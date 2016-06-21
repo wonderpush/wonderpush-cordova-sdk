@@ -1,0 +1,21 @@
+{
+  "name": "wonderpush-cordova-sdk",
+  "version": "1.0.0",
+  "description": "Wonderpush Cordova SDK - Notifications & Analytics",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {},
+  "standard": {
+    "globals": ["cordova"]
+  },
+  "keywords": [
+    "wonderpush",
+    "cordova",
+    "sdk",
+    "push",
+    "notifications",
+    "analytics"
+  ],
+  "author": "dev@wonderpush.com",
+  "license": ""
+}

@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-plugin-wonderpush" version="1.0.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+  <name>Wonderpush</name>
+  <js-module name="Wonderpush" src="www/Wonderpush.js">
+    <clobbers target="cordova.plugins.Wonderpush" />
+  </js-module>
+  <platform name="android">
+    <preference name="CLIENT_ID" />
+    <preference name="CLIENT_SECRET" />
+
+    <framework src="com.wonderpush:wonderpush-android-sdk:1.2.2.0" />
+    <config-file parent="/*" target="res/xml/config.xml">
+      <feature name="WonderpushPlugin">
+        <param name="android-package" value="com.wonderpush.sdk.cordova.WonderpushPlugin" />
+      </feature>
+    </config-file>
+    <config-file parent="/*" target="res/values/strings.xml">
+      <string name="WP_CLIENT_ID">$CLIENT_ID</string>
+      <string name="WP_CLIENT_SECRET">$CLIENT_SECRET</string>
+    </config-file>
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+      <meta-data android:name="wonderpushInitializerClass" android:value="com.wonderpush.sdk.cordova.WonderPushInitializerImpl" tools:replace="android:value" />
+    </config-file>
+    <config-file parent="/*" target="AndroidManifest.xml"></config-file>
+    <source-file src="src/android/WonderpushPlugin.java" target-dir="src/com/wonderpush/sdk/cordova" />
+    <source-file src="src/android/WonderPushInitializerImpl.java" target-dir="src/com/wonderpush/sdk/cordova" />
+  </platform>
+</plugin>
