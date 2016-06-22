@@ -1,10 +1,10 @@
-var _serviceName = 'WonderpushPlugin'
+var _serviceName = 'WonderPushPlugin'
 var _allowedPrefixes = 'byte short int long float double bool string date geoloc object ignore'
     .split(' ')
     .map(function (type) { return type + '_' })
 
 function _errorHandler (error) {
-  console.error('[Wonderpush] error calling native method:', error)
+  console.error('[WonderPush] error calling native method:', error)
 }
 
 function _callNative (actionName, args) {
@@ -59,11 +59,11 @@ function setNotificationEnabled (enabled) {
   _callNative('setNotificationEnabled', [enabled])
 }
 
-var Wonderpush = {
+var WonderPush = {
   initialize: function () { _callNative('initialize') },
   trackEvent: trackEvent,
   putInstallationCustomProperties: putInstallationCustomProperties,
   setNotificationEnabled: setNotificationEnabled
 }
 
-module.exports = Wonderpush
+module.exports = WonderPush
