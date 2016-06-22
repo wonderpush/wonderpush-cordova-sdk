@@ -1,5 +1,6 @@
 # wonderpush-cordova-sdk
 Cordova SDK for WonderPush − Notifications &amp; Analytics
+(Not for production yet)
 
 ## Getting started
 #### 1) Create your application if needed
@@ -17,9 +18,13 @@ cordova platform add android --save
 ```
 cordova plugin add --save cordova-plugin-wonderpush --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'
 ```
+For development 
+```
+cordova plugin add --save --link path-to-wonderpush-sdk-folder --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'
+```
 
 #### 3) Configure your platforms
-##### a) For android: Add grade config to your gradle file.
+##### a) For android: Add gradle config to your gradle file.
 ```
 android {
   defaultConfig {
