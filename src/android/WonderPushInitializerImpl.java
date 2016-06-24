@@ -1,8 +1,6 @@
 package com.wonderpush.sdk.cordova;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 
 import com.wonderpush.sdk.WonderPush;
 import com.wonderpush.sdk.WonderPushInitializer;
