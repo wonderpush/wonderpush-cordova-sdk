@@ -55,3 +55,7 @@ cordova.plugins.WonderPush.initialize()
 ```
 cordova run --device
 ```
+
+## Advanced usage
+#### Handling your own deep links
+WonderPush allows you to open a deep link with your notifications (`targetUrl` of your notification object, or set the tap/click action while composing your notification with our dashboard). To use deep links with cordova, you can use [a plugin](https://github.com/EddyVerbruggen/Custom-URL-scheme) maintained by the community.
