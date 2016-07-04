@@ -47,6 +47,7 @@ You must initialize the sdk before using it. A good place to add the code is in 
 cordova.plugins.WonderPush.initialize()
 ```
 ##### b) Use WonderPush features
+See our [Android guide: Using the SDK in your Android application](http://www.wonderpush.com/docs/android/getting-started) for guidance about using our features. These methods do the same thing as in Android version.
 - cordova.plugins.WonderPush.trackEvent
 - cordova.plugins.WonderPush.putInstallationCustomProperties
 - cordova.plugins.WonderPush.setNotificationEnabled
