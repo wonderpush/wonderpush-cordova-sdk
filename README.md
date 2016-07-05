@@ -3,6 +3,7 @@ Cordova SDK for WonderPush − Notifications &amp; Analytics
 (Not for production yet)
 
 ## Getting started
+This guide is a draft, please see our [Android guide](http://www.wonderpush.com/docs/android/getting-started) for more details (CLIENT_ID, CLIENT_SECRET ... ).
 #### 1) Create your application if needed
 Use cordova tool to create an application, see [cordova guide](https://cordova.apache.org/docs/en/latest/guide/cli/) for more details
 ```
