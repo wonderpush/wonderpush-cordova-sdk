@@ -17,7 +17,7 @@ cordova platform add android --save
 ```
 #### 2) Add the wonderpush sdk
 ```
-cordova plugin add --save cordova-plugin-wonderpush --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'
+cordova plugin add --save wonderpush-cordova-sdk --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'
 ```
 For development 
 ```
