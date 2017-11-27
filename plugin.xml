@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="wonderpush-cordova-sdk" version="1.0.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="wonderpush-cordova-sdk" version="0.1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
   <name>WonderPush</name>
   <js-module name="WonderPush" src="www/WonderPush.js">
     <clobbers target="cordova.plugins.WonderPush" />
@@ -27,5 +27,32 @@
     <config-file parent="/*" target="AndroidManifest.xml"></config-file>
     <source-file src="src/android/WonderPushPlugin.java" target-dir="src/com/wonderpush/sdk/cordova" />
     <source-file src="src/android/WonderPushInitializerImpl.java" target-dir="src/com/wonderpush/sdk/cordova" />
+  </platform>
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="WonderPush">
+        <param name="ios-package" value="WonderPush"/>
+        </feature>
+    </config-file>
+    <framework src="SystemConfiguration.framework" />
+    <framework src="MobileCoreServices.framework" />
+    <framework src="CoreGraphics.framework" />
+    <framework src="UIKit.framework" />
+    <framework src="CoreTelephony.framework" />
+    <framework src="CoreLocation.framework" />
+    <framework src="CoreBluetooth.framework" />
+    <framework src="AVFoundation.framework" />
+    <framework src="CoreMotion.framework" />
+    <framework src="src/ios/WonderPush.framework" custom="true" embed="true" />
+    <framework src="src/ios/AFNetworking.framework" custom="true" embed="true" />
+    <framework src="src/ios/OpenUDID.framework" custom="true" embed="true" />
+    <framework src="src/ios/PKAlertController.framework" custom="true" embed="true" />
+    <framework src="src/ios/TCMobileProvision.framework" custom="true" embed="true" />
+    <framework src="src/ios/DTFoundation.framework" custom="true" embed="true" />
+    <config-file target="*-Info.plist" parent="UIBackgroundModes">
+      <array>
+        <string>remote-notification</string>
+      </array>
+    </config-file>
   </platform>
 </plugin>
