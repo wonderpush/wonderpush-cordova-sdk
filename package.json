@@ -10,9 +10,14 @@
     "url": "https://github.com/wonderpush/wonderpush-cordova-sdk"
   },
   "standard": {
-    "globals": ["cordova"]
+    "globals": [
+      "cordova"
+    ]
   },
   "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
     "wonderpush",
     "cordova",
     "sdk",
