@@ -1,9 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-plugin-wonderpush" version="1.0.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="wonderpush-cordova-sdk" version="1.0.2.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
   <name>WonderPush</name>
   <js-module name="WonderPush" src="www/WonderPush.js">
     <clobbers target="cordova.plugins.WonderPush" />
   </js-module>
+  <engines>
+    <engine name="cocoapods" version=">=0.39.0" platform="ios" />
+  </engines>
   <platform name="android">
     <preference name="CLIENT_ID" />
     <preference name="CLIENT_SECRET" />
@@ -32,23 +35,9 @@
     <config-file target="config.xml" parent="/*">
       <feature name="WonderPush">
         <param name="ios-package" value="WonderPush"/>
-        </feature>
+      </feature>
     </config-file>
-    <framework src="SystemConfiguration.framework" />
-    <framework src="MobileCoreServices.framework" />
-    <framework src="CoreGraphics.framework" />
-    <framework src="UIKit.framework" />
-    <framework src="CoreTelephony.framework" />
-    <framework src="CoreLocation.framework" />
-    <framework src="CoreBluetooth.framework" />
-    <framework src="AVFoundation.framework" />
-    <framework src="CoreMotion.framework" />
-    <framework src="src/ios/WonderPush.framework" custom="true" embed="true" />
-    <framework src="src/ios/AFNetworking.framework" custom="true" embed="true" />
-    <framework src="src/ios/OpenUDID.framework" custom="true" embed="true" />
-    <framework src="src/ios/PKAlertController.framework" custom="true" embed="true" />
-    <framework src="src/ios/TCMobileProvision.framework" custom="true" embed="true" />
-    <framework src="src/ios/DTFoundation.framework" custom="true" embed="true" />
+    <framework src="WonderPush" type="podspec" spec="~> 2.2" />
     <config-file target="*-Info.plist" parent="UIBackgroundModes">
       <array>
         <string>remote-notification</string>

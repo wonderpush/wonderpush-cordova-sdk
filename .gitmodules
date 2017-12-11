@@ -1,4 +1,0 @@
-[submodule "wonderpush-ios-sdk"]
-	path = wonderpush-ios-sdk
-	url = https://github.com/wonderpush/wonderpush-ios-sdk.git
-	branch = latest
