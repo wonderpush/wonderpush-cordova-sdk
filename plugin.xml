@@ -29,10 +29,15 @@
     <source-file src="src/android/WonderPushInitializerImpl.java" target-dir="src/com/wonderpush/sdk/cordova" />
   </platform>
   <platform name="ios">
+    <preference name="CLIENT_ID" />
+    <preference name="CLIENT_SECRET" />
     <config-file target="config.xml" parent="/*">
-      <feature name="WonderPush">
-        <param name="ios-package" value="WonderPush"/>
-        </feature>
+      <feature name="WonderPushPlugin">
+        <param name="ios-package" value="WonderPushPlugin"/>
+        <param name="onload" value="true" />
+      </feature>
+      <preference name="CLIENT_ID" value="$CLIENT_ID" />
+      <preference name="CLIENT_SECRET" value="$CLIENT_SECRET" />
     </config-file>
     <framework src="SystemConfiguration.framework" />
     <framework src="MobileCoreServices.framework" />
@@ -54,5 +59,13 @@
         <string>remote-notification</string>
       </array>
     </config-file>
+    <config-file target="*-Debug.plist" parent="aps-environment">
+      <string>development</string>
+    </config-file>
+    <config-file target="*-Release.plist" parent="aps-environment">
+      <string>production</string>
+    </config-file>
+    <header-file src="src/ios/WonderPushPlugin.h" />
+    <source-file src="src/ios/WonderPushPlugin.m" />
   </platform>
 </plugin>
