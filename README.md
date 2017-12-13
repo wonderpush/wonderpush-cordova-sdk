@@ -11,7 +11,7 @@ This guide is a draft, please see our [Android guide](https://www.wonderpush.com
 Use cordova tool to create an application, see [cordova guide](https://cordova.apache.org/docs/en/latest/guide/cli/) for more details.
 
 ```
-cordova create cordova-demo com.wonderpush.cordova.demo WonderPushCordovaDemo
+cordova create cordova-demo com.wonderpush.demo WonderPushCordovaDemo
 cd cordova-demo
 ```
 
