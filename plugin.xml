@@ -49,6 +49,7 @@
     <framework src="AVFoundation.framework" />
     <framework src="CoreMotion.framework" />
     <framework src="src/ios/WonderPush.framework" custom="true" embed="true" />
+    <framework src="src/ios/WonderPushExtension.framework" custom="true" embed="true" />
     <framework src="src/ios/AFNetworking.framework" custom="true" embed="true" />
     <framework src="src/ios/OpenUDID.framework" custom="true" embed="true" />
     <framework src="src/ios/PKAlertController.framework" custom="true" embed="true" />

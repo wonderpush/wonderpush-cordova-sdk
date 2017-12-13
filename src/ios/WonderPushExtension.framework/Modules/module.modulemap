@@ -1,0 +1,6 @@
+framework module WonderPushExtension {
+  umbrella header "WonderPushExtension-umbrella.h"
+
+  export *
+  module * { export * }
+}
