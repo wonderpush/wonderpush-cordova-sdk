@@ -19,12 +19,27 @@
 
 @interface WonderPushPlugin : CDVPlugin
 
+// Initialization
 - (void)pluginInitialize;
 - (void)UIApplicationDidFinishLaunchingNotification:(NSNotification *)notification;
 
-- (void)initialize:(CDVInvokedUrlCommand*)command;
+- (void)setUserId:(CDVInvokedUrlCommand *)command;
+- (void)isReady:(CDVInvokedUrlCommand *)command;
+- (void)setLogging:(CDVInvokedUrlCommand *)command;
+
+// Core information
+- (void)getUserId:(CDVInvokedUrlCommand *)command;
+- (void)getInstallationId:(CDVInvokedUrlCommand *)command;
+- (void)getDeviceId:(CDVInvokedUrlCommand *)command;
+- (void)getPushToken:(CDVInvokedUrlCommand *)command;
+- (void)getAccessToken:(CDVInvokedUrlCommand *)command;
+
 - (void)trackEvent:(CDVInvokedUrlCommand*)command;
+- (void)getInstallationCustomProperties:(CDVInvokedUrlCommand *)command;
 - (void)putInstallationCustomProperties:(CDVInvokedUrlCommand *)command;
+
+// Push notification handling
+- (void)getNotificationEnabled:(CDVInvokedUrlCommand *)command;
 - (void)setNotificationEnabled:(CDVInvokedUrlCommand *)command;
 
 @end

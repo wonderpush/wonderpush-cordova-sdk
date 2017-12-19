@@ -2,6 +2,7 @@ package com.wonderpush.sdk.cordova;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.PluginResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,13 +14,47 @@ public class WonderPushPlugin extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        // WonderPush.setLogging(true);
+        // Initialization
+        if (action.equals("setUserId")) {
 
-        if (action.equals("initialize")) {
-            WonderPush.initialize(this.cordova.getActivity().getApplicationContext());
+            String userId = args.isNull(0) ? null : args.getString(0);
+            WonderPush.setUserId(userId);
+            callbackContext.success();
 
-            return true;
+        } else if (action.equals("isReady")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.isReady()));
+
+        } else if (action.equals("setLogging")) {
+
+            boolean enabled = args.getBoolean(0);
+            WonderPush.setLogging(enabled);
+            callbackContext.success();
+
+        // Core information
+        } else if (action.equals("getUserId")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getUserId()));
+
+        } else if (action.equals("getInstallationId")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getInstallationId()));
+
+        } else if (action.equals("getDeviceId")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getDeviceId()));
+
+        } else if (action.equals("getPushToken")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getPushToken()));
+
+        } else if (action.equals("getAccessToken")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getAccessToken()));
+
+        // Installation data and events
         } else if (action.equals("trackEvent")) {
+
             String type = args.getString(0);
 
             if (args.length() == 2) {
@@ -28,21 +63,34 @@ public class WonderPushPlugin extends CordovaPlugin {
             } else {
                 WonderPush.trackEvent(type);
             }
+            callbackContext.success();
 
-            return true;
+        } else if (action.equals("getInstallationCustomProperties")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getInstallationCustomProperties()));
+
         } else if (action.equals("putInstallationCustomProperties")) {
+
             JSONObject custom = args.getJSONObject(0);
             WonderPush.putInstallationCustomProperties(custom);
+            callbackContext.success();
 
-            return true;
+        // Push notification handling
+        } else if (action.equals("getNotificationEnabled")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getNotificationEnabled()));
+
         } else if (action.equals("setNotificationEnabled")) {
+
             boolean enabled = args.getBoolean(0);
             WonderPush.setNotificationEnabled(enabled);
+            callbackContext.success();
 
-            return true;
+        } else {
+            return false;
         }
 
-        return false;
+        return true;
     }
 
 }

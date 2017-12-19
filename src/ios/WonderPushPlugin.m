@@ -16,6 +16,8 @@
 
 @implementation WonderPushPlugin
 
+#pragma mark - Initialization
+
 - (void)pluginInitialize {
     // Because we use `<param name="onload" value="true"/>`, this method is called inside
     // - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
@@ -41,10 +43,62 @@
     [WonderPush application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:launchOptions];
 }
 
-- (void)initialize:(CDVInvokedUrlCommand*)command {
-    // No-op
-    // already done in pluginInitialize for iOS
+- (void)setUserId:(CDVInvokedUrlCommand *)command {
+    NSString *userId = (NSString *)command.arguments[0];
+    if (userId == [NSNull null]) userId = nil;
+
+    [WonderPush setUserId:userId];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
+
+- (void)isReady:(CDVInvokedUrlCommand *)command {
+    BOOL rtn = [WonderPush isReady];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:rtn] callbackId:command.callbackId];
+}
+
+- (void)setLogging:(CDVInvokedUrlCommand *)command {
+    NSNumber *enabled = (NSNumber *)command.arguments[0];
+
+    [WonderPush setLogging:[enabled boolValue]];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+#pragma mark - Core information
+
+- (void)getUserId:(CDVInvokedUrlCommand *)command {
+    NSString *rtn = [WonderPush userId];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
+}
+
+- (void)getInstallationId:(CDVInvokedUrlCommand *)command {
+    NSString *rtn = [WonderPush installationId];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
+}
+
+- (void)getDeviceId:(CDVInvokedUrlCommand *)command {
+    NSString *rtn = [WonderPush deviceId];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
+}
+
+- (void)getPushToken:(CDVInvokedUrlCommand *)command {
+    NSString *rtn = [WonderPush pushToken];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
+}
+
+- (void)getAccessToken:(CDVInvokedUrlCommand *)command {
+    NSString *rtn = [WonderPush accessToken];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
+}
+
+#pragma mark - Installation data and events
 
 - (void)trackEvent:(CDVInvokedUrlCommand *)command {
     NSString *type = (NSString *)command.arguments[0];
@@ -53,16 +107,37 @@
         data = (NSDictionary *)command.arguments[1];
     }
     [WonderPush trackEvent:type withData:data];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)getInstallationCustomProperties:(CDVInvokedUrlCommand *)command {
+    NSDictionary *rtn = [WonderPush getInstallationCustomProperties];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:rtn] callbackId:command.callbackId];
 }
 
 - (void)putInstallationCustomProperties:(CDVInvokedUrlCommand *)command {
     NSDictionary *customProperties = (NSDictionary *)command.arguments[0];
     [WonderPush putInstallationCustomProperties:customProperties];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+#pragma mark - Push notification handling
+
+- (void)getNotificationEnabled:(CDVInvokedUrlCommand *)command {
+    BOOL rtn = [WonderPush getNotificationEnabled];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:rtn] callbackId:command.callbackId];
 }
 
 - (void)setNotificationEnabled:(CDVInvokedUrlCommand *)command {
     NSNumber *enabled = (NSNumber *)command.arguments[0];
+
     [WonderPush setNotificationEnabled:[enabled boolValue]];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
 @end
