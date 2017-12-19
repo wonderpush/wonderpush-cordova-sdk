@@ -24,7 +24,11 @@
         android:name="wonderpushInitializerClass" android:value="com.wonderpush.sdk.cordova.WonderPushInitializerImpl" tools:replace="android:value"
       />
     </config-file>
-    <config-file parent="/*" target="AndroidManifest.xml"></config-file>
+    <edit-config file="AndroidManifest.xml" target="/manifest/application" mode="merge">
+      <application android:name="com.wonderpush.sdk.cordova.WonderPushApplication" />
+    </edit-config>
+    <framework src="build.gradle" custom="true" type="gradleReference" />
+    <source-file src="src/android/WonderPushApplication.java" target-dir="src/com/wonderpush/sdk/cordova" />
     <source-file src="src/android/WonderPushPlugin.java" target-dir="src/com/wonderpush/sdk/cordova" />
     <source-file src="src/android/WonderPushInitializerImpl.java" target-dir="src/com/wonderpush/sdk/cordova" />
   </platform>

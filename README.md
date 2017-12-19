@@ -36,22 +36,7 @@ cordova plugin add --save --link ../wonderpush-cordova-sdk --variable CLIENT_ID=
 
 ### 3) Configure your platforms
 
-#### a) For Android: Add gradle config to your gradle file.
-
-Edit your `platforms/android/build-extras.gradle`:
-
-```
-android {
-  defaultConfig {
-    manifestPlaceholders = [
-      wonderpushDefaultActivity:  'YOUR_MAIN_ACTIVITY_CLASS', // eg. 'com.myapp.MainActivity'
-      wonderpushNotificationIcon: 'YOUR_NOTIFICATION_ICON'    // eg. '@drawable/icon'
-    ]
-  }
-}
-```
-
-#### b) For iOS: Add Push Notifications capability
+#### a) For iOS: Add Push Notifications capability
 
 If you've just created your project, before we open XCode, make sure to build the project once so that things like Signing identities are properly set:
 
@@ -68,7 +53,7 @@ First, let’s add the new application extension to your project:
 
 This step could be done automatically without causing problems building the Notification Service Extension with Cordova of the next step.
 
-#### c) For iOS: (Recommended) Support rich notifications
+#### b) For iOS: (Recommended) Support rich notifications
 
 In order to use rich notifications, you must add a Notification Service Extension to your project and let the WonderPush SDK do the hard work for you.
 
@@ -192,13 +177,17 @@ While the actual cause stay a mystery for us, the solution is simple: uninstall 
 
 ### 4) Use WonderPush SDK in your application
 
-#### a) Initialize the SDK
+#### a) Notification permission and SDK initialization
 
-You must initialize the sdk before using it. A good place to add the code is in `onDeviceReady`, normally in `www/js/index.js`.
+On iOS, you must call the `cordova.plugins.WonderPush.setNotificationEnabled(true)` function at some time, preferably after presenting the user what benefit will push notifications bring to him.
 
-```
-cordova.plugins.WonderPush.initialize()
-```
+The SDK initializes itself on the start of the application.
+You don't need to do anything.
+
+On Android it declares a custom `Application` class.
+If you already are using your own, be sure to call `WonderPush.initialize(this);` inside your implementation.
+
+On iOS it watches for the `UIApplicationDidFinishLaunchingNotification` notification in the `NSNotificationCenter`.
 
 #### b) Use WonderPush features
 
@@ -206,9 +195,9 @@ See our [Android guide: Using the SDK in your Android application](https://www.w
 
 These methods do the same thing as in the Android/iOS version:
 
-- cordova.plugins.WonderPush.trackEvent
-- cordova.plugins.WonderPush.putInstallationCustomProperties
-- cordova.plugins.WonderPush.setNotificationEnabled
+- `cordova.plugins.WonderPush.setNotificationEnabled`
+- `cordova.plugins.WonderPush.trackEvent`
+- `cordova.plugins.WonderPush.putInstallationCustomProperties`
 
 ### 5) Test your app
 

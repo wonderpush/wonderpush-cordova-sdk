@@ -60,7 +60,6 @@ function setNotificationEnabled (enabled) {
 }
 
 var WonderPush = {
-  initialize: function () { _callNative('initialize') },
   trackEvent: trackEvent,
   putInstallationCustomProperties: putInstallationCustomProperties,
   setNotificationEnabled: setNotificationEnabled
