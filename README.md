@@ -195,8 +195,10 @@ See our [Android guide: Using the SDK in your Android application](https://www.w
 
 These methods do the same thing as in the Android/iOS version:
 
+- `cordova.plugins.WonderPush.setUserId`
 - `cordova.plugins.WonderPush.setNotificationEnabled`
 - `cordova.plugins.WonderPush.trackEvent`
+- `cordova.plugins.WonderPush.getInstallationCustomProperties`
 - `cordova.plugins.WonderPush.putInstallationCustomProperties`
 
 ### 5) Test your app
