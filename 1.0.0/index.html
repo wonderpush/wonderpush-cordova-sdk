@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>WonderPush Cordova SDK Index</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cerulean.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">WonderPush Cordova SDK</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="cordova.plugins.WonderPush.html">cordova.plugins.WonderPush</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	
+	
+
+
+
+    <h3>wonderpush-cordova-sdk 1.0.0</h3>
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+
+
+
+    <section class="readme-section">
+        <article><h1>wonderpush-cordova-sdk</h1><p>Cordova SDK for WonderPush − Notifications &amp; Analytics</p>
+<h2>Getting started</h2><p>Please see our <a href="https://www.wonderpush.com/docs/cordova/getting-started">Cordova guide</a> for more information.</p>
+<h3>1) Create your application if needed</h3><p>Use cordova tool to create an application, see the <a href="https://cordova.apache.org/docs/en/latest/guide/cli/">Cordova guide</a> for more details.</p>
+<pre class="prettyprint source lang-sh"><code>cordova create cordova-demo com.wonderpush.demo WonderPushCordovaDemo
+cd cordova-demo</code></pre><p>Add the Android and iOS platforms:</p>
+<pre class="prettyprint source lang-sh"><code>cordova platform add android --save
+cordova platform add ios --save</code></pre><h3>2) Add the WonderPush SDK</h3><pre class="prettyprint source lang-sh"><code>cordova plugin add --save wonderpush-cordova-sdk --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'</code></pre><p>For development:</p>
+<pre class="prettyprint source lang-sh"><code>cordova plugin add --save --link ../wonderpush-cordova-sdk --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'</code></pre><h3>3) Configure your platforms</h3><h4>a) For iOS: Add the Push Notifications capability</h4><p>If you've just created your project, before we open XCode, make sure to build the project once so that things like Signing identities are properly set:</p>
+<pre class="prettyprint source lang-sh"><code>cordova build</code></pre><p>First, let's add the new application extension to your project:</p>
+<ol>
+<li>Open <code>platforms/ios/YourApplication.xcworkspace</code> in XCode.</li>
+<li>In the Project navigator, select your project.</li>
+<li>Select your application target.</li>
+<li>In the <em>Capabilities</em> tab, flip the <em>Push Notifications</em> switch on.</li>
+</ol>
+<p>This step could not be done automatically without causing problems building the Notification Service Extension with Cordova of the next step.</p>
+<h4>b) For iOS: (Recommended) Support rich notifications</h4><p>In order to use rich notifications on iOS, you must add a Notification Service Extension to your project and let the WonderPush SDK do the hard work for you.</p>
+<p>First, let's add the new application extension to your project:</p>
+<ol>
+<li>Open <code>platforms/ios/YourApplication.xcworkspace</code> in XCode.</li>
+<li>Open the XCode <em>File</em> menu, under <em>New</em> select <em>Target…</em>.</li>
+<li>In the <em>iOS</em> tab, in the <em>Application Extension</em> group, select <em>Notification Service Extension</em> and click <em>Next</em>.</li>
+<li>Give it a name you like, here we soberly chose <em>NotificationServiceExtension</em>.
+Choose the same team as your application target.
+Make sure that it is linked to your project instead of <code>CordovaLib</code>, and next that it's embedded in your application.
+Click <em>Finish</em>.</li>
+<li>XCode will ask you whether you want to activate the new scheme. Click <em>Cancel</em>.
+If you inadvertently clicked <em>Activate</em>, simply select your application in the scheme selector next to the run/stop buttons.</li>
+</ol>
+<p>Let's fix a signing issue:</p>
+<ol>
+<li>In the Project navigator, select your project.</li>
+<li>Select your new target.</li>
+<li>In the <em>General</em> tab, under <em>Signing</em> select your <em>Team</em> if necessary.</li>
+</ol>
+<p>Make sure the extension runs on any iOS 10.0 or ulterior devices:</p>
+<ol>
+<li>In the Project navigator, select your project.</li>
+<li>Select your new target.</li>
+<li>In the <em>General</em> tab, under <em>Deployment Info</em> set <em>Deployment Target</em> to <code>10.0</code>.</li>
+</ol>
+<p>Add the necessary WonderPushExtension framework to the target:</p>
+<ol>
+<li>In the Project navigator, select your project.</li>
+<li>Select your new target.</li>
+<li>In the <em>General</em> tab, under <em>Linked Frameworks and Libraries</em> click the <em>+</em> button.</li>
+<li>Click <em>Add Other…</em>.</li>
+<li>Navigate to your project root directory then under <em>platforms/ios/MyApp/Plugins/wonderpush-cordova-sdk/</em> and select <em>WonderPushExtension.framework</em>.</li>
+<li>Click <em>Open</em>.</li>
+</ol>
+<p>Let's fix a path issue:</p>
+<ol>
+<li>In the Project navigator, select your project.</li>
+<li>Select your new target.</li>
+<li>In the <em>Build settings</em> tab, under <em>Search Paths</em> on the <em>Framework Search Paths</em> line, double click on the cell with bold text (potentially on a green background).</li>
+<li>In the values list, find <code>$(PROJECT_DIR)/YourApp/Plugins/wonderpush-cordova-sdk</code> and drop <code>$(PROJECT_DIR)/</code> at the beginning so it becomes <code>Yourapp/Plugins/wonderpush-cordova-sdk</code>.</li>
+<li>Click outside the popup to validate your input. (Pressing Enter then Escape to close the popup dismisses your changes.)</li>
+</ol>
+<p>Now we'll need to remove a Cordova configuration that leaks from the application's target to the extension target: </p>
+<ol>
+<li>In the Project navigator, select your project.</li>
+<li>Select your new target.</li>
+<li>In the <em>Build settings</em> tab, under <em>Signing</em> on the <em>Code Signing Entitlements</em> group, double click the cell corresponding to your extension target and remove values for both the <em>Debug</em> and <em>Release</em> entries so that they are empty.</li>
+</ol>
+<p>We're done with the configuration, now on with a bit of code.</p>
+<p>You should see the following files in your Project navigator:</p>
+<ul>
+<li><code>YourApp</code><ul>
+<li><code>NotificationServiceExtension</code> (this is the name of the service extension you chose earlier)<ul>
+<li><code>NotificationService.h</code></li>
+<li><code>NotificationService.m</code></li>
+<li><code>Info.plist</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>We are going to remove almost all generated code to rely on a utility class the implements it all for you.</p>
+<p>Open <code>NotificationService.h</code> and modify it so that it reads:</p>
+<pre class="prettyprint source lang-objc"><code>#import &lt;WonderPushExtension/NotificationServiceExtension.h>
+
+// We delegate everything to WPNotificationService
+@interface NotificationService : WPNotificationService
+
+@end</code></pre><p>Then open <code>NotificationService.m</code> and modify it so that it reads:</p>
+<pre class="prettyprint source lang-objc"><code>#import &quot;NotificationService.h&quot;
+
+@implementation NotificationService
+
+// The WPNotificationService superclass already implements everything
+
+@end</code></pre><p>Test that cordova can still build your project from command-line:</p>
+<pre class="prettyprint source"><code>cordova build</code></pre><p>If you see an error in the step <code>Check dependencies</code> for the Notification Service Extension target, then open <code>platforms/ios/cordova/build.xcconfig</code> and add <code>//</code> at the begining of the following line so that it reads:</p>
+<pre class="prettyprint source"><code>// (CB-11854)
+//CODE_SIGN_ENTITLEMENTS = $(PROJECT_DIR)/$(PROJECT_NAME)/Entitlements-$(CONFIGURATION).plist</code></pre><p>Now your project builds fine with either Cordova CLI or XCode.</p>
+<h5>Troubleshooting missing media attachments</h5><p>We have noticed that, after running an application using XCode, when running with Cordova after that can lead to media attachments not being shown in the notifications.</p>
+<p>The error that you can see in your device logs is as follows: (NB: not your application logs, open XCode, menu <em>Window</em>, click <em>Devices and Simulators</em>, choose your device and in the bottom of the main part, click the upward triangle in a square whose tooltip reads <em>Show the device console</em>)</p>
+<pre class="prettyprint source"><code>kernel(Sandbox)[0] &lt;Notice>: SandboxViolation: NotificationServ(4385) deny(1) file-write-create /private/var/mobile/Containers/Data/PluginKitPlugin/73E48A8F-696D-460C-AEB8-BD83674DD158
+NotificationServiceExtension(Foundation)[4385] &lt;Info>: Write options: 0 -- URL: &lt;private> -- purposeID: DCB02E0E-CA64-41B9-B99D-D37BC87C6A2E
+filecoordinationd(Foundation)[179] &lt;Notice>: Received claim &lt;private>
+filecoordinationd(Foundation)[179] &lt;Info>: Starting to observe state of client with pid 4385 on behalf of claim DEA8C7A2-5479-4822-8586-A49E26FB214F
+filecoordinationd(Foundation)[179] &lt;Notice>: Claim DEA8C7A2-5479-4822-8586-A49E26FB214F granted in server
+filecoordinationd(Foundation)[179] &lt;Notice>: Claim DEA8C7A2-5479-4822-8586-A49E26FB214F invoked in server
+NotificationServiceExtension(Foundation)[4385] &lt;Notice>: Claim DEA8C7A2-5479-4822-8586-A49E26FB214F granted in client
+NotificationServiceExtension(Foundation)[4385] &lt;Notice>: Claim DEA8C7A2-5479-4822-8586-A49E26FB214F invoked in client
+filecoordinationd(Foundation)[179] &lt;Notice>: Claim DEA8C7A2-5479-4822-8586-A49E26FB214F was revoked
+NotificationServiceExtension(WonderPushExtension)[4385] &lt;Notice>: [WonderPush] Failed to write attachment to disk: Error Domain=NSCocoaErrorDomain Code=4 &quot;The folder \M-b\M^@\M^\0.jpg\M-b\M^@\M^] doesn\M-b\M^@\M^Yt exist.&quot; UserInfo={NSURL=file:///private/var/mobile/Containers/Data/PluginKitPlugin/73E48A8F-696D-460C-AEB8-BD83674DD158/0.jpg, NSUnderlyingError=0x1762e4b0 {Error Domain=NSPOSIXErrorDomain Code=2 &quot;No such file or directory&quot;}, NSUserStringVariant=Folder}</code></pre><p>While the actual cause is mysterious, the solution is simple: uninstall your application, and run it again using Cordova.</p>
+<h3>4) Use WonderPush SDK in your application</h3><h4>a) Notification permission and SDK initialization</h4><p>On iOS, you must call the <code>cordova.plugins.WonderPush.setNotificationEnabled(true)</code> function at some time, preferably after presenting the user what benefit will push notifications bring to him.</p>
+<p>The SDK initializes itself on the start of the application.
+You don't need to do anything.</p>
+<p>On Android it declares a custom <code>Application</code> class.
+If you already are using your own, be sure to call <code>WonderPush.initialize(this);</code> inside your implementation.</p>
+<p>On iOS it watches for the <code>UIApplicationDidFinishLaunchingNotification</code> notification in the <code>NSNotificationCenter</code>.</p>
+<h4>b) Use WonderPush features</h4><p>See our <a href="https://www.wonderpush.com/docs/cordova/getting-started#cordova-getting-started-using-sdk">Cordova guide: Using the SDK in your Cordova application</a> for guidance about using our features.</p>
+<p>These methods do the same thing as in the Android/iOS version:</p>
+<ul>
+<li><code>cordova.plugins.WonderPush.setUserId</code></li>
+<li><code>cordova.plugins.WonderPush.setNotificationEnabled</code></li>
+<li><code>cordova.plugins.WonderPush.trackEvent</code></li>
+<li><code>cordova.plugins.WonderPush.getInstallationCustomProperties</code></li>
+<li><code>cordova.plugins.WonderPush.putInstallationCustomProperties</code></li>
+</ul>
+<h3>5) Test your app</h3><pre class="prettyprint source"><code>cordova run --device</code></pre><h2>Updating</h2><pre class="prettyprint source"><code>cordova plugin remove wonderpush-cordova-sdk
+
+cordova plugin add --save wonderpush-cordova-sdk --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'
+// OR for development
+cordova plugin add --save --link ../wonderpush-cordova-sdk --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'</code></pre><p>Recheck all integration steps, including for the Notification Service Extension, especially:</p>
+<ul>
+<li>Adding the necessary WonderPushExtension framework to the target</li>
+<li>Fix a path issue</li>
+</ul>
+<h2>Advanced usage</h2><h3>Handling your own deep links</h3><p>WonderPush allows you to open a deep link with your notifications (<code>targetUrl</code> of your notification object, or set the tap/click action while composing your notification with our dashboard).
+To use deep links with cordova, you can use <a href="https://github.com/EddyVerbruggen/Custom-URL-scheme">a plugin</a> maintained by the community.</p></article>
+    </section>
+
+
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	© 2017 WonderPush. All rights reserved.
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Wed Dec 20th 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>
