@@ -8,56 +8,56 @@ Please see our [Cordova guide](https://www.wonderpush.com/docs/cordova/getting-s
 
 ### 1) Create your application if needed
 
-Use cordova tool to create an application, see [cordova guide](https://cordova.apache.org/docs/en/latest/guide/cli/) for more details.
+Use cordova tool to create an application, see the [Cordova guide](https://cordova.apache.org/docs/en/latest/guide/cli/) for more details.
 
-```
+```sh
 cordova create cordova-demo com.wonderpush.demo WonderPushCordovaDemo
 cd cordova-demo
 ```
 
 Add the Android and iOS platforms:
 
-```
+```sh
 cordova platform add android --save
 cordova platform add ios --save
 ```
 
 ### 2) Add the WonderPush SDK
 
-```
+```sh
 cordova plugin add --save wonderpush-cordova-sdk --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'
 ```
 
 For development:
 
-```
+```sh
 cordova plugin add --save --link ../wonderpush-cordova-sdk --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'
 ```
 
 ### 3) Configure your platforms
 
-#### a) For iOS: Add Push Notifications capability
+#### a) For iOS: Add the Push Notifications capability
 
 If you've just created your project, before we open XCode, make sure to build the project once so that things like Signing identities are properly set:
 
-```
+```sh
 cordova build
 ```
 
-First, let’s add the new application extension to your project:
+First, let's add the new application extension to your project:
 
 1. Open `platforms/ios/YourApplication.xcworkspace` in XCode.
 2. In the Project navigator, select your project.
 3. Select your application target.
 4. In the _Capabilities_ tab, flip the _Push Notifications_ switch on.
 
-This step could be done automatically without causing problems building the Notification Service Extension with Cordova of the next step.
+This step could not be done automatically without causing problems building the Notification Service Extension with Cordova of the next step.
 
 #### b) For iOS: (Recommended) Support rich notifications
 
-In order to use rich notifications, you must add a Notification Service Extension to your project and let the WonderPush SDK do the hard work for you.
+In order to use rich notifications on iOS, you must add a Notification Service Extension to your project and let the WonderPush SDK do the hard work for you.
 
-First, let’s add the new application extension to your project:
+First, let's add the new application extension to your project:
 
 1. Open `platforms/ios/YourApplication.xcworkspace` in XCode.
 2. Open the XCode _File_ menu, under _New_ select _Target…_.
@@ -173,7 +173,7 @@ filecoordinationd(Foundation)[179] <Notice>: Claim DEA8C7A2-5479-4822-8586-A49E2
 NotificationServiceExtension(WonderPushExtension)[4385] <Notice>: [WonderPush] Failed to write attachment to disk: Error Domain=NSCocoaErrorDomain Code=4 "The folder \M-b\M^@\M^\0.jpg\M-b\M^@\M^] doesn\M-b\M^@\M^Yt exist." UserInfo={NSURL=file:///private/var/mobile/Containers/Data/PluginKitPlugin/73E48A8F-696D-460C-AEB8-BD83674DD158/0.jpg, NSUnderlyingError=0x1762e4b0 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}, NSUserStringVariant=Folder}
 ```
 
-While the actual cause stay a mystery for us, the solution is simple: uninstall your application, and run it again using Cordova.
+While the actual cause is mysterious, the solution is simple: uninstall your application, and run it again using Cordova.
 
 ### 4) Use WonderPush SDK in your application
 
@@ -191,7 +191,7 @@ On iOS it watches for the `UIApplicationDidFinishLaunchingNotification` notifica
 
 #### b) Use WonderPush features
 
-See our [Android guide: Using the SDK in your Android application](https://www.wonderpush.com/docs/android/getting-started#android-getting-started-using-sdk) or [iOS guide: Using the SDK in your iOS application](https://www.wonderpush.com/docs/ios/getting-started#ios-getting-started-using-sdk) for guidance about using our features.
+See our [Cordova guide: Using the SDK in your Cordova application](https://www.wonderpush.com/docs/cordova/getting-started#cordova-getting-started-using-sdk) for guidance about using our features.
 
 These methods do the same thing as in the Android/iOS version:
 
