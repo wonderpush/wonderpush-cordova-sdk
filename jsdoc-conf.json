@@ -1,0 +1,33 @@
+{
+  "source": {
+    "include": ["www/"]
+  },
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "opts": {
+    "verbose": true,
+    "destination": "doc",
+    "package": "package.json",
+    "readme": "README.md",
+    "template": "node_modules/ink-docstrap/template"
+  },
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false,
+    "dateFormat": "ddd MMM Do YYYY",
+    "outputSourceFiles": false,
+    "outputSourcePath": false,
+    "systemName": "WonderPush Cordova SDK",
+    "footer": "",
+    "copyright": "© 2017 WonderPush. All rights reserved.",
+    "navType": "vertical",
+    "theme": "cerulean",
+    "linenums": false,
+    "collapseSymbols": false,
+    "inverseNav": false,
+    "highlightTutorialCode": true,
+    "syntaxTheme": "default",
+    "protocol": "html://"
+  }
+}
