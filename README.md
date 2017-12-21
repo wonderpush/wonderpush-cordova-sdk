@@ -8,6 +8,7 @@ Quick links:
 * [**Getting started guide**](https://www.wonderpush.com/docs/cordova/getting-started)
 * [**Latest SDK documentation**](https://wonderpush.github.io/wonderpush-cordova-sdk/)
 * [**Latest API reference**](https://wonderpush.github.io/wonderpush-cordova-sdk/api.html)
+* [**Demo application**](https://github.com/wonderpush/wonderpush-cordova-demo)
 
 ## Getting started
 
