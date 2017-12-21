@@ -1,13 +1,17 @@
 {
   "name": "wonderpush-cordova-sdk",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "WonderPush Cordova SDK - Notifications & Analytics",
   "dependencies": {},
   "devDependencies": {
     "ink-docstrap": "^1.3.2",
     "jsdoc": "^3.5.5"
   },
-  "scripts": {},
+  "scripts": {
+    "doc": "          jsdoc -c jsdoc-conf.json --access public,undefined",
+    "doc-protected": "jsdoc -c jsdoc-conf.json --access public,protected,undefined",
+    "doc-private": "  jsdoc -c jsdoc-conf.json --access all"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/wonderpush/wonderpush-cordova-sdk"
@@ -29,10 +33,5 @@
     "analytics"
   ],
   "author": "dev@wonderpush.com",
-  "license": "Apache-2.0",
-  "scripts": {
-    "doc": "          jsdoc -c jsdoc-conf.json --access public,undefined",
-    "doc-protected": "jsdoc -c jsdoc-conf.json --access public,protected,undefined",
-    "doc-private": "  jsdoc -c jsdoc-conf.json --access all"
-  }
+  "license": "Apache-2.0"
 }
