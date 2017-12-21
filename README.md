@@ -1,16 +1,21 @@
 # wonderpush-cordova-sdk
 
-[WonderPush](https://www.wonderpush.com) is an advanced push notification service for iOS and Android applications and Websites. High volume and fast delivery. Start for free.
+[WonderPush](https://www.wonderpush.com) is an advanced push notification service for iOS and Android applications and Websites. High volume and fast delivery. [Start for free](https://dashboard.wonderpush.com/account/signup).
 
 This a Cordova / PhoneGap SDK.
 
+Quick links:
+* [**Getting started guide**](https://www.wonderpush.com/docs/cordova/getting-started)
+* [**Latest SDK documentation**](https://wonderpush.github.io/wonderpush-cordova-sdk/)
+* [**Latest API reference**](https://wonderpush.github.io/wonderpush-cordova-sdk/api.html)
+
 ## Getting started
 
-Please see our [Cordova guide](https://www.wonderpush.com/docs/cordova/getting-started) for more information.
+Please see [our guide](https://www.wonderpush.com/docs/cordova/getting-started) for more information.
 
 ### 1) Create your application if needed
 
-Use cordova tool to create an application, see the [Cordova guide](https://cordova.apache.org/docs/en/latest/guide/cli/) for more details.
+Use cordova tool to create an application, see the [official Cordova guide](https://cordova.apache.org/docs/en/latest/guide/cli/) for more details.
 
 ```sh
 cordova create cordova-demo com.wonderpush.demo WonderPushCordovaDemo
