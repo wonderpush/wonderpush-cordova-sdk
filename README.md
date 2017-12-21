@@ -1,4 +1,4 @@
-# wonderpush-cordova-sdk
+# WonderPush Cordova / PhoneGap SDK
 
 [WonderPush](https://www.wonderpush.com) is an advanced push notification service for iOS and Android applications and Websites. High volume and fast delivery. [Start for free](https://dashboard.wonderpush.com/account/signup).
 
