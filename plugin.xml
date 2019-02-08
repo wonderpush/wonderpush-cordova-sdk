@@ -18,15 +18,13 @@
       <string name="WP_CLIENT_ID">$CLIENT_ID</string>
       <string name="WP_CLIENT_SECRET">$CLIENT_SECRET</string>
     </config-file>
-    <config-file target="AndroidManifest.xml" parent="/manifest/application">
-      <meta-data
+
+    <config-file target="AndroidManifest.xml" parent="application">
+        <meta-data
         xmlns:tools="http://schemas.android.com/tools"
         android:name="wonderpushInitializerClass" android:value="com.wonderpush.sdk.cordova.WonderPushInitializerImpl" tools:replace="android:value"
       />
     </config-file>
-    <edit-config file="AndroidManifest.xml" target="/manifest/application" mode="merge">
-      <application android:name="com.wonderpush.sdk.cordova.WonderPushApplication" />
-    </edit-config>
     <framework src="build.gradle" custom="true" type="gradleReference" />
     <source-file src="src/android/WonderPushApplication.java" target-dir="src/com/wonderpush/sdk/cordova" />
     <source-file src="src/android/WonderPushPlugin.java" target-dir="src/com/wonderpush/sdk/cordova" />
