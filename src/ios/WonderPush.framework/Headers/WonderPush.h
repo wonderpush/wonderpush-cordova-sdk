@@ -30,6 +30,15 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 #define WP_NOTIFICATION_INITIALIZED @"_wonderpushInitialized"
 
 /**
+ Name of the notification that is sent using `NSNotificationCenter` when the user consent changes.
+ */
+#define WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED @"_wonderpushHasUserConsentChanged"
+/**
+ Name of the userInfo key that holds a NSNumber whose boolValue is the user consent.
+ */
+#define WP_NOTIFICATION_HAS_USER_CONSENT_CHANGED_KEY @"hasUserConsent"
+
+/**
  Name of the notification that is sent using `NSNotificationCenter` when a user logs in.
  */
 #define WP_NOTIFICATION_USER_LOGED_IN @"_wonderpushUserLoggedIn"
@@ -87,6 +96,30 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
 /// @name Initialization
 ///---------------------
 
+/**
+ Sets whether user consent is required before the SDK is allowed to work.
+ Call this method before `setClientId:secret:`
+ @param requiresUserConsent Whether user consent is required before the SDK is allowed to work.
+ @see setUserConsent:
+ */
++ (void) setRequiresUserConsent:(BOOL)requiresUserConsent;
+/**
+ Provides or withdraws user consent.
+ Call this method after `setClientId:secret:`.
+ @param userConsent Whether the user provided or withdrew consent.
+ @see setRequiresUserConsent:
+ */
++ (void) setUserConsent:(BOOL)userConsent;
+/**
+ Returns whether user has already provided consent.
+ Call this method after `setClientId:secret:`.
+ */
++ (BOOL) getUserConsent;
+/**
+ Returns YES whenever user has already provided consent or consent is not necessary.
+ Call this method after `setClientId:secret:`.
+ */
++ (BOOL) hasUserConsent;
 /**
  Initializes the WonderPush SDK.
 
@@ -330,6 +363,8 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  */
 + (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 /**
  Forwards an application delegate to the SDK.
 
@@ -341,6 +376,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param notification Same parameter as in the forwarded delegate method.
  */
 + (void) application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification;
+#pragma clang diagnostic pop
 
 /**
  Forwards an application delegate to the SDK.
@@ -386,7 +422,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  You must call this from either `application:willFinishLaunchingWithOptions:` or `application:didFinishLaunchingWithOptions:` of your AppDelegate.
  Simply call it along with `[WonderPush setupDelegateForApplication:]`.
  */
-+ (void) setupDelegateForUserNotificationCenter;
++ (void) setupDelegateForUserNotificationCenter __IOS_AVAILABLE(10.0);
 
 
 ///--------------------------------------------------------
@@ -410,7 +446,7 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param notification Same parameter as in the forwarded delegate method.
  @param completionHandler Same parameter as in the forwarded delegate method.
  */
-+ (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler;
++ (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler __IOS_AVAILABLE(10.0);
 
 /**
  Forwards a UserNotificationCenter delegate to the SDK.
@@ -421,7 +457,65 @@ FOUNDATION_EXPORT const unsigned char WonderPushVersionString[];
  @param response Same parameter as in the forwarded delegate method.
  @param completionHandler Same parameter as in the forwarded delegate method.
  */
-+ (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler;
++ (void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)(void))completionHandler __IOS_AVAILABLE(10.0);
+
+/**
+ Subscribes to push notifications. Triggers the system permission prompt.
+ */
++ (void) subscribeToNotifications;
+
+/**
+ Unsubscribes from push notifications. Does not affect the push notification permission.
+ */
++ (void) unsubscribeFromNotifications;
+
+/**
+ Returns a boolean indicating whether the user is subscribed to push notifications.
+ */
++ (BOOL) isSubscribedToNotifications;
+
+/**
+ Send an event to be tracked to WonderPush.
+ 
+ @param eventType The event type, or name. Event types starting with an `@` character are reserved.
+ @param attributes A dictionary containing attributes to be attached to the event.
+ 
+ The keys should be prefixed according to the type of their values.
+ You can find the details in the [Property names](https://docs.wonderpush.com/docs/properties#section-property-names) section of the documentation.
+ */
++ (void) trackEvent:(NSString *)eventType attributes:(NSDictionary *)attributes;
+/**
+ Updates the properties attached to the current installation object stored by WonderPush.
+ 
+ In order to remove a value, don't forget to use `[NSNull null]` as value.
+ 
+ @param properties The partial object containing only the custom properties to update.
+ 
+ The keys should be prefixed according to the type of their values.
+ You can find the details in the [Property names](https://docs.wonderpush.com/docs/properties#section-property-names) section of the documentation.
+ */
++ (void) putProperties:(NSDictionary *)properties;
+/**
+ Returns the latest known properties attached to the current installation object stored by WonderPush.
+ */
++ (NSDictionary *) getProperties;
+/**
+ Instructs to delete any event associated with the all installations present on the device, locally and on WonderPush servers.
+ */
++ (void) clearEventsHistory;
+/**
+ Instructs to delete any custom data (including installation properties) associated with the all installations present on the device, locally and on WonderPush servers.
+ */
++ (void) clearPreferences;
+/**
+ Instructs to delete any event, installation and potential user objects associated with all installations present on the device, locally and on WonderPush servers.
+ */
++ (void) clearAllData;
+/**
+ Initiates the download of all the WonderPush data relative to the current installation, in JSON format.
+ @param completion Completion block called upon success or error
+ */
++ (void) downloadAllData:(void(^)(NSData *data, NSError *error))completion;
 
 
 @end

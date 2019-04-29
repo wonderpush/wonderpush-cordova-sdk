@@ -44,21 +44,13 @@
       <preference name="CLIENT_SECRET" value="$CLIENT_SECRET" />
     </config-file>
     <framework src="SystemConfiguration.framework" />
-    <framework src="MobileCoreServices.framework" />
     <framework src="CoreGraphics.framework" />
     <framework src="UIKit.framework" />
     <framework src="CoreTelephony.framework" />
     <framework src="CoreLocation.framework" />
-    <framework src="CoreBluetooth.framework" />
-    <framework src="AVFoundation.framework" />
-    <framework src="CoreMotion.framework" />
+    <framework src="WebKit.framework" />
     <framework src="src/ios/WonderPush.framework" custom="true" embed="true" />
     <framework src="src/ios/WonderPushExtension.framework" custom="true" embed="true" />
-    <framework src="src/ios/AFNetworking.framework" custom="true" embed="true" />
-    <framework src="src/ios/OpenUDID.framework" custom="true" embed="true" />
-    <framework src="src/ios/PKAlertController.framework" custom="true" embed="true" />
-    <framework src="src/ios/TCMobileProvision.framework" custom="true" embed="true" />
-    <framework src="src/ios/DTFoundation.framework" custom="true" embed="true" />
     <config-file target="*-Info.plist" parent="UIBackgroundModes">
       <array>
         <string>remote-notification</string>

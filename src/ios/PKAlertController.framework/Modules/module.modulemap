@@ -1,6 +1,0 @@
-framework module PKAlertController {
-  umbrella header "PKAlertController-umbrella.h"
-
-  export *
-  module * { export * }
-}

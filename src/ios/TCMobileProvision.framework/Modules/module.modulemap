@@ -1,6 +1,0 @@
-framework module TCMobileProvision {
-  umbrella header "TCMobileProvision-umbrella.h"
-
-  export *
-  module * { export * }
-}

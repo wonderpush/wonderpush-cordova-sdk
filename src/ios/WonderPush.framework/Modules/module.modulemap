@@ -1,5 +1,5 @@
 framework module WonderPush {
-  umbrella header "WonderPush-umbrella.h"
+  umbrella header "WonderPush.h"
 
   export *
   module * { export * }
