@@ -30,8 +30,8 @@
         <param name="ios-package" value="WonderPushPlugin"/>
         <param name="onload" value="true" />
       </feature>
-      <preference name="CLIENT_ID" value="$CLIENT_ID" />
-      <preference name="CLIENT_SECRET" value="$CLIENT_SECRET" />
+      <preference name="WONDERPUSH_CLIENT_ID" value="$CLIENT_ID" />
+      <preference name="WONDERPUSH_CLIENT_SECRET" value="$CLIENT_SECRET" />
     </config-file>
     <framework src="SystemConfiguration.framework" />
     <framework src="CoreGraphics.framework" />
