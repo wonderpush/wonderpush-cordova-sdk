@@ -28,6 +28,14 @@
       "ios"
     ]
   },
+  "engines": {
+    "cordovaDependencies": {
+      "<3.0.0": {
+        "cordova-android": ">=8.0.0",
+        "cordova-ios": ">=5.0.0"
+      }
+    }
+  },
   "bugs": {
     "url": "https://github.com/wonderpush/wonderpush-cordova-sdk/issues"
   },
