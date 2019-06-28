@@ -1,6 +1,0 @@
-framework module WonderPush {
-  umbrella header "WonderPush.h"
-
-  export *
-  module * { export * }
-}
