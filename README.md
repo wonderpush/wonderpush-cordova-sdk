@@ -33,14 +33,18 @@ cordova platform add ios --save
 ### 2) Add the WonderPush SDK
 
 ```sh
-cordova plugin add --save wonderpush-cordova-sdk --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'
+cordova plugin add wonderpush-cordova-sdk --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'
+cordova plugin save
 ```
 
 For development:
 
 ```sh
-cordova plugin add --save --link ../wonderpush-cordova-sdk --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'
+cordova plugin add --link ../wonderpush-cordova-sdk --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'
+cordova plugin save
 ```
+
+Note that `cordova plugin save` unsures your `config.xml` has the required `<plugin>` entry, using `cordova plugin add --save` does not prove enough.
 
 ### 3) Configure your platforms
 

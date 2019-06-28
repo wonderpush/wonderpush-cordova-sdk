@@ -1,6 +1,6 @@
 {
   "name": "wonderpush-cordova-sdk",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Cordova / PhoneGap SDK for WonderPush − Advanced push notification service for iOS and Android applications and Websites. High volume and fast delivery. Start for free.",
   "dependencies": {},
   "devDependencies": {
@@ -20,6 +20,16 @@
     "globals": [
       "cordova"
     ]
+  },
+  "cordova": {
+    "id": "wonderpush-cordova-sdk",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/wonderpush/wonderpush-cordova-sdk/issues"
   },
   "keywords": [
     "ecosystem:cordova",

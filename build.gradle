@@ -1,8 +1,0 @@
-android {
-  defaultConfig {
-    manifestPlaceholders = [
-      wonderpushDefaultActivity:  '.MainActivity',
-      wonderpushNotificationIcon: '@mipmap/icon'
-    ]
-  }
-}

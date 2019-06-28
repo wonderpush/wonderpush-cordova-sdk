@@ -1,36 +1,26 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="wonderpush-cordova-sdk" version="0.1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="wonderpush-cordova-sdk" version="2.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
   <name>WonderPush</name>
+  <description>Advanced push notification service for mobile applications and Websites. High volume, fast delivery and full-featured starting €1/month.</description>
+  <author>WonderPush</author>
+  <keywords>wonderpush,push,notification,notifications,push notification,push notifications,apn,apns,gcm,fcm,android,ios</keywords>
+  <license>Apache-2.0</license>
   <js-module name="WonderPush" src="www/WonderPush.js">
     <clobbers target="cordova.plugins.WonderPush" />
+    <clobbers target="WonderPush" />
   </js-module>
   <platform name="android">
     <preference name="CLIENT_ID" />
     <preference name="CLIENT_SECRET" />
 
-    <framework src="com.wonderpush:wonderpush-android-sdk:1.2.7.0" />
+    <framework src="com.wonderpush:wonderpush-android-sdk:3.1.0" />
     <config-file parent="/*" target="res/xml/config.xml">
       <feature name="WonderPushPlugin">
         <param name="android-package" value="com.wonderpush.sdk.cordova.WonderPushPlugin" />
       </feature>
     </config-file>
-    <config-file parent="/*" target="res/values/strings.xml">
-      <string name="WP_CLIENT_ID">$CLIENT_ID</string>
-      <string name="WP_CLIENT_SECRET">$CLIENT_SECRET</string>
-    </config-file>
-    <config-file target="AndroidManifest.xml" parent="/manifest/application">
-      <meta-data
-        xmlns:tools="http://schemas.android.com/tools"
-        android:name="wonderpushInitializerClass" android:value="com.wonderpush.sdk.cordova.WonderPushInitializerImpl" tools:replace="android:value"
-      />
-    </config-file>
-    <edit-config file="AndroidManifest.xml" target="/manifest/application" mode="merge">
-      <application android:name="com.wonderpush.sdk.cordova.WonderPushApplication" />
-    </edit-config>
-    <framework src="build.gradle" custom="true" type="gradleReference" />
-    <source-file src="src/android/WonderPushApplication.java" target-dir="src/com/wonderpush/sdk/cordova" />
+    <framework src="build-extras.gradle" custom="true" type="gradleReference" />
     <source-file src="src/android/WonderPushPlugin.java" target-dir="src/com/wonderpush/sdk/cordova" />
-    <source-file src="src/android/WonderPushInitializerImpl.java" target-dir="src/com/wonderpush/sdk/cordova" />
   </platform>
   <platform name="ios">
     <preference name="CLIENT_ID" />

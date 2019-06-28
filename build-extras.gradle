@@ -1,0 +1,30 @@
+android {
+  defaultConfig {
+    def wonderpushPluginVariables = ({
+      // Read plugin variables from cordova project root config.xml
+      // so that they stay in code and do not end-up copied as a resource
+      def configXmlText = file("../../../config.xml").getText()
+      def configXml = new XmlParser(false, false).parseText(configXmlText)
+      def rtn = [:]
+      configXml.plugin.each { pluginTag ->
+        if (pluginTag.@name == "wonderpush-cordova-sdk") {
+          pluginTag.variable.each { variableTag ->
+            rtn[variableTag.@name] = variableTag.@value
+          }
+        }
+      }
+      return rtn
+    })()
+    buildConfigField 'String', 'WONDERPUSH_CLIENT_ID', '"' + wonderpushPluginVariables.get('CLIENT_ID', '" + throw new Error("MISSING WONDERPUSH CLIENT_ID") + "') + '"'
+    buildConfigField 'String', 'WONDERPUSH_CLIENT_SECRET', '"' + wonderpushPluginVariables.get('CLIENT_SECRET', '" + throw new Error("MISSING WONDERPUSH CLIENT_SECRET") + "') + '"'
+    if (wonderpushPluginVariables.SENDER_ID != null) {
+      buildConfigField 'String', 'WONDERPUSH_SENDER_ID', '"' + wonderpushPluginVariables.SENDER_ID + '"'
+    }
+    if (wonderpushPluginVariables.LOGGING != null) {
+      buildConfigField 'boolean', 'WONDERPUSH_LOGGING', wonderpushPluginVariables.LOGGING == 'true' ? 'true' : 'false'
+    }
+    if (wonderpushPluginVariables.REQUIRES_USER_CONSENT != null) {
+      buildConfigField 'boolean', 'WONDERPUSH_REQUIRES_USER_CONSENT', wonderpushPluginVariables.REQUIRES_USER_CONSENT == 'true' ? 'true' : 'false'
+    }
+  }
+}
