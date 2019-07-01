@@ -23,6 +23,9 @@ android {
     if (wonderpushPluginVariables.LOGGING != null) {
       buildConfigField 'boolean', 'WONDERPUSH_LOGGING', wonderpushPluginVariables.LOGGING == 'true' ? 'true' : 'false'
     }
+    if (wonderpushPluginVariables.AUTO_INIT != null) {
+      buildConfigField 'boolean', 'WONDERPUSH_AUTO_INIT', wonderpushPluginVariables.AUTO_INIT == 'true' ? 'true' : 'false'
+    }
     if (wonderpushPluginVariables.REQUIRES_USER_CONSENT != null) {
       buildConfigField 'boolean', 'WONDERPUSH_REQUIRES_USER_CONSENT', wonderpushPluginVariables.REQUIRES_USER_CONSENT == 'true' ? 'true' : 'false'
     }
