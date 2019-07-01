@@ -39,6 +39,9 @@
 - (void)putInstallationCustomProperties:(CDVInvokedUrlCommand *)command;
 
 // Push notification handling
+- (void)subscribeToNotifications:(CDVInvokedUrlCommand *)command;
+- (void)isSubscribedToNotifications:(CDVInvokedUrlCommand *)command;
+- (void)unsubscribeFromNotifications:(CDVInvokedUrlCommand *)command;
 - (void)getNotificationEnabled:(CDVInvokedUrlCommand *)command;
 - (void)setNotificationEnabled:(CDVInvokedUrlCommand *)command;
 

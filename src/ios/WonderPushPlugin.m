@@ -126,6 +126,24 @@
 
 #pragma mark - Push notification handling
 
+- (void)subscribeToNotifications:(CDVInvokedUrlCommand *)command {
+    [WonderPush subscribeToNotifications];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)isSubscribedToNotifications:(CDVInvokedUrlCommand *)command {
+    BOOL rtn = [WonderPush isSubscribedToNotifications];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:rtn] callbackId:command.callbackId];
+}
+
+- (void)unsubscribeFromNotifications:(CDVInvokedUrlCommand *)command {
+    [WonderPush unsubscribeFromNotifications];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
 - (void)getNotificationEnabled:(CDVInvokedUrlCommand *)command {
     BOOL rtn = [WonderPush getNotificationEnabled];
 

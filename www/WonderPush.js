@@ -252,10 +252,55 @@ function putInstallationCustomProperties (customProperties, cb) {
 ///
 
 /**
+ * Subscribes to push notification and registers the device token with WondePush.
+ *
+ * On iOS, you **must** call the following method at least once to make the notification visible to the user.
+ *
+ * - You can call this method multiple times. The user is only prompted for permission by iOS once.
+ * - There is no need to call this method if the permission has already been granted, but it does not harm either.
+ * - If the permission has been denied in the OS, the user will stay soft opt-out.
+ *
+ * Because in iOS you only have *one* chance for prompting the user, you should find a good timing for that.
+ * For a start, you can systematically call it when the application starts, so that the user will be prompted directly at the first launch.
+ *
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function subscribeToNotifications (cb) {
+  _callNative('subscribeToNotifications', [], cb)
+}
+
+/**
  * Returns whether the notifications are enabled.
  * @param {cordova.plugins.WonderPush~BooleanCallback} cb - Callback called with either `true` or false.
  * @memberof cordova.plugins.WonderPush
  * @instance
+ */
+function isSubscribedToNotifications (cb) {
+  _callNative('isSubscribedToNotifications', [], cb)
+}
+
+/**
+ * Unsubscribes from push notification.
+ *
+ * This method marks the user as soft opt-out.
+ *
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function unsubscribeFromNotifications (cb) {
+  _callNative('unsubscribeFromNotifications', [], cb)
+}
+
+/**
+ * Returns whether the notifications are enabled.
+ * @param {cordova.plugins.WonderPush~BooleanCallback} cb - Callback called with either `true` or false.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ * @deprecated
+ * @see cordova.plugins.WonderPush.isSubscribedToNotifications
  */
 function getNotificationEnabled (cb) {
   _callNative('getNotificationEnabled', [], cb)
@@ -278,6 +323,9 @@ function getNotificationEnabled (cb) {
  * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof cordova.plugins.WonderPush
  * @instance
+ * @deprecated
+ * @see cordova.plugins.WonderPush.subscribeToNotifications
+ * @see cordova.plugins.WonderPush.unsubscribeFromNotifications
  */
 function setNotificationEnabled (enabled, cb) {
   if (typeof enabled !== 'boolean') {
@@ -295,6 +343,7 @@ function setNotificationEnabled (enabled, cb) {
  * Main object of the WonderPush SDK.
  * @public
  * @namespace cordova.plugins.WonderPush {WonderPush}
+ * @namespace WonderPush {WonderPush}
  */
 var WonderPush = {
   // Initialization
@@ -312,6 +361,9 @@ var WonderPush = {
   getInstallationCustomProperties: getInstallationCustomProperties,
   putInstallationCustomProperties: putInstallationCustomProperties,
   // Push notification handling
+  subscribeToNotifications: subscribeToNotifications,
+  isSubscribedToNotifications: isSubscribedToNotifications,
+  unsubscribeFromNotifications: unsubscribeFromNotifications,
   getNotificationEnabled: getNotificationEnabled,
   setNotificationEnabled: setNotificationEnabled,
 }

@@ -76,6 +76,20 @@ public class WonderPushPlugin extends CordovaPlugin {
             callbackContext.success();
 
         // Push notification handling
+        } else if (action.equals("subscribeToNotifications")) {
+
+            WonderPush.subscribeToNotifications();
+            callbackContext.success();
+
+        } else if (action.equals("isSubscribedToNotifications")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.isSubscribedToNotifications()));
+
+        } else if (action.equals("unsubscribeFromNotifications")) {
+
+            WonderPush.unsubscribeFromNotifications();
+            callbackContext.success();
+
         } else if (action.equals("getNotificationEnabled")) {
 
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getNotificationEnabled()));
