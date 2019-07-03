@@ -22,6 +22,11 @@
  * @callback cordova.plugins.WonderPush~ObjectCallback
  * @param {object} value - The return value.
  */
+/**
+ * This callback is called with a single argument of varying type when the call succeeds.
+ * @callback cordova.plugins.WonderPush~MixedCallback
+ * @param {*} value - The return value.
+ */
 
 ///
 /// Plugin helpers - Foreign interface
@@ -215,6 +220,39 @@ function trackEvent (type, attributes, cb) {
 }
 
 /**
+ * Returns the value of a given installation property.
+ *
+ * If the property stores an array, only the first value is returned.
+ * This way you don't have to deal with potential arrays if that property is not supposed to hold one.
+ * Returns `null` if the property is absent or has an empty array value.
+ *
+ * @param {string} field - The name of the property to read values from
+ * @param {cordova.plugins.WonderPush~MixedCallback} cb - Callback called with `null` or a single value stored in the property, never an array or `undefined`.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function getPropertyValue (field, cb) {
+  return _callNative('getPropertyValue', [field], cb)
+}
+
+/**
+ * Returns an array of the values of a given installation property.
+ *
+ * If the property does not store an array, an array is returned nevertheless.
+ * This way you don't have to deal with potential scalar values if that property is supposed to hold an array.
+ * Returns an empty array instead of `null` if the property is absent.
+ * Returns an array wrapping any scalar value held by the property.
+ *
+ * @param {string} field - The name of the property to read values from
+ * @param {cordova.plugins.WonderPush~MixedArrayCallback} cb - Callback called with a possibly empty array of the values stored in the property, but never `null` nor `undefined`
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function getPropertyValues (field, cb) {
+  return _callNative('getPropertyValues', [field], cb)
+}
+
+/**
  * Returns the latest known custom properties attached to the current installation object stored by WonderPush.
  * @param {cordova.plugins.WonderPush~ObjectCallback} cb - Callback called with the current installation custom properties.
  * @memberof cordova.plugins.WonderPush
@@ -393,6 +431,8 @@ var WonderPush = {
   getAccessToken: getAccessToken,
   // Installation data and events
   trackEvent: trackEvent,
+  getPropertyValue: getPropertyValue,
+  getPropertyValues: getPropertyValues,
   getProperties: getProperties,
   putProperties: putProperties,
   getInstallationCustomProperties: getInstallationCustomProperties,

@@ -111,6 +111,20 @@
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
+- (void)getPropertyValue:(CDVInvokedUrlCommand *)command {
+    NSString *field = (NSString *)command.arguments[0];
+    id rtn = [WonderPush getPropertyValue:field];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsMultipart:@[rtn]] callbackId:command.callbackId];
+}
+
+- (void)getPropertyValues:(CDVInvokedUrlCommand *)command {
+    NSString *field = (NSString *)command.arguments[0];
+    id rtn = [WonderPush getPropertyValues:field];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsMultipart:@[rtn]] callbackId:command.callbackId];
+}
+
 - (void)getProperties:(CDVInvokedUrlCommand *)command {
     NSDictionary *rtn = [WonderPush getProperties];
 
