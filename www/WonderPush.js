@@ -184,7 +184,7 @@ function getAccessToken (cb) {
  * Send an event to be tracked to WonderPush.
  *
  * @param {string} type - The event type, or name. Event types starting with an `@` character are reserved.
- * @param {?object} [data] - An object containing custom properties to be attached to the event.
+ * @param {?object} [attributes] - An object containing custom properties to be attached to the event.
  *   Prefer using a few custom properties over a plethora of event type variants.
  *
  *   The keys should be prefixed according to the type of their values.
@@ -193,22 +193,22 @@ function getAccessToken (cb) {
  * @memberof cordova.plugins.WonderPush
  * @instance
  */
-function trackEvent (type, customData, cb) {
+function trackEvent (type, attributes, cb) {
   var args = [type]
 
   if (!type) {
     throw new Error('Missing event type')
   }
 
-  if (customData && !cb && typeof customData === "function") {
-    cb = customData
-    customData = null
+  if (attributes && !cb && typeof attributes === "function") {
+    cb = attributes
+    attributes = null
   }
 
-  if (customData) {
-    _checkAllowedKeys(customData)
+  if (attributes) {
+    _checkAllowedKeys(attributes)
 
-    args.push(customData)
+    args.push(attributes)
   }
 
   _callNative('trackEvent', args, cb)
@@ -219,6 +219,40 @@ function trackEvent (type, customData, cb) {
  * @param {cordova.plugins.WonderPush~ObjectCallback} cb - Callback called with the current installation custom properties.
  * @memberof cordova.plugins.WonderPush
  * @instance
+ */
+function getProperties (cb) {
+  return _callNative('getProperties', [], cb)
+}
+
+/**
+ * Updates the properties attached to the current installation object stored by WonderPush.
+ *
+ * In order to remove a value, use `null`.
+ *
+ * @param {object} properties - The partial object containing only the custom properties to update.
+ *
+ * The keys should be prefixed according to the type of their values.
+ * You can find the details in the [Segmentation > Properties](https://docs.wonderpush.com/docs/properties#section-custom-properties) section of the documentation.
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function putProperties (properties, cb) {
+  if (!properties) {
+    throw new Error('Missing properties')
+  }
+
+  _checkAllowedKeys(properties)
+
+  _callNative('putProperties', [properties], cb)
+}
+
+/**
+ * Returns the latest known custom properties attached to the current installation object stored by WonderPush.
+ * @param {cordova.plugins.WonderPush~ObjectCallback} cb - Callback called with the current installation custom properties.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ * @deprecated
  */
 function getInstallationCustomProperties (cb) {
   return _callNative('getInstallationCustomProperties', [], cb)
@@ -232,10 +266,11 @@ function getInstallationCustomProperties (cb) {
  * @param {object} customProperties - The partial object containing only the custom properties to update.
  *
  * The keys should be prefixed according to the type of their values.
- * You can find the details in the [Concepts > Custom fields](https://www.wonderpush.com/docs/guide/custom-fields) section of the documentation.
+ * You can find the details in the [Segmentation > Properties](https://docs.wonderpush.com/docs/properties#section-custom-properties) section of the documentation.
  * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof cordova.plugins.WonderPush
  * @instance
+ * @deprecated
  */
 function putInstallationCustomProperties (customProperties, cb) {
   if (!customProperties) {
@@ -358,6 +393,8 @@ var WonderPush = {
   getAccessToken: getAccessToken,
   // Installation data and events
   trackEvent: trackEvent,
+  getProperties: getProperties,
+  putProperties: putProperties,
   getInstallationCustomProperties: getInstallationCustomProperties,
   putInstallationCustomProperties: putInstallationCustomProperties,
   // Push notification handling

@@ -111,6 +111,19 @@
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
+- (void)getProperties:(CDVInvokedUrlCommand *)command {
+    NSDictionary *rtn = [WonderPush getProperties];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:rtn] callbackId:command.callbackId];
+}
+
+- (void)putProperties:(CDVInvokedUrlCommand *)command {
+    NSDictionary *properties = (NSDictionary *)command.arguments[0];
+    [WonderPush putProperties:properties];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
 - (void)getInstallationCustomProperties:(CDVInvokedUrlCommand *)command {
     NSDictionary *rtn = [WonderPush getInstallationCustomProperties];
 

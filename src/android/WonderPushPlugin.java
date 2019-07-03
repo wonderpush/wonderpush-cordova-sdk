@@ -65,6 +65,16 @@ public class WonderPushPlugin extends CordovaPlugin {
             }
             callbackContext.success();
 
+        } else if (action.equals("getProperties")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getProperties()));
+
+        } else if (action.equals("putProperties")) {
+
+            JSONObject properties = args.getJSONObject(0);
+            WonderPush.putProperties(properties);
+            callbackContext.success();
+
         } else if (action.equals("getInstallationCustomProperties")) {
 
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getInstallationCustomProperties()));
