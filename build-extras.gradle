@@ -9,7 +9,7 @@ android {
     })()
     buildConfigField 'String', 'WONDERPUSH_CLIENT_ID', '"' + wonderpushPluginVariables.get('CLIENT_ID', '" + throw new Error("MISSING WONDERPUSH CLIENT_ID") + "') + '"'
     buildConfigField 'String', 'WONDERPUSH_CLIENT_SECRET', '"' + wonderpushPluginVariables.get('CLIENT_SECRET', '" + throw new Error("MISSING WONDERPUSH CLIENT_SECRET") + "') + '"'
-    if (wonderpushPluginVariables.SENDER_ID != null) {
+    if (wonderpushPluginVariables.SENDER_ID != null && wonderpushPluginVariables.SENDER_ID != "default") {
       buildConfigField 'String', 'WONDERPUSH_SENDER_ID', '"' + wonderpushPluginVariables.SENDER_ID + '"'
     }
     if (wonderpushPluginVariables.LOGGING != null) {

@@ -17,6 +17,10 @@
   <platform name="android">
     <preference name="CLIENT_ID" />
     <preference name="CLIENT_SECRET" />
+    <preference name="SENDER_ID" default="default" />
+    <preference name="LOGGING" default="false" />
+    <preference name="AUTO_INIT" default="true" />
+    <preference name="REQUIRES_USER_CONSENT" default="false" />
 
     <framework src="com.wonderpush:wonderpush-android-sdk:3.1.0" />
     <config-file parent="/*" target="res/xml/config.xml">
@@ -30,6 +34,9 @@
   <platform name="ios">
     <preference name="CLIENT_ID" />
     <preference name="CLIENT_SECRET" />
+    <preference name="LOGGING" default="false" />
+    <preference name="AUTO_INIT" default="true" />
+    <preference name="REQUIRES_USER_CONSENT" default="false" />
     <config-file target="config.xml" parent="/*">
       <feature name="WonderPushPlugin">
         <param name="ios-package" value="WonderPushPlugin"/>
