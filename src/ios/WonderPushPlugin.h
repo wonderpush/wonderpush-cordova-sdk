@@ -35,6 +35,10 @@
 - (void)getAccessToken:(CDVInvokedUrlCommand *)command;
 
 - (void)trackEvent:(CDVInvokedUrlCommand*)command;
+- (void)setProperty:(CDVInvokedUrlCommand *)command;
+- (void)unsetProperty:(CDVInvokedUrlCommand *)command;
+- (void)addProperty:(CDVInvokedUrlCommand *)command;
+- (void)removeProperty:(CDVInvokedUrlCommand *)command;
 - (void)getPropertyValue:(CDVInvokedUrlCommand *)command;
 - (void)getPropertyValues:(CDVInvokedUrlCommand *)command;
 - (void)getProperties:(CDVInvokedUrlCommand *)command;

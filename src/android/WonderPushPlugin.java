@@ -1,5 +1,7 @@
 package com.wonderpush.sdk.cordova;
 
+import java.util.Collections;
+
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.PluginResult;
@@ -65,15 +67,42 @@ public class WonderPushPlugin extends CordovaPlugin {
             }
             callbackContext.success();
 
+        } else if (action.equals("setProperty")) {
+
+            String field = args.getString(0);
+            Object value = args.get(1);
+            WonderPush.setProperty(field, value);
+            callbackContext.success();
+
+        } else if (action.equals("unsetProperty")) {
+
+            String field = args.getString(0);
+            WonderPush.unsetProperty(field);
+            callbackContext.success();
+
+        } else if (action.equals("addProperty")) {
+
+            String field = args.getString(0);
+            Object value = args.get(1);
+            WonderPush.addProperty(field, value);
+            callbackContext.success();
+
+        } else if (action.equals("removeProperty")) {
+
+            String field = args.getString(0);
+            Object value = args.get(1);
+            WonderPush.removeProperty(field, value);
+            callbackContext.success();
+
         } else if (action.equals("getPropertyValue")) {
 
             String field = args.getString(0);
-            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getPropertyValue(field)));
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, new JSONObject(Collections.singletonMap("__wrapped", WonderPush.getPropertyValue(field)))));
 
         } else if (action.equals("getPropertyValues")) {
 
             String field = args.getString(0);
-            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getPropertyValues(field)));
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, new JSONArray(WonderPush.getPropertyValues(field))));
 
         } else if (action.equals("getProperties")) {
 

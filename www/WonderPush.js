@@ -220,6 +220,70 @@ function trackEvent (type, attributes, cb) {
 }
 
 /**
+ * Sets the value to a given installation property.
+ *
+ * The previous value is replaced entirely.
+ * Setting `undefined` or `null` has the same effect as {@link cordova.plugins.WonderPush#unsetProperty}.
+ *
+ * @param {string} field - The name of the property to set
+ * @param {mixed} value - The value to be set, can be an array
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function setProperty (field, value, cb) {
+  return _callNative('setProperty', [field, value], cb)
+};
+
+/**
+ * Removes the value of a given installation property.
+ *
+ * The previous value is replaced with `null`.
+ *
+ * @param {string} field - The name of the property to set
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function unsetProperty (field, cb) {
+  return _callNative('unsetProperty', [field], cb)
+};
+
+/**
+ * Adds the value to a given installation property.
+ *
+ * The stored value is made an array if not already one.
+ * If the given value is an array, all its values are added.
+ * If a value is already present in the stored value, it won't be added.
+ *
+ * @param {string} field - The name of the property to add values to
+ * @param {*|Array.<*>|...*} value - The value(s) to be added, can be an array or multiple arguments
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function addProperty (field, value, cb) {
+  return _callNative('addProperty', [field, value], cb)
+}
+
+/**
+ * Removes the value from a given installation property.
+ *
+ * The stored value is made an array if not already one.
+ * If the given value is an array, all its values are removed.
+ * If a value is present multiple times in the stored value, they will all be removed.
+ *
+ * @param {string} field - The name of the property to read values from
+ * @param {*|Array.<*>|...*} value - The value(s) to be removed, can be an array or multiple arguments
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function removeProperty (field, value, cb) {
+  return _callNative('removeProperty', [field, value], cb)
+}
+
+/**
  * Returns the value of a given installation property.
  *
  * If the property stores an array, only the first value is returned.
@@ -232,7 +296,9 @@ function trackEvent (type, attributes, cb) {
  * @instance
  */
 function getPropertyValue (field, cb) {
-  return _callNative('getPropertyValue', [field], cb)
+  return _callNative('getPropertyValue', [field], function(wrappedValue) {
+      cb && cb(wrappedValue.__wrapped);
+  })
 }
 
 /**
@@ -431,6 +497,10 @@ var WonderPush = {
   getAccessToken: getAccessToken,
   // Installation data and events
   trackEvent: trackEvent,
+  setProperty: setProperty,
+  unsetProperty: unsetProperty,
+  addProperty: addProperty,
+  removeProperty: removeProperty,
   getPropertyValue: getPropertyValue,
   getPropertyValues: getPropertyValues,
   getProperties: getProperties,

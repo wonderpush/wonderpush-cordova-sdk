@@ -111,11 +111,42 @@
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
+- (void)setProperty:(CDVInvokedUrlCommand *)command {
+    NSString *field = (NSString *)command.arguments[0];
+    id value = command.arguments[1];
+    [WonderPush setProperty:field value:value];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)unsetProperty:(CDVInvokedUrlCommand *)command {
+    NSString *field = (NSString *)command.arguments[0];
+    [WonderPush unsetProperty:field];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)addProperty:(CDVInvokedUrlCommand *)command {
+    NSString *field = (NSString *)command.arguments[0];
+    id value = command.arguments[1];
+    [WonderPush addProperty:field value:value];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)removeProperty:(CDVInvokedUrlCommand *)command {
+    NSString *field = (NSString *)command.arguments[0];
+    id value = command.arguments[1];
+    [WonderPush removeProperty:field value:value];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
 - (void)getPropertyValue:(CDVInvokedUrlCommand *)command {
     NSString *field = (NSString *)command.arguments[0];
     id rtn = [WonderPush getPropertyValue:field];
 
-    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsMultipart:@[rtn]] callbackId:command.callbackId];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"__wrapped":rtn}] callbackId:command.callbackId];
 }
 
 - (void)getPropertyValues:(CDVInvokedUrlCommand *)command {
