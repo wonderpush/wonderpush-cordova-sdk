@@ -1,19 +1,11 @@
 android {
   defaultConfig {
     def wonderpushPluginVariables = ({
-      // Read plugin variables from cordova project root config.xml
+      // Read plugin variables from cordova project root package.json
       // so that they stay in code and do not end-up copied as a resource
-      def configXmlText = file("../../../config.xml").getText()
-      def configXml = new XmlParser(false, false).parseText(configXmlText)
-      def rtn = [:]
-      configXml.plugin.each { pluginTag ->
-        if (pluginTag.@name == "wonderpush-cordova-sdk") {
-          pluginTag.variable.each { variableTag ->
-            rtn[variableTag.@name] = variableTag.@value
-          }
-        }
-      }
-      return rtn
+      def packageJsonText = file("../../../package.json").getText()
+      def packageJson = new groovy.json.JsonSlurper().parseText(packageJsonText)
+      return packageJson.cordova.plugins["wonderpush-cordova-sdk"]
     })()
     buildConfigField 'String', 'WONDERPUSH_CLIENT_ID', '"' + wonderpushPluginVariables.get('CLIENT_ID', '" + throw new Error("MISSING WONDERPUSH CLIENT_ID") + "') + '"'
     buildConfigField 'String', 'WONDERPUSH_CLIENT_SECRET', '"' + wonderpushPluginVariables.get('CLIENT_SECRET', '" + throw new Error("MISSING WONDERPUSH CLIENT_SECRET") + "') + '"'
