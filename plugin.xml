@@ -13,6 +13,7 @@
     <clobbers target="cordova.plugins.WonderPush" />
     <clobbers target="WonderPush" />
   </js-module>
+  <hook type="after_prepare" src="src/ios/hooks/addNotificationServiceExtension.js" />
   <platform name="android">
     <preference name="CLIENT_ID" />
     <preference name="CLIENT_SECRET" />
