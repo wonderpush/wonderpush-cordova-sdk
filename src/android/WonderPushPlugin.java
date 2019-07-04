@@ -192,6 +192,36 @@ public class WonderPushPlugin extends CordovaPlugin {
             WonderPush.setNotificationEnabled(enabled);
             callbackContext.success();
 
+        } else if (action.equals("getUserConsent")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getUserConsent()));
+
+        } else if (action.equals("setUserConsent")) {
+
+            boolean enabled = args.getBoolean(0);
+            WonderPush.setUserConsent(enabled);
+            callbackContext.success();
+
+        } else if (action.equals("clearAllData")) {
+
+            WonderPush.clearAllData();
+            callbackContext.success();
+
+        } else if (action.equals("clearEventsHistory")) {
+
+            WonderPush.clearEventsHistory();
+            callbackContext.success();
+
+        } else if (action.equals("clearPreferences")) {
+
+            WonderPush.clearPreferences();
+            callbackContext.success();
+
+        } else if (action.equals("downloadAllData")) {
+
+            WonderPush.downloadAllData();
+            callbackContext.success();
+
         } else {
             return false;
         }

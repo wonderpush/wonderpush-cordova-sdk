@@ -257,4 +257,52 @@
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
+- (void)getUserConsent:(CDVInvokedUrlCommand *)command {
+    BOOL rtn = [WonderPush getUserConsent];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:rtn] callbackId:command.callbackId];
+}
+
+- (void)setUserConsent:(CDVInvokedUrlCommand *)command {
+    NSNumber *enabled = (NSNumber *)command.arguments[0];
+
+    [WonderPush setUserConsent:[enabled boolValue]];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)clearAllData:(CDVInvokedUrlCommand *)command {
+    [WonderPush clearAllData];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)clearEventsHistory:(CDVInvokedUrlCommand *)command {
+    [WonderPush clearEventsHistory];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)clearPreferences:(CDVInvokedUrlCommand *)command {
+    [WonderPush clearPreferences];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)downloadAllData:(CDVInvokedUrlCommand *)command {
+    [WonderPush downloadAllData:^(NSData *data, NSError *error) {
+        if (error) {
+            [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[error localizedDescription]] callbackId:command.callbackId];
+        }
+        if (data == nil) {
+            [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"got no data"] callbackId:command.callbackId];
+        }
+        NSString *text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        UIActivityViewController *sharing = [[UIActivityViewController alloc] initWithActivityItems:@[text] applicationActivities:nil];
+        [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController:sharing animated:YES completion:^{
+            [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+        }];
+    }];
+}
+
 @end

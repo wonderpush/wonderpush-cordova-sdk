@@ -533,6 +533,78 @@ function setNotificationEnabled (enabled, cb) {
 }
 
 ///
+/// Privacy
+///
+
+/**
+ * Reads user consent state.
+ * Returns undefined if no explicit consent was set.
+ * @param {cordova.plugins.WonderPush~BooleanCallback} [cb] - The callback called with either true or false.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function getUserConsent (cb) {
+  _callNative('getUserConsent', [], cb)
+}
+
+/**
+ * Provides or withdraws user consent.
+ * If the `requiresUserConsent` initialization option is true,
+ * the whole SDK is paused and no data is sent to WonderPush, until consent is provided.
+ * @param {boolean} consent -
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function setUserConsent (consent, cb) {
+  _callNative('setUserConsent', [consent], cb)
+}
+
+/**
+ * Remove any local storage and ask the WonderPush servers to delete any data associated with the all local installations and related users.
+ *
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function clearAllData (cb) {
+  _callNative('clearAllData', [], cb)
+}
+
+/**
+ * Ask the WonderPush servers to delete any event associated with the all local installations.
+ *
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function clearEventsHistory (cb) {
+  _callNative('clearEventsHistory', [], cb)
+}
+
+/**
+ * Ask the WonderPush servers to delete any custom data associated with the all local installations and related users.
+ *
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function clearPreferences (cb) {
+  _callNative('clearPreferences', [], cb)
+}
+
+/**
+ * Initiates the download of all user remote and local data.
+ *
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function downloadAllData (cb) {
+  _callNative('downloadAllData', [], cb)
+}
+
+///
 /// Plugin interface
 ///
 
@@ -576,6 +648,13 @@ var WonderPush = {
   unsubscribeFromNotifications: unsubscribeFromNotifications,
   getNotificationEnabled: getNotificationEnabled,
   setNotificationEnabled: setNotificationEnabled,
+  // Privacy
+  getUserConsent: getUserConsent,
+  setUserConsent: setUserConsent,
+  clearAllData: clearAllData,
+  clearEventsHistory: clearEventsHistory,
+  clearPreferences: clearPreferences,
+  downloadAllData: downloadAllData,
 }
 
 module.exports = WonderPush

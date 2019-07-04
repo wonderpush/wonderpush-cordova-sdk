@@ -58,4 +58,12 @@
 - (void)getNotificationEnabled:(CDVInvokedUrlCommand *)command;
 - (void)setNotificationEnabled:(CDVInvokedUrlCommand *)command;
 
+// Privacy
+- (void)getUserConsent:(CDVInvokedUrlCommand *)command;
+- (void)setUserConsent:(CDVInvokedUrlCommand *)command;
+- (void)clearAllData:(CDVInvokedUrlCommand *)command;
+- (void)clearEventsHistory:(CDVInvokedUrlCommand *)command;
+- (void)clearPreferences:(CDVInvokedUrlCommand *)command;
+- (void)downloadAllData:(CDVInvokedUrlCommand *)command;
+
 @end
