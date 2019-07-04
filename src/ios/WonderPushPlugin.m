@@ -111,6 +111,47 @@
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
+- (void)addTag:(CDVInvokedUrlCommand *)command {
+    id arg = command.arguments[0];
+    if ([arg isKindOfClass:[NSArray class]]) {
+        [WonderPush addTags:(NSArray *)arg];
+    } else if ([arg isKindOfClass:[NSString class]]) {
+        [WonderPush addTag:(NSString *)arg];
+    }
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)removeTag:(CDVInvokedUrlCommand *)command {
+    id arg = command.arguments[0];
+    if ([arg isKindOfClass:[NSArray class]]) {
+        [WonderPush removeTags:(NSArray *)arg];
+    } else if ([arg isKindOfClass:[NSString class]]) {
+        [WonderPush removeTag:(NSString *)arg];
+    }
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)removeAllTags:(CDVInvokedUrlCommand *)command {
+    [WonderPush removeAllTags];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)getTags:(CDVInvokedUrlCommand *)command {
+    NSOrderedSet<NSString *> *rtn = [WonderPush getTags];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:[rtn array]] callbackId:command.callbackId];
+}
+
+- (void)hasTag:(CDVInvokedUrlCommand *)command {
+    NSString *tag = (NSString *)command.arguments[0];
+    BOOL rtn = [WonderPush hasTag:tag];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:rtn] callbackId:command.callbackId];
+}
+
 - (void)setProperty:(CDVInvokedUrlCommand *)command {
     NSString *field = (NSString *)command.arguments[0];
     id value = command.arguments[1];

@@ -1,6 +1,8 @@
 package com.wonderpush.sdk.cordova;
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -66,6 +68,47 @@ public class WonderPushPlugin extends CordovaPlugin {
                 WonderPush.trackEvent(type);
             }
             callbackContext.success();
+
+        } else if (action.equals("addTag") || action.equals("removeTag")) {
+
+            // This can be called with a single string or a single array of strings
+            String[] tags = null;
+            Object value = args.get(0); // can be a string or an array of strings
+            if (value instanceof JSONArray) {
+                JSONArray argTags = (JSONArray) value;
+                List<String> tagsList = new LinkedList<>();
+                for (int i = 0; i < argTags.length(); ++i) {
+                    Object v = argTags.get(i);
+                    if (v instanceof String) {
+                        tagsList.add((String) v);
+                    }
+                }
+                tags = tagsList.toArray(new String[]{});
+            } else if (value instanceof String) {
+                tags = new String[]{(String) value};
+            }
+            if (tags != null) {
+                if (action.equals("addTag")) {
+                    WonderPush.addTag(tags);
+                } else {
+                    WonderPush.removeTag(tags);
+                }
+            }
+            callbackContext.success();
+
+        } else if (action.equals("removeAllTags")) {
+
+            WonderPush.removeAllTags();
+            callbackContext.success();
+
+        } else if (action.equals("getTags")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, new JSONArray(WonderPush.getTags())));
+
+        } else if (action.equals("hasTag")) {
+
+            String tag = args.getString(0);
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.hasTag(tag)));
 
         } else if (action.equals("setProperty")) {
 

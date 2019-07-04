@@ -13,6 +13,11 @@
  * @param {string} value - The return value.
  */
 /**
+ * This callback is called with a single string argument when the call succeeds.
+ * @callback cordova.plugins.WonderPush~StringArrayCallback
+ * @param {string[]} value - The return value.
+ */
+/**
  * This callback is called with a single nullable string argument when the call succeeds.
  * @callback cordova.plugins.WonderPush~NullableStringCallback
  * @param {?string} value - The return value.
@@ -217,6 +222,59 @@ function trackEvent (type, attributes, cb) {
   }
 
   _callNative('trackEvent', args, cb)
+}
+
+/**
+ * Adds one or more tags to the installation.
+ * @param {string|string[]} tag - The tags to add to the installation. You can use either a single string argument or an array of strings.
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function addTag (tag, cb) {
+  return _callNative('addTag', [tag], cb)
+}
+
+/**
+ * Removes one or more tags from the installation.
+ * @param {string|string[]} tag - The tags to remove from the installation. You can use either a single string argument or an array of strings.
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function removeTag (tag, cb) {
+  return _callNative('removeTag', [tag], cb)
+}
+
+/**
+ * Removes all tags from the installation.
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function removeAllTags (cb) {
+  return _callNative('removeAllTags', [], cb)
+}
+
+/**
+ * Returns all the tags of the installation.
+ * @param {cordova.plugins.WonderPush~StringArrayCallback} [cb] - The callback called with an array of string tags.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function getTags (cb) {
+  return _callNative('getTags', [], cb)
+}
+
+/**
+ * Tests whether the installation has the given tag attached to it.
+ * @param {string} tag - The tag to test.
+ * @param {cordova.plugins.WonderPush~BooleanCallback} [cb] - The callback called with `true` if the given tag is attached to the installation, `false` otherwise.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function hasTag (tag, cb) {
+  return _callNative('hasTag', [tag], cb)
 }
 
 /**
@@ -497,6 +555,11 @@ var WonderPush = {
   getAccessToken: getAccessToken,
   // Installation data and events
   trackEvent: trackEvent,
+  addTag: addTag,
+  removeTag: removeTag,
+  removeAllTags: removeAllTags,
+  getTags: getTags,
+  hasTag: hasTag,
   setProperty: setProperty,
   unsetProperty: unsetProperty,
   addProperty: addProperty,
