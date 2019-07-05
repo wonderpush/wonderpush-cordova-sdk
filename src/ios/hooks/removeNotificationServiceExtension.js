@@ -90,11 +90,13 @@ module.exports = function(context) {
           }
 
           // Remove the target
-          projectHelper.removeTargetByKey(target.uuid);
+          if (target) {
+            projectHelper.removeTargetByKey(target.uuid);
+            // Remove target from PBXProject section and PBXTargetDependency
+            projectHelper.removeTargetFromAllProjects(target.uuid);
+            projectHelper.removeTargetFromAllTargetDependencies(target.uuid);
 
-          // Remove target from PBXProject section and PBXTargetDependency
-          projectHelper.removeTargetFromAllProjects(target.uuid);
-          projectHelper.removeTargetFromAllTargetDependencies(target.uuid);
+          }
 
           // Remove the build file
           const appexFile = projectHelper.findFileByName(`${ProjectHelper.NOTIFICATION_SERVICE_EXTENSION_NAME}.appex`);
