@@ -329,11 +329,9 @@ module.exports = function(context) {
         .then((buffer) => {
           const podfileContents = buffer.toString('utf8');
           if (podfileContents.indexOf(PODFILE_SNIPPET) < 0) {
-            return fs.writeFile(contextHelper.podfilePath, podfileContents + "\n" + PODFILE_SNIPPET);
+            return fs.writeFile(contextHelper.podfilePath, podfileContents + "\n" + PODFILE_SNIPPET)
+              .then(() => contextHelper.runPodInstall());
           }
-        })
-        .then(() => {
-          return contextHelper.runPodInstall();
         });
 
     })
