@@ -7,6 +7,8 @@ class ProjectHelper {
     "  use_frameworks!\n" +
     "  pod 'WonderPushExtension', '" + ProjectHelper.POD_VERSION + "'\n" +
     "end\n";
+  static NOTIFICATION_SERVICE_EXTENSION_NAME = 'WonderPushNotificationServiceExtension';
+  static COMMENT_KEY = /_comment$/;
 
   constructor(project) {
     this.project = project;
@@ -16,6 +18,28 @@ class ProjectHelper {
     const serviceExtensionType = '"com.apple.product-type.app-extension"';
     return Object.values(nativeTargetSection || {})
       .filter((elt) => elt && elt.productType === serviceExtensionType);
+  }
+
+  getBuildConfigurationListByKey(key) {
+    return this.project.pbxXCConfigurationList()[key];
+  }
+
+  getBuildConfigurationByKey(key) {
+    return this.project.pbxXCBuildConfigurationSection()[key];
+  }
+
+  removeBuildConfigurationByKey(key) {
+    const pbxXCBuildConfigurationSection = this.project.pbxXCBuildConfigurationSection();
+    const val = pbxXCBuildConfigurationSection[key];
+    delete pbxXCBuildConfigurationSection[key];
+    return val;
+  }
+
+  removeBuildConfigurationListByKey(key) {
+    const pbxXCConfigurationList = this.project.pbxXCConfigurationList();
+    const val = pbxXCConfigurationList[key];
+    delete pbxXCConfigurationList[key];
+    return val;
   }
 
   /**
@@ -29,12 +53,12 @@ class ProjectHelper {
 
     if (!target.buildConfigurationList) return [];
 
-    const buildConfigurationList = this.project.pbxXCConfigurationList()[target.buildConfigurationList];
+    const buildConfigurationList = this.getBuildConfigurationListByKey(target.buildConfigurationList);
     if (!buildConfigurationList || !buildConfigurationList.buildConfigurations) return [];
 
     const buildConfigurationKeys = buildConfigurationList.buildConfigurations.map(x => x.value);
     return buildConfigurationKeys
-      .map(x => this.project.pbxXCBuildConfigurationSection()[x])
+      .map(x => this.getBuildConfigurationByKey(x))
       .filter(x => !!x);
   }
 
@@ -53,10 +77,22 @@ class ProjectHelper {
     const fileRefSection = this.project.pbxFileReferenceSection();
     return fileRefSection[key];
   }
+  removeFileByKey(key) {
+    const fileRefSection = this.project.pbxFileReferenceSection();
+    const val = fileRefSection[key];
+    delete fileRefSection[key];
+    return val;
+  }
 
   getBuildFileByKey(key) {
     const buildFileSection = this.project.pbxBuildFileSection();
     return buildFileSection[key];
+  }
+  removeBuildFileByKey(key) {
+    const buildFileSection = this.project.pbxBuildFileSection();
+    const buildFile = buildFileSection[key];
+    delete buildFileSection[key];
+    return buildFile;
   }
   getBuildFileKeyByFileRefKey(key) {
     const buildFileSection = this.project.pbxBuildFileSection();
@@ -92,9 +128,70 @@ class ProjectHelper {
 
     return rootObject.mainGroup;
   }
+  getGroupByName(name) {
+    const groups = this.project.hash.project.objects['PBXGroup'];
+
+    for (const key in groups) {
+      // only look for comments
+      if (!ProjectHelper.COMMENT_KEY.test(key)) continue;
+
+      if (groups[key] === name) {
+        const groupKey = key.split(ProjectHelper.COMMENT_KEY)[0];
+        return {
+          uuid: groupKey,
+          pbxGroup: groups[groupKey],
+        };
+      }
+    }
+    return undefined;
+  }
+  removeKeyFromGroup(key, groupKey) {
+    const group = this.getGroupByKey(groupKey);
+    if (!group) return undefined;
+    group.children = (group.children || []).filter(x => x.value !== key && x.value !== `comment_${key}`);
+  }
+  getGroupByKey(key) {
+    const groups = this.project.hash.project.objects['PBXGroup'];
+    return groups[key];
+  }
+  removeGroupByKey(key) {
+    const groups = this.project.hash.project.objects['PBXGroup'];
+    const group = groups[key];
+    delete groups[key];
+    return group;
+  }
   getBuildPhaseSection(name) {
     if (!this.project.hash.project.objects[name]) this.project.hash.objects[name] = {};
     return this.project.hash.project.objects[name];
+  }
+
+  removeBuildPhase(sectionName, key) {
+    const section = this.project.hash.project.objects[sectionName];
+    if (!section) return undefined;
+    const val = section[key];
+    delete section[key];
+    return val;
+  }
+
+  getBuildPhaseByKey(key) {
+    const buildPhaseSections = [
+      'PBXSourcesBuildPhase',
+      'PBXResourcesBuildPhase',
+      'PBXFrameworksBuildPhase',
+      'PBXCopyFilesBuildPhase',
+      'PBXCopyFilesBuildPhase',
+      'PBXShellScriptBuildPhase',
+    ];
+    for (const buildPhaseSection of buildPhaseSections) {
+      const section = this.project.hash.project.objects[buildPhaseSection];
+      if (typeof section !== 'object') continue;
+      const buildPhase = section[key];
+      if (buildPhase) return {
+        section: buildPhaseSection,
+        pbxBuildPhaseObj: section[key],
+      }
+    }
+    return undefined;
   }
 
   addSourcesBuildPhase(fileKeys, target) {
@@ -122,6 +219,56 @@ class ProjectHelper {
 
   unquote(str) {
     if (str) return str.replace(/^"(.*)"$/, "$1");
+  }
+
+  findTargetByName(name) {
+    const pbxNativeTargetSection = this.project.pbxNativeTargetSection();
+    for (const key in pbxNativeTargetSection) {
+      const pbxNativeTarget = pbxNativeTargetSection[key];
+      if (pbxNativeTarget.name === name) return {
+        uuid: key,
+        pbxNativeTarget,
+      };
+    }
+    return undefined;
+  }
+
+  removeTargetByKey(key) {
+    const pbxNativeTargetSection = this.project.pbxNativeTargetSection();
+    const target = pbxNativeTargetSection[key];
+    delete pbxNativeTargetSection[key];
+    return target;
+  }
+
+  removeTargetFromAllProjects(key) {
+    const projectsSection = this.project.hash.project.objects['PBXProject'];
+    if (!projectsSection) return;
+    for (const projectKey in projectsSection) {
+      const project = projectsSection[projectKey];
+      if (typeof project !== 'object') continue;
+      project.targets = (project.targets || []).filter(x => x.value !== key);
+    }
+  }
+
+  removeTargetFromAllTargetDependencies(key) {
+    const dependenciesSection = this.project.hash.project.objects['PBXTargetDependency'];
+    const proxySection = this.project.hash.project.objects['PBXContainerItemProxy'];
+    for (const depKey of Object.keys(dependenciesSection)) {
+      const dep = dependenciesSection[depKey];
+      if (typeof dep !== 'object') continue;
+
+      // Remove from dependencies
+      if (dep.target && dep.target === key) {
+        delete dependenciesSection[depKey];
+        delete dependenciesSection[`${depKey}_comment`];
+
+        // Remove from PBXContainerItemProxy
+        if (dep.targetProxy) {
+          delete proxySection[`${dep.targetProxy}_comment`];
+          delete proxySection[dep.targetProxy];
+        }
+      }
+    }
   }
 }
 module.exports = ProjectHelper;

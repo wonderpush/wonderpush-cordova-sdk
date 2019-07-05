@@ -48,14 +48,13 @@ const EXTENSION_TARGET_BUILD_SETTINGS = {
 module.exports = function(context) {
 
   const contextHelper = new ContextHelper(context);
-  const ourServiceExtensionName = 'WonderPushNotificationServiceExtension';
+  const ourServiceExtensionName = ProjectHelper.NOTIFICATION_SERVICE_EXTENSION_NAME;
   const pluginDir = contextHelper.pluginDir;
   const projectRoot = contextHelper.projectRoot;
   if (!pluginDir || !projectRoot) return;
 
   // Let's run only if ios is a platform
   if (!contextHelper.hasPlatform('ios')) return;
-
   return contextHelper.readXcodeProject()
     .then((project) => {
       const projectHelper = new ProjectHelper(project);
