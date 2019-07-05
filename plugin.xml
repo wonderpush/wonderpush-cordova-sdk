@@ -55,7 +55,6 @@
       <config />
       <pods use-frameworks="true">
         <pod name="WonderPush" spec="3.1.0" />
-        <pod name="WonderPushNotificationServiceExtension" spec="3.1.0" />
       </pods>
     </podspec>
     <config-file target="*-Info.plist" parent="UIBackgroundModes">
