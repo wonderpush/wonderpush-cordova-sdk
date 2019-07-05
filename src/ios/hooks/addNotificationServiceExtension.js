@@ -192,6 +192,30 @@ class ProjectHelper {
     if (!this.project.hash.project.objects[name]) this.project.hash.objects[name] = {};
     return this.project.hash.project.objects[name];
   }
+
+  addSourcesBuildPhase(fileKeys, target) {
+    const buildPhase = {
+      isa: 'PBXSourcesBuildPhase',
+      buildActionMask: 2147483647,
+      files: fileKeys.map(x => {
+        const f = this.getFileByKey(x);
+        const filepath = this.unquote(f.path);
+        const buildFileKey = this.getBuildFileKeyByFileRefKey(x);
+        if (!buildFileKey) return null;
+        return {value: buildFileKey, comment: `${path.basename(filepath)} in Sources`};
+      }),
+      runOnlyForDeploymentPostprocessing: 0
+    };
+    const buildPhaseSection = this.getBuildPhaseSection('PBXSourcesBuildPhase');
+    const buildPhaseUuid = this.project.generateUuid();
+    buildPhaseSection[buildPhaseUuid] = buildPhase;
+    target.pbxNativeTarget.buildPhases.push({
+      value: buildPhaseUuid,
+      comment: 'Sources',
+    });
+    return buildPhase;
+  }
+
   unquote(str) {
     if (str) return str.replace(/^"(.*)"$/, "$1");
   }
@@ -264,31 +288,15 @@ module.exports = function(context) {
           if (!mainGroupId) throw  new Error('Could not find main group ID');
           project.addToPbxGroup(group.uuid, mainGroupId);
 
+          // Only .m files
+          const buildPhaseFileKeys = group.pbxGroup.children
+            .filter(x => {
+              const f = projectHelper.getFileByKey(x.value);
+              return f && f.path && projectHelper.unquote(f.path).endsWith('.m');
+            })
+            .map(x => x.value);
 
-          const buildPhase = {
-            isa: 'PBXSourcesBuildPhase',
-            buildActionMask: 2147483647,
-            files: group.pbxGroup.children.map(x => {
-              const file = projectHelper.getFileByKey(x.value);
-              if (!file) return null;
-
-              const filepath = projectHelper.unquote(file.path);
-
-              // Only .m files
-              if (!filepath || !filepath.endsWith('.m')) return null;
-              const buildFileKey = projectHelper.getBuildFileKeyByFileRefKey(x.value);
-              if (!buildFileKey) return null;
-              return { value: buildFileKey, comment: `${path.basename(filepath)} in Sources`};
-            }).filter(x => !!x),
-            runOnlyForDeploymentPostprocessing: 0
-          };
-          const buildPhaseSection = projectHelper.getBuildPhaseSection('PBXSourcesBuildPhase');
-          const buildPhaseUuid = project.generateUuid();
-          buildPhaseSection[buildPhaseUuid] = buildPhase;
-          target.pbxNativeTarget.buildPhases.push({
-            value: buildPhaseUuid,
-            comment: 'Sources',
-          });
+          projectHelper.addSourcesBuildPhase(buildPhaseFileKeys, target);
 
           fs.writeFileSync(project.filepath, project.writeSync());
         });
