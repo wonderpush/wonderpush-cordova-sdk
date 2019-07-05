@@ -7,12 +7,6 @@ const logMessage = (msg) => {
   console.log(`[WonderPush] ${msg}`);
 };
 
-const POD_VERSION = '3.1.0';
-const PODFILE_SNIPPET = "target 'WonderPushNotificationServiceExtension' do\n" +
-  "  platform :ios, '10.0'\n" +
-  "  use_frameworks!\n" +
-  "  pod 'WonderPushExtension', '" + POD_VERSION + "'\n" +
-  "end\n";
 
 const EXTENSION_TARGET_BUILD_SETTINGS = {
   Debug: {
@@ -137,8 +131,8 @@ module.exports = function(context) {
         })
         .then((buffer) => {
           const podfileContents = buffer.toString('utf8');
-          if (podfileContents.indexOf(PODFILE_SNIPPET) < 0) {
-            return fs.writeFile(contextHelper.podfilePath, podfileContents + "\n" + PODFILE_SNIPPET)
+          if (podfileContents.indexOf(ProjectHelper.PODFILE_SNIPPET) < 0) {
+            return fs.writeFile(contextHelper.podfilePath, podfileContents + "\n" + ProjectHelper.PODFILE_SNIPPET)
               .then(() => contextHelper.runPodInstall());
           }
         });

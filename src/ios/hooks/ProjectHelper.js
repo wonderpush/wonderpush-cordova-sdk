@@ -1,6 +1,13 @@
 const path = require('path');
 
 class ProjectHelper {
+  static POD_VERSION = '3.1.0';
+  static PODFILE_SNIPPET = "target 'WonderPushNotificationServiceExtension' do\n" +
+    "  platform :ios, '10.0'\n" +
+    "  use_frameworks!\n" +
+    "  pod 'WonderPushExtension', '" + ProjectHelper.POD_VERSION + "'\n" +
+    "end\n";
+
   constructor(project) {
     this.project = project;
   }
