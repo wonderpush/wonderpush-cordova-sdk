@@ -6,6 +6,12 @@ const logMessage = (msg) => {
   console.log(`[WonderPush] ${msg}`);
 };
 
+const PODFILE_SNIPPET = "target 'WonderPushNotificationServiceExtension' do\n" +
+  "  platform :ios, '10.0'\n" +
+  "  use_frameworks!\n" +
+  "  pod 'WonderPushExtension', '~> 3.0'\n" +
+  "end\n";
+
 const EXTENSION_TARGET_BUILD_SETTINGS = {
   Debug: {
     DEBUG_INFORMATION_FORMAT: 'dwarf',
@@ -61,6 +67,9 @@ class ContextHelper {
   get pluginDir() {
     return this.context && this.context.opts && this.context.opts.plugin && this.context.opts.plugin.dir || undefined;
   }
+  get podfilePath() {
+    return this.projectRoot && path.join(this.projectRoot, 'platforms', 'ios', 'Podfile');
+  }
   readConfig() {
     const projectRoot = this.projectRoot;
     if (!projectRoot) return Promise.reject(new Error('Missing project root'));
@@ -100,6 +109,18 @@ class ContextHelper {
           });
         })
       })
+  }
+  runPodInstall() {
+    const cordovaCommon = this.context.requireCordovaModule('cordova-common');
+    const { superspawn } = cordovaCommon;
+    var opts = {};
+    opts.cwd = path.join(this.podfilePath, '..'); // parent path of this Podfile
+    opts.stdio = 'pipe';
+    opts.printCommand = true;
+    return superspawn.spawn('pod', ['install', '--verbose'], opts)
+      .progress(function (stdio) {
+        if (stdio.stderr) { console.error(stdio.stderr); }
+      });
   }
 }
 
@@ -296,9 +317,23 @@ module.exports = function(context) {
             })
             .map(x => x.value);
 
+          // Add build phase to compile files
           projectHelper.addSourcesBuildPhase(buildPhaseFileKeys, target);
 
+          // Write the project
           fs.writeFileSync(project.filepath, project.writeSync());
+
+          // Read the Podfile
+          return fs.readFile(contextHelper.podfilePath);
+        })
+        .then((buffer) => {
+          const podfileContents = buffer.toString('utf8');
+          if (podfileContents.indexOf(PODFILE_SNIPPET) < 0) {
+            return fs.writeFile(contextHelper.podfilePath, podfileContents + "\n" + PODFILE_SNIPPET);
+          }
+        })
+        .then(() => {
+          return contextHelper.runPodInstall();
         });
 
     })
