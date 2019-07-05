@@ -32,6 +32,11 @@
  * @callback cordova.plugins.WonderPush~MixedCallback
  * @param {*} value - The return value.
  */
+/**
+ * This callback is called with a single argument of varying type when the call succeeds.
+ * @callback cordova.plugins.WonderPush~DelegateCallback
+ * @param {?WonderPushDelegate} value - The return value.
+ */
 
 ///
 /// Plugin helpers - Foreign interface
@@ -125,6 +130,58 @@ function setLogging (enabled, cb) {
   }
 
   _callNative('setLogging', [enabled], cb)
+}
+
+/**
+ * @type {WonderPushDelegate}
+ */
+var currentDelegate = null
+
+function delegateNativeCallback (call) {
+  if (!call || !currentDelegate) {
+    return
+  }
+  switch (call.method) {
+    case 'urlForDeepLink': // fallthrough // Android name
+    case 'wonderPushWillOpenURL': // iOS name
+      currentDelegate.urlForDeepLink(call['url'], function(url) {
+        _callNative('__callback', [call.__callbackId, url])
+      })
+      return
+  }
+}
+
+/**
+ * Sets up a delegate for tighter integration, or removes it.
+ * @param {?WonderPushDelegate} delegate - The delegate to set, or `null` to remove it.
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function setDelegate (delegate, cb) {
+  cb = cb || function(){} // ensure cb is set to consume first result properly
+  currentDelegate = delegate
+  _callNative('setDelegate', [currentDelegate != null], function(call) {
+    if (cb) {
+      // Consuming first return
+      cb()
+      cb = null
+    } else {
+      // Forwarding successive calls
+      delegateNativeCallback(call)
+    }
+  })
+}
+
+/**
+ * Gets the current delegate for tighter integration.
+ * @param {cordova.plugins.WonderPush~DelegateCallback} [cb] - The success callback called with the current delegate.
+ * @memberof cordova.plugins.WonderPush
+ * @instance
+ */
+function getDelegate (cb) {
+    cb = cb || function(){} // ensure cb is set to consume first result properly
+    cb(currentDelegate)
 }
 
 ///
@@ -609,6 +666,22 @@ function downloadAllData (cb) {
 ///
 
 /**
+ * Delegate interface
+ * @interface cordova.plugins.WonderPushDelegate
+ * @interface WonderPushDelegate
+ */
+function WonderPushDelegate () {}
+
+/**
+ * @param {string} url - The URL to be opened
+ * @return {string} The URL to open instead
+ */
+WonderPushDelegate.prototype.urlForDeepLink = function (url) {
+  // Stub, no-op implementation
+  return url;
+}
+
+/**
  * Main object of the WonderPush SDK.
  * @public
  * @namespace cordova.plugins.WonderPush {WonderPush}
@@ -619,6 +692,8 @@ var WonderPush = {
   setUserId: setUserId,
   isReady: isReady,
   setLogging: setLogging,
+  setDelegate: setDelegate,
+  getDelegate: getDelegate,
   // Core information
   getUserId: getUserId,
   getInstallationId: getInstallationId,
