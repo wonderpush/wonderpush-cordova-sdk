@@ -77,11 +77,32 @@ class ProjectHelper {
     const fileRefSection = this.project.pbxFileReferenceSection();
     return fileRefSection[key];
   }
+  findFileByName(name) {
+    const fileRefSection = this.project.pbxFileReferenceSection();
+    for (const key in fileRefSection) {
+      const pbxFile = fileRefSection[key];
+      if (typeof pbxFile !== 'object') continue;
+      if (pbxFile.name === name) return {
+        uuid: key,
+        pbxFile,
+      }
+    }
+    return undefined;
+  }
   removeFileByKey(key) {
     const fileRefSection = this.project.pbxFileReferenceSection();
     const val = fileRefSection[key];
     delete fileRefSection[key];
     return val;
+  }
+
+  removeFileFromAllGroups(key) {
+    const groups = this.project.hash.project.objects['PBXGroup'];
+    for (const groupKey in groups) {
+      const group = groups[groupKey];
+      if (typeof group !== 'object') continue;
+      this.removeKeyFromGroup(key, groupKey);
+    }
   }
 
   getBuildFileByKey(key) {

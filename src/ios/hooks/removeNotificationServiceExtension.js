@@ -100,12 +100,26 @@ module.exports = function(context) {
           // Remove the target
           projectHelper.removeTargetByKey(target.uuid);
 
-          // Remove the source files
-          buildFileKeys.forEach((x) => projectHelper.removeBuildFileByKey(x));
-
           // Remove target from PBXProject section and PBXTargetDependency
           projectHelper.removeTargetFromAllProjects(target.uuid);
           projectHelper.removeTargetFromAllTargetDependencies(target.uuid);
+
+          // Remove the build file
+          const appexFile = projectHelper.findFileByName(`${ProjectHelper.NOTIFICATION_SERVICE_EXTENSION_NAME}.appex`);
+          if (appexFile) {
+            // Remove from Products group
+            projectHelper.removeFileFromAllGroups(appexFile.uuid);
+
+            // Remove from build files
+            const buildFileKey = projectHelper.getBuildFileKeyByFileRefKey(appexFile.uuid);
+            if (buildFileKey) buildFileKeys.add(buildFileKey);
+
+            // Remove file
+            projectHelper.removeFileByKey(appexFile.uuid);
+          }
+
+          // Remove the source files
+          buildFileKeys.forEach((x) => projectHelper.removeBuildFileByKey(x));
 
           // Write the project
           fs.writeFileSync(project.filepath, project.writeSync());
