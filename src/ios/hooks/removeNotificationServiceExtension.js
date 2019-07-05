@@ -31,13 +31,11 @@ module.exports = function(context) {
           const target = projectHelper.findTargetByName(ProjectHelper.NOTIFICATION_SERVICE_EXTENSION_NAME);
           const buildFileKeys = new Set();
           const filePaths = new Set();
-          console.log('target', target.pbxNativeTarget);
 
           // Configuration list and build configurations
           if (target && target.pbxNativeTarget && target.pbxNativeTarget.buildConfigurationList) {
             const buildConfigurationList = projectHelper.getBuildConfigurationListByKey(target.pbxNativeTarget.buildConfigurationList);
             if (buildConfigurationList) {
-              console.log('buildConfigurationList', buildConfigurationList);
               // Remove the build configurations
               (buildConfigurationList.buildConfigurations || []).forEach(x => projectHelper.removeBuildConfigurationByKey(x.value));
 
@@ -51,7 +49,6 @@ module.exports = function(context) {
             target.pbxNativeTarget.buildPhases.forEach(x => {
               const buildPhase = projectHelper.getBuildPhaseByKey(x.value);
               if (!buildPhase) return;
-              console.log('buildPhase', buildPhase);
               for (const file of buildPhase.pbxBuildPhaseObj.files || []) {
                 if (file.value) buildFileKeys.add(file.value);
               }
@@ -64,7 +61,6 @@ module.exports = function(context) {
           const group = projectHelper.getGroupByName(ProjectHelper.NOTIFICATION_SERVICE_EXTENSION_NAME);
           const mainGroupId = projectHelper.getProjectMainGroupId();
           if (group) {
-            console.log('group', group);
 
             // Remove the file refs
             for (const x of group.pbxGroup.children || []) {
@@ -79,7 +75,6 @@ module.exports = function(context) {
                 filePaths.add(p);
               }
               // Remove file
-              console.log('childKey', childKey);
               projectHelper.removeFileByKey(childKey);
 
               // Collect all related build files
@@ -93,9 +88,6 @@ module.exports = function(context) {
             // Remove the group
             projectHelper.removeGroupByKey(group.uuid);
           }
-
-          console.log('filePaths', filePaths);
-          console.log('buildFileKeys', buildFileKeys);
 
           // Remove the target
           projectHelper.removeTargetByKey(target.uuid);
