@@ -1,15 +1,17 @@
 const fs = require('fs-extra');
 const path = require('path');
-const xcode = require('xcode');
+const ContextHelper = require('./ContextHelper');
+const ProjectHelper = require('./ProjectHelper');
 
 const logMessage = (msg) => {
   console.log(`[WonderPush] ${msg}`);
 };
 
+const POD_VERSION = '3.1.0';
 const PODFILE_SNIPPET = "target 'WonderPushNotificationServiceExtension' do\n" +
   "  platform :ios, '10.0'\n" +
   "  use_frameworks!\n" +
-  "  pod 'WonderPushExtension', '~> 3.0'\n" +
+  "  pod 'WonderPushExtension', '" + POD_VERSION + "'\n" +
   "end\n";
 
 const EXTENSION_TARGET_BUILD_SETTINGS = {
@@ -48,199 +50,6 @@ const EXTENSION_TARGET_BUILD_SETTINGS = {
     TARGETED_DEVICE_FAMILY: '"1,2"',
   },
 };
-
-class ContextHelper {
-  constructor(context) {
-    this.context = context;
-  }
-  hasPlatform(platform) {
-    const platforms = this.context && this.context.opts ? this.context.opts.platforms : undefined;
-    if (!platforms) return false;
-    return platforms.indexOf('ios') >= 0;
-  }
-  get projectRoot() {
-    return this.context && this.context.opts && this.context.opts.projectRoot || undefined;
-  }
-  get pluginId() {
-    return this.context && this.context.opts && this.context.opts.plugin && this.context.opts.plugin.id || undefined;
-  }
-  get pluginDir() {
-    return this.context && this.context.opts && this.context.opts.plugin && this.context.opts.plugin.dir || undefined;
-  }
-  get podfilePath() {
-    return this.projectRoot && path.join(this.projectRoot, 'platforms', 'ios', 'Podfile');
-  }
-  readConfig() {
-    const projectRoot = this.projectRoot;
-    if (!projectRoot) return Promise.reject(new Error('Missing project root'));
-    if (!this.context) return Promise.reject(new Error('Missing context'));
-    const cordovaCommon = this.context.requireCordovaModule('cordova-common');
-    const configPath = path.join(projectRoot, 'config.xml');
-    return new Promise((res, rej) => {
-      fs.exists(configPath, (exists) => {
-        if (!exists) rej(new Error('Missing config.xml file'));
-        else res(new cordovaCommon.ConfigParser(configPath));
-      });
-    });
-  }
-  readXcodeProjectPath() {
-    const projectRoot = this.projectRoot;
-    if (!projectRoot) return Promise.reject(new Error('Missing project root'));
-    return this.readConfig()
-      .then((config) => {
-        const name = config.name();
-        const xcodeProjectPath = path.join(projectRoot, 'platforms', 'ios', `${name}.xcodeproj`);
-        return new Promise((res, rej) => {
-          fs.exists(xcodeProjectPath, (exists) => {
-            if (exists) res(xcodeProjectPath);
-            else rej(new Error(`${xcodeProjectPath}: no such file or directory`));
-          });
-        });
-      })
-  }
-  readXcodeProject() {
-    return this.readXcodeProjectPath()
-      .then((xcodeProjectPath) => {
-        const project = xcode.project(path.join(xcodeProjectPath, 'project.pbxproj'));
-        return new Promise((res, rej) => {
-          project.parse((err) => {
-            if (err) rej(err);
-            else res(project);
-          });
-        })
-      })
-  }
-  runPodInstall() {
-    const cordovaCommon = this.context.requireCordovaModule('cordova-common');
-    const { superspawn } = cordovaCommon;
-    var opts = {};
-    opts.cwd = path.join(this.podfilePath, '..'); // parent path of this Podfile
-    opts.stdio = 'pipe';
-    opts.printCommand = true;
-    return superspawn.spawn('pod', ['install', '--verbose'], opts)
-      .progress(function (stdio) {
-        if (stdio.stderr) { console.error(stdio.stderr); }
-      });
-  }
-}
-
-class ProjectHelper {
-  constructor(project) {
-    this.project = project;
-  }
-  getAppExtensionTargets() {
-    const nativeTargetSection = this.project.pbxNativeTargetSection();
-    const serviceExtensionType = '"com.apple.product-type.app-extension"';
-    return Object.values(nativeTargetSection || {})
-      .filter((elt) => elt && elt.productType === serviceExtensionType);
-  }
-
-  /**
-   * Returns the build configurations for the specified target
-   * @param targetKey
-   * @return Array
-   */
-  getTargetBuildConfigurations(targetKey) {
-    const target = this.project.pbxNativeTargetSection()[targetKey];
-    if (!target) return [];
-
-    if (!target.buildConfigurationList) return [];
-
-    const buildConfigurationList = this.project.pbxXCConfigurationList()[target.buildConfigurationList];
-    if (!buildConfigurationList || !buildConfigurationList.buildConfigurations) return [];
-
-    const buildConfigurationKeys = buildConfigurationList.buildConfigurations.map(x => x.value);
-    return buildConfigurationKeys
-      .map(x => this.project.pbxXCBuildConfigurationSection()[x])
-      .filter(x => !!x);
-  }
-
-  /**
-   * Returns the key of the first target of type Application
-   * @returns {string | undefined}
-   */
-  getAppTargetKey() {
-    // List app targets
-    const pbxNativeTargetSection = this.project.pbxNativeTargetSection();
-    return Object.keys(pbxNativeTargetSection)
-      .find(x => pbxNativeTargetSection[x].productType === '"com.apple.product-type.application"');
-  }
-
-  getFileByKey(key) {
-    const fileRefSection = this.project.pbxFileReferenceSection();
-    return fileRefSection[key];
-  }
-
-  getBuildFileByKey(key) {
-    const buildFileSection = this.project.pbxBuildFileSection();
-    return buildFileSection[key];
-  }
-  getBuildFileKeyByFileRefKey(key) {
-    const buildFileSection = this.project.pbxBuildFileSection();
-    return Object.keys(buildFileSection)
-      .find(x => typeof buildFileSection[x] === 'object' && buildFileSection[x].fileRef === key);
-  }
-
-  /**
-   * Returns the bundle ID of the first app target for the specified environment
-   * @param {'Debug' | 'Release'} environment
-   * @return {string | undefined}
-   */
-  getAppBundleIdentifier(environment) {
-    const appTargetKey = this.getAppTargetKey();
-    if (!appTargetKey) return undefined;
-
-    const buildConfiguration = this.getTargetBuildConfigurations(appTargetKey)
-      .find(x => x.name === environment);
-
-    return buildConfiguration
-      && buildConfiguration.buildSettings
-      && buildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER
-      || undefined;
-  }
-  
-  getProjectMainGroupId() {
-    const { project } = this;
-    const rootObjectId = project.hash && project.hash.project && project.hash.project.rootObject || undefined;
-    if (!rootObjectId) return undefined;
-
-    const rootObject = project.pbxProjectSection()[rootObjectId];
-    if (!rootObject) return undefined;
-
-    return rootObject.mainGroup;
-  }
-  getBuildPhaseSection(name) {
-    if (!this.project.hash.project.objects[name]) this.project.hash.objects[name] = {};
-    return this.project.hash.project.objects[name];
-  }
-
-  addSourcesBuildPhase(fileKeys, target) {
-    const buildPhase = {
-      isa: 'PBXSourcesBuildPhase',
-      buildActionMask: 2147483647,
-      files: fileKeys.map(x => {
-        const f = this.getFileByKey(x);
-        const filepath = this.unquote(f.path);
-        const buildFileKey = this.getBuildFileKeyByFileRefKey(x);
-        if (!buildFileKey) return null;
-        return {value: buildFileKey, comment: `${path.basename(filepath)} in Sources`};
-      }),
-      runOnlyForDeploymentPostprocessing: 0
-    };
-    const buildPhaseSection = this.getBuildPhaseSection('PBXSourcesBuildPhase');
-    const buildPhaseUuid = this.project.generateUuid();
-    buildPhaseSection[buildPhaseUuid] = buildPhase;
-    target.pbxNativeTarget.buildPhases.push({
-      value: buildPhaseUuid,
-      comment: 'Sources',
-    });
-    return buildPhase;
-  }
-
-  unquote(str) {
-    if (str) return str.replace(/^"(.*)"$/, "$1");
-  }
-}
 
 module.exports = function(context) {
 
