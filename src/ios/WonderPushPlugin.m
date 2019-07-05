@@ -113,7 +113,7 @@
     if (command.arguments.count > 1) {
         data = (NSDictionary *)command.arguments[1];
     }
-    [WonderPush trackEvent:type withData:data];
+    [WonderPush trackEvent:type attributes:data];
 
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
@@ -218,14 +218,20 @@
 }
 
 - (void)getInstallationCustomProperties:(CDVInvokedUrlCommand *)command {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     NSDictionary *rtn = [WonderPush getInstallationCustomProperties];
+#pragma clang diagnostic pop
 
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:rtn] callbackId:command.callbackId];
 }
 
 - (void)putInstallationCustomProperties:(CDVInvokedUrlCommand *)command {
     NSDictionary *customProperties = (NSDictionary *)command.arguments[0];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [WonderPush putInstallationCustomProperties:customProperties];
+#pragma clang diagnostic pop
 
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
@@ -251,7 +257,10 @@
 }
 
 - (void)getNotificationEnabled:(CDVInvokedUrlCommand *)command {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     BOOL rtn = [WonderPush getNotificationEnabled];
+#pragma clang diagnostic pop
 
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:rtn] callbackId:command.callbackId];
 }
@@ -259,7 +268,10 @@
 - (void)setNotificationEnabled:(CDVInvokedUrlCommand *)command {
     NSNumber *enabled = (NSNumber *)command.arguments[0];
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [WonderPush setNotificationEnabled:[enabled boolValue]];
+#pragma clang diagnostic pop
 
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
