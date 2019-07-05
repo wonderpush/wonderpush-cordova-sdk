@@ -22,7 +22,14 @@
     // Because we use `<param name="onload" value="true"/>`, this method is called inside
     // - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 
-    [WonderPush setLogging:YES];
+    [WonderPush setLogging:[@"true" isEqualToString:[self.commandDelegate.settings objectForKey:[@"WONDERPUSH_LOGGING" lowercaseString]]]];
+    [WonderPush setRequiresUserConsent:[@"true" isEqualToString:[self.commandDelegate.settings objectForKey:[@"WONDERPUSH_REQUIRES_USER_CONSENT" lowercaseString]]]];
+
+    // Stop initialization here if told to
+    if ([@"false" isEqualToString:[self.commandDelegate.settings objectForKey:[@"WONDERPUSH_AUTO_INIT" lowercaseString]]]) {
+        NSLog(@"[WonderPush] Initialization left to the developer as requested (AUTO_INIT=false)");
+        return;
+    }
 
     NSString *clientId = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_CLIENT_ID" lowercaseString]];
     NSString *clientSecret = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_CLIENT_SECRET" lowercaseString]];

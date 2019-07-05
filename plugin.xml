@@ -46,6 +46,9 @@
       </feature>
       <preference name="WONDERPUSH_CLIENT_ID" value="$CLIENT_ID" />
       <preference name="WONDERPUSH_CLIENT_SECRET" value="$CLIENT_SECRET" />
+      <preference name="WONDERPUSH_LOGGING" value="$LOGGING" />
+      <preference name="WONDERPUSH_AUTO_INIT" value="$AUTO_INIT" />
+      <preference name="WONDERPUSH_REQUIRES_USER_CONSENT" value="$REQUIRES_USER_CONSENT" />
     </config-file>
     <framework src="SystemConfiguration.framework" />
     <framework src="CoreGraphics.framework" />
