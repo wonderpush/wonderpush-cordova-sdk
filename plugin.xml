@@ -11,6 +11,7 @@
   </engines>
   <js-module name="WonderPush" src="www/WonderPush.js">
     <clobbers target="cordova.plugins.WonderPush" />
+    <clobbers target="plugins.WonderPush" />
     <clobbers target="WonderPush" />
   </js-module>
   <hook type="after_prepare" src="src/ios/hooks/addNotificationServiceExtension.js" />
