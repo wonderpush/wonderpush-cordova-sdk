@@ -6,11 +6,6 @@ class ContextHelper {
   constructor(context) {
     this.context = context;
   }
-  hasPlatform(platform) {
-    const platforms = this.context && this.context.opts ? this.context.opts.platforms : undefined;
-    if (!platforms) return false;
-    return platforms.indexOf(platform) >= 0;
-  }
   get projectRoot() {
     return this.context && this.context.opts && this.context.opts.projectRoot || undefined;
   }

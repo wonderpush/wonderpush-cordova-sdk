@@ -45,97 +45,103 @@ const EXTENSION_TARGET_BUILD_SETTINGS = {
   },
 };
 
-module.exports = function(context) {
+const addExtensionToProject = (contextHelper, project) => {
 
-  const contextHelper = new ContextHelper(context);
-  const ourServiceExtensionName = ProjectHelper.NOTIFICATION_SERVICE_EXTENSION_NAME;
   const pluginDir = contextHelper.pluginDir;
   const projectRoot = contextHelper.projectRoot;
-  if (!pluginDir || !projectRoot) return;
+  if (!pluginDir || !projectRoot) return Promise.resolve();
 
-  // Let's run only if ios is a platform
-  if (!contextHelper.hasPlatform('ios')) return;
-  return contextHelper.readXcodeProject()
-    .then((project) => {
-      const projectHelper = new ProjectHelper(project);
-      const existingServiceExtensions = projectHelper.getAppExtensionTargets();
+  const ourServiceExtensionName = ProjectHelper.NOTIFICATION_SERVICE_EXTENSION_NAME;
+  const projectHelper = new ProjectHelper(project);
+  const existingServiceExtensions = projectHelper.getAppExtensionTargets();
 
-      // Message user if another extension that is not ours is found
-      if (existingServiceExtensions.find(x => x.name !== ourServiceExtensionName)) logMessage('You already have a notification service extension. Please follow our guide to support rich push notifications: https://docs.wonderpush.com/docs/adding-a-notification-service-extension');
+  // Message user if another extension that is not ours is found
+  if (existingServiceExtensions.find(x => x.name !== ourServiceExtensionName)) logMessage('You already have a notification service extension. Please follow our guide to support rich push notifications: https://docs.wonderpush.com/docs/adding-a-notification-service-extension');
 
-      // Exit right there
-      if (existingServiceExtensions.length) return;
+  // Exit right there
+  if (existingServiceExtensions.length) {
+    return Promise.resolve();
+  }
 
-      // Copy files
-      const source = path.join(pluginDir, 'src', 'ios', ourServiceExtensionName);
-      const destination = path.join(projectRoot, 'platforms', 'ios', ourServiceExtensionName);
+  // Copy files
+  const source = path.join(pluginDir, 'src', 'ios', ourServiceExtensionName);
+  const destination = path.join(projectRoot, 'platforms', 'ios', ourServiceExtensionName);
 
-      return fs.copy(source, destination)
-        .then(() => {
+  return fs.copy(source, destination)
+    .then(() => {
 
-          // Let's add the extension
-          const target = project.addTarget(ourServiceExtensionName, 'app_extension', ourServiceExtensionName);
+      // Let's add the extension
+      const target = project.addTarget(ourServiceExtensionName, 'app_extension', ourServiceExtensionName);
 
-          // Get this build configurations for the app
-          const appTargetKey = projectHelper.getAppTargetKey();
-          const appBuildConfigurations = projectHelper.getTargetBuildConfigurations(appTargetKey);
+      // Get this build configurations for the app
+      const appTargetKey = projectHelper.getAppTargetKey();
+      const appBuildConfigurations = projectHelper.getTargetBuildConfigurations(appTargetKey);
 
-          // Get the build configuration for the extension
-          const buildConfigurations = projectHelper.getTargetBuildConfigurations(target.uuid);
-          for (const buildConfiguration of buildConfigurations) {
-            const environment = buildConfiguration.name;
+      // Get the build configuration for the extension
+      const buildConfigurations = projectHelper.getTargetBuildConfigurations(target.uuid);
+      for (const buildConfiguration of buildConfigurations) {
+        const environment = buildConfiguration.name;
 
-            // Copy CODE_SIGN* entries
-            const correspondingAppBuildConfiguration = appBuildConfigurations.find(x => x.name === environment);
-            if (correspondingAppBuildConfiguration && correspondingAppBuildConfiguration.buildSettings) {
-              for (const key in correspondingAppBuildConfiguration.buildSettings) {
-                if (key.startsWith("CODE_SIGN")) buildConfiguration.buildSettings[key] = correspondingAppBuildConfiguration.buildSettings[key];
-              }
-            }
-
-            // Copy other build settings
-            Object.assign(buildConfiguration.buildSettings, EXTENSION_TARGET_BUILD_SETTINGS.Common);
-            Object.assign(buildConfiguration.buildSettings, EXTENSION_TARGET_BUILD_SETTINGS[environment]);
-
-            // Copy bundle identifier
-            const bundleIdentifier = projectHelper.getAppBundleIdentifier(environment);
-            buildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER = `${bundleIdentifier}.${ourServiceExtensionName}`;
+        // Copy CODE_SIGN* entries
+        const correspondingAppBuildConfiguration = appBuildConfigurations.find(x => x.name === environment);
+        if (correspondingAppBuildConfiguration && correspondingAppBuildConfiguration.buildSettings) {
+          for (const key in correspondingAppBuildConfiguration.buildSettings) {
+            if (key.startsWith("CODE_SIGN")) buildConfiguration.buildSettings[key] = correspondingAppBuildConfiguration.buildSettings[key];
           }
+        }
 
-          // Create our group
-          const filePaths = ['NotificationService.m', 'NotificationService.h', `${ourServiceExtensionName}-Info.plist`];
-          const group = project.addPbxGroup(filePaths, ourServiceExtensionName, ourServiceExtensionName);
+        // Copy other build settings
+        Object.assign(buildConfiguration.buildSettings, EXTENSION_TARGET_BUILD_SETTINGS.Common);
+        Object.assign(buildConfiguration.buildSettings, EXTENSION_TARGET_BUILD_SETTINGS[environment]);
 
-          // Add our group to the main group
-          const mainGroupId = projectHelper.getProjectMainGroupId();
-          if (!mainGroupId) throw  new Error('Could not find main group ID');
-          project.addToPbxGroup(group.uuid, mainGroupId);
+        // Copy bundle identifier
+        const bundleIdentifier = projectHelper.getAppBundleIdentifier(environment);
+        buildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER = `${bundleIdentifier}.${ourServiceExtensionName}`;
+      }
 
-          // Only .m files
-          const buildPhaseFileKeys = group.pbxGroup.children
-            .filter(x => {
-              const f = projectHelper.getFileByKey(x.value);
-              return f && f.path && projectHelper.unquote(f.path).endsWith('.m');
-            })
-            .map(x => x.value);
+      // Create our group
+      const filePaths = ['NotificationService.m', 'NotificationService.h', `${ourServiceExtensionName}-Info.plist`];
+      const group = project.addPbxGroup(filePaths, ourServiceExtensionName, ourServiceExtensionName);
 
-          // Add build phase to compile files
-          projectHelper.addSourcesBuildPhase(buildPhaseFileKeys, target);
+      // Add our group to the main group
+      const mainGroupId = projectHelper.getProjectMainGroupId();
+      if (!mainGroupId) throw  new Error('Could not find main group ID');
+      project.addToPbxGroup(group.uuid, mainGroupId);
 
-          // Write the project
-          fs.writeFileSync(project.filepath, project.writeSync());
-
-          // Read the Podfile
-          return fs.readFile(contextHelper.podfilePath);
+      // Only .m files
+      const buildPhaseFileKeys = group.pbxGroup.children
+        .filter(x => {
+          const f = projectHelper.getFileByKey(x.value);
+          return f && f.path && projectHelper.unquote(f.path).endsWith('.m');
         })
-        .then((buffer) => {
-          const podfileContents = buffer.toString('utf8');
-          if (podfileContents.indexOf(ProjectHelper.PODFILE_SNIPPET) < 0) {
-            return fs.writeFile(contextHelper.podfilePath, podfileContents + "\n" + ProjectHelper.PODFILE_SNIPPET)
-              .then(() => contextHelper.runPodInstall());
-          }
-        });
+        .map(x => x.value);
 
+      // Add build phase to compile files
+      projectHelper.addSourcesBuildPhase(buildPhaseFileKeys, target);
+
+      // Write the project
+      fs.writeFileSync(project.filepath, project.writeSync());
+
+      // Read the Podfile
+      return fs.readFile(contextHelper.podfilePath);
+    })
+    .then((buffer) => {
+      const podfileContents = buffer.toString('utf8');
+      if (podfileContents.indexOf(ProjectHelper.PODFILE_SNIPPET) < 0) {
+        return fs.writeFile(contextHelper.podfilePath, podfileContents + "\n" + ProjectHelper.PODFILE_SNIPPET)
+          .then(() => contextHelper.runPodInstall());
+      }
+    });
+};
+
+module.exports = function(context) {
+  const contextHelper = new ContextHelper(context);
+
+  return contextHelper.readConfig()
+    .then((config) => {
+      return contextHelper.readXcodeProject()
+        .catch((err) => { /* ignore, platform iOS might not be supported */ })
+        .then((project) => (project ? addExtensionToProject(contextHelper, project) : null));
     })
     .catch((err) => console.error(err))
 };
