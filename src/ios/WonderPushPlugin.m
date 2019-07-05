@@ -52,7 +52,7 @@
 
 - (void)setUserId:(CDVInvokedUrlCommand *)command {
     NSString *userId = (NSString *)command.arguments[0];
-    if (userId == [NSNull null]) userId = nil;
+    if ((id)userId == [NSNull null]) userId = nil;
 
     [WonderPush setUserId:userId];
 
