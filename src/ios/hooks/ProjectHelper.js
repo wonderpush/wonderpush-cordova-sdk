@@ -50,8 +50,11 @@ class ProjectHelper {
 
     const buildConfigurationKeys = buildConfigurationList.buildConfigurations.map(x => x.value);
     return buildConfigurationKeys
-      .map(x => this.getBuildConfigurationByKey(x))
-      .filter(x => !!x);
+      .map(uuid => ({
+        uuid: uuid,
+        pbxXCBuildConfiguration: this.getBuildConfigurationByKey(uuid),
+      }))
+      .filter(x => !!x && !!x.pbxXCBuildConfiguration);
   }
 
   /**
@@ -122,12 +125,13 @@ class ProjectHelper {
     const appTargetKey = this.getAppTargetKey();
     if (!appTargetKey) return undefined;
 
-    const buildConfiguration = this.getTargetBuildConfigurations(appTargetKey)
-      .find(x => x.name === environment);
+    const targetBuildConfigurations = this.getTargetBuildConfigurations(appTargetKey);
+    const buildConfiguration = targetBuildConfigurations
+      .find(x => x.pbxXCBuildConfiguration.name === environment);
 
     return buildConfiguration
-      && buildConfiguration.buildSettings
-      && buildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER
+      && buildConfiguration.pbxXCBuildConfiguration.buildSettings
+      && buildConfiguration.pbxXCBuildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER
       || undefined;
   }
 

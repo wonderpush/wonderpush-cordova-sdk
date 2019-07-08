@@ -80,19 +80,21 @@ const addExtensionToProject = (contextHelper, project) => {
       // Get the build configuration for the extension
       const buildConfigurations = projectHelper.getTargetBuildConfigurations(target.uuid);
       for (const buildConfiguration of buildConfigurations) {
-        const environment = buildConfiguration.name;
+        const environment = buildConfiguration.pbxXCBuildConfiguration.name;
 
         // Copy CODE_SIGN* entries
-        const correspondingAppBuildConfiguration = appBuildConfigurations.find(x => x.name === environment);
-        if (correspondingAppBuildConfiguration && correspondingAppBuildConfiguration.buildSettings) {
-          for (const key in correspondingAppBuildConfiguration.buildSettings) {
-            if (key.startsWith("CODE_SIGN")) buildConfiguration.buildSettings[key] = correspondingAppBuildConfiguration.buildSettings[key];
+        const correspondingAppBuildConfiguration = appBuildConfigurations.find(x => x.pbxXCBuildConfiguration.name === environment);
+        if (correspondingAppBuildConfiguration && correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings) {
+          for (const key in correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings) {
+            if (key.startsWith("CODE_SIGN") || key === 'DEVELOPMENT_TEAM') {
+              buildConfiguration.pbxXCBuildConfiguration.buildSettings[key] = correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings[key];
+            }
           }
         }
 
         // Copy other build settings
-        Object.assign(buildConfiguration.buildSettings, EXTENSION_TARGET_BUILD_SETTINGS.Common);
-        Object.assign(buildConfiguration.buildSettings, EXTENSION_TARGET_BUILD_SETTINGS[environment]);
+        Object.assign(buildConfiguration.pbxXCBuildConfiguration.buildSettings, EXTENSION_TARGET_BUILD_SETTINGS.Common);
+        Object.assign(buildConfiguration.pbxXCBuildConfiguration.buildSettings, EXTENSION_TARGET_BUILD_SETTINGS[environment]);
 
         // Copy bundle identifier
         const bundleIdentifier = projectHelper.getAppBundleIdentifier(environment);
