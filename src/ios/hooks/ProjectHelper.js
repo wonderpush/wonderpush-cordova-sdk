@@ -1,9 +1,14 @@
 const path = require('path');
+const fs = require('fs-extra');
 
 class ProjectHelper {
 
   constructor(project) {
     this.project = project;
+  }
+  saveSync() {
+    // Write the project
+    fs.writeFileSync(this.project.filepath, this.project.writeSync());
   }
   getAppExtensionTargets() {
     const nativeTargetSection = this.project.pbxNativeTargetSection();
@@ -32,6 +37,13 @@ class ProjectHelper {
     const val = pbxXCConfigurationList[key];
     delete pbxXCConfigurationList[key];
     return val;
+  }
+
+  getAllBuildConfigurations() {
+    const result = [];
+    const section = this.project.pbxXCBuildConfigurationSection();
+    return Object.keys(section)
+      .map(uuid => ({ uuid, pbxXCBuildConfiguration: section[uuid]}));
   }
 
   /**

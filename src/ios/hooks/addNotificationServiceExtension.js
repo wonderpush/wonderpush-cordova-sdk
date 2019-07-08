@@ -2,11 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const ContextHelper = require('./ContextHelper');
 const ProjectHelper = require('./ProjectHelper');
-
-const logMessage = (msg) => {
-  console.log(`[WonderPush] ${msg}`);
-};
-
+const LogHelper = require('./LogHelper');
 
 const EXTENSION_TARGET_BUILD_SETTINGS = {
   Debug: {
@@ -45,8 +41,47 @@ const EXTENSION_TARGET_BUILD_SETTINGS = {
   },
 };
 
-const addExtensionToProject = (contextHelper, project) => {
+/**
+ * Make sure our notification service extension has the right product bundle identifier.
+ * This identifier might change when user updates the identifier of his app in config.xml
+ * or when Cordova prepare wrongly mistakes our build configuration for the project's.
+ * @param contextHelper
+ * @param projectHelper
+ */
+const ensureProductBundleIdentifier = (contextHelper, projectHelper) => {
 
+  const logHelper = new LogHelper(contextHelper.context);
+  let mustSave = false;
+  for (const environment of ['Debug', 'Release']) {
+    const appBundleIdentifier = projectHelper.getAppBundleIdentifier(environment);
+    if (!appBundleIdentifier) {
+      logHelper.debug('[ensureProductBundleIdentifier] Could not determine bundle ID');
+      return;
+    }
+    const buildConfigurations = projectHelper.getAllBuildConfigurations()
+      .filter(x =>
+        x.pbxXCBuildConfiguration.name === environment
+        && x.pbxXCBuildConfiguration.buildSettings.PRODUCT_NAME === ProjectHelper.NOTIFICATION_SERVICE_EXTENSION_NAME);
+
+    for (const buildConfig of buildConfigurations) {
+      const desiredBundleId = `${appBundleIdentifier }.${ProjectHelper.NOTIFICATION_SERVICE_EXTENSION_NAME}`;
+      const actualBundleId = buildConfig.pbxXCBuildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER;
+      if (desiredBundleId !== actualBundleId) {
+        logHelper.debug('[ensureProductBundleIdentifier] Updating notification service extension bundle ID to', desiredBundleId);
+        mustSave = true;
+        buildConfig.pbxXCBuildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER = desiredBundleId;
+      }
+    }
+  }
+
+  if (mustSave) {
+    projectHelper.saveSync();
+  }
+  return Promise.resolve();
+};
+const addExtensionToProject = (contextHelper, project) => {
+  const logHelper = new LogHelper(contextHelper.context);
+  logHelper.debug('[addExtensionToProject]');
   const pluginDir = contextHelper.pluginDir;
   const projectRoot = contextHelper.projectRoot;
   if (!pluginDir || !projectRoot) return Promise.resolve();
@@ -56,16 +91,20 @@ const addExtensionToProject = (contextHelper, project) => {
   const existingServiceExtensions = projectHelper.getAppExtensionTargets();
 
   // Message user if another extension that is not ours is found
-  if (existingServiceExtensions.find(x => x.name !== ourServiceExtensionName)) logMessage('You already have a notification service extension. Please follow our guide to support rich push notifications: https://docs.wonderpush.com/docs/adding-a-notification-service-extension');
+  if (existingServiceExtensions.find(x => x.name !== ourServiceExtensionName)) logHelper.warn('You already have a notification service extension. Please follow our guide to support rich push notifications: https://docs.wonderpush.com/docs/adding-a-notification-service-extension');
 
   // Exit right there
   if (existingServiceExtensions.length) {
-    return Promise.resolve();
+    logHelper.debug('[addExtensionToProject] existing service extension, exiting');
+    return ensureProductBundleIdentifier(contextHelper, projectHelper);
   }
 
   // Copy files
   const source = path.join(pluginDir, 'src', 'ios', ourServiceExtensionName);
   const destination = path.join(projectRoot, 'platforms', 'ios', ourServiceExtensionName);
+
+  logHelper.debug('[addExtensionToProject] copying ', source, 'to', destination);
+  let extensionBundleIdentifier;
 
   return fs.copy(source, destination)
     .then(() => {
@@ -87,7 +126,10 @@ const addExtensionToProject = (contextHelper, project) => {
         if (correspondingAppBuildConfiguration && correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings) {
           for (const key in correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings) {
             if (key.startsWith("CODE_SIGN") || key === 'DEVELOPMENT_TEAM') {
+              logHelper.debug('Copying build setting', key, correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings[key]);
               buildConfiguration.pbxXCBuildConfiguration.buildSettings[key] = correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings[key];
+            } else {
+              logHelper.debug('Ignore build setting', key, correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings[key]);
             }
           }
         }
@@ -98,7 +140,8 @@ const addExtensionToProject = (contextHelper, project) => {
 
         // Copy bundle identifier
         const bundleIdentifier = projectHelper.getAppBundleIdentifier(environment);
-        buildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER = `${bundleIdentifier}.${ourServiceExtensionName}`;
+        extensionBundleIdentifier = `${bundleIdentifier}.${ourServiceExtensionName}`;
+        buildConfiguration.pbxXCBuildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER = extensionBundleIdentifier;
       }
 
       // Create our group
@@ -122,7 +165,7 @@ const addExtensionToProject = (contextHelper, project) => {
       projectHelper.addSourcesBuildPhase(buildPhaseFileKeys, target);
 
       // Write the project
-      fs.writeFileSync(project.filepath, project.writeSync());
+      projectHelper.saveSync();
 
       // Read the Podfile
       return fs.readFile(contextHelper.podfilePath);
@@ -133,6 +176,10 @@ const addExtensionToProject = (contextHelper, project) => {
         return fs.writeFile(contextHelper.podfilePath, podfileContents + "\n" + ProjectHelper.PODFILE_SNIPPET)
           .then(() => contextHelper.runPodInstall());
       }
+    })
+    .then(() => {
+      logHelper.log('Notification service extension added with bundle identifier', extensionBundleIdentifier);
+      logHelper.warn('Please reload your Xcode workspace.');
     });
 };
 
