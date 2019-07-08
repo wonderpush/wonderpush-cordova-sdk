@@ -128,8 +128,6 @@ const addExtensionToProject = (contextHelper, project) => {
             if (key.startsWith("CODE_SIGN") || key === 'DEVELOPMENT_TEAM') {
               logHelper.debug('Copying build setting', key, correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings[key]);
               buildConfiguration.pbxXCBuildConfiguration.buildSettings[key] = correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings[key];
-            } else {
-              logHelper.debug('Ignore build setting', key, correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings[key]);
             }
           }
         }
