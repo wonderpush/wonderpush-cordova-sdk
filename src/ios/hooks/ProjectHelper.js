@@ -1,14 +1,6 @@
 const path = require('path');
 
 class ProjectHelper {
-  static POD_VERSION = '3.1.0';
-  static PODFILE_SNIPPET = "target 'WonderPushNotificationServiceExtension' do\n" +
-    "  platform :ios, '10.0'\n" +
-    "  use_frameworks!\n" +
-    "  pod 'WonderPushExtension', '" + ProjectHelper.POD_VERSION + "'\n" +
-    "end\n";
-  static NOTIFICATION_SERVICE_EXTENSION_NAME = 'WonderPushNotificationServiceExtension';
-  static COMMENT_KEY = /_comment$/;
 
   constructor(project) {
     this.project = project;
@@ -292,4 +284,14 @@ class ProjectHelper {
     }
   }
 }
+
+ProjectHelper.POD_VERSION = '3.1.0';
+ProjectHelper.PODFILE_SNIPPET = "target 'WonderPushNotificationServiceExtension' do\n" +
+  "  platform :ios, '10.0'\n" +
+  "  use_frameworks!\n" +
+  "  pod 'WonderPushExtension', '" + ProjectHelper.POD_VERSION + "'\n" +
+  "end\n";
+ProjectHelper.NOTIFICATION_SERVICE_EXTENSION_NAME = 'WonderPushNotificationServiceExtension';
+ProjectHelper.COMMENT_KEY = /_comment$/;
+
 module.exports = ProjectHelper;
