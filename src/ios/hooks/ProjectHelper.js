@@ -39,10 +39,42 @@ class ProjectHelper {
     return val;
   }
 
+  removeBuildConfigurationFromBuildConfigurationList(buildConfigurationKey, buildConfigurationListKey) {
+    const buildConfigurationList = this.getBuildConfigurationListByKey(buildConfigurationListKey);
+    if (!buildConfigurationList) return undefined;
+    buildConfigurationList.buildConfigurations = buildConfigurationList.buildConfigurations
+      .filter(x => x.value !== buildConfigurationKey);
+    return buildConfigurationList;
+  }
+
+  addBuildConfiguration(key, buildConfiguration) {
+    if (!key || !buildConfiguration) return;
+    const pbxXCBuildConfigurationSection = this.project.pbxXCBuildConfigurationSection();
+    pbxXCBuildConfigurationSection[key] = buildConfiguration;
+    pbxXCBuildConfigurationSection[key + '_comment'] = buildConfiguration.name;
+    return buildConfiguration;
+  }
+
+  addBuildConfigurationToBuildConfigurationList(buildConfigurationKey, buildConfigurationListKey) {
+    const buildConfigurationList = this.getBuildConfigurationListByKey(buildConfigurationListKey);
+    if (!buildConfigurationList) {
+      console.log('build configuration list not found', buildConfigurationListKey);
+      return undefined;
+    }
+    const buildConfiguration = this.getBuildConfigurationByKey(buildConfigurationKey);
+    if (!buildConfiguration) {
+      console.log('build configuration not found', buildConfigurationKey);
+      return undefined;
+    }
+    buildConfigurationList.buildConfigurations.push({ value: buildConfigurationKey, comment: buildConfiguration.name });
+    return buildConfigurationList;
+  }
+
   getAllBuildConfigurations() {
     const result = [];
     const section = this.project.pbxXCBuildConfigurationSection();
     return Object.keys(section)
+      .filter(x => !ProjectHelper.COMMENT_KEY.test(x))
       .map(uuid => ({ uuid, pbxXCBuildConfiguration: section[uuid]}));
   }
 
