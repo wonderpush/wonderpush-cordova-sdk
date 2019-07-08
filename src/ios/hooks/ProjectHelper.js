@@ -58,12 +58,10 @@ class ProjectHelper {
   addBuildConfigurationToBuildConfigurationList(buildConfigurationKey, buildConfigurationListKey) {
     const buildConfigurationList = this.getBuildConfigurationListByKey(buildConfigurationListKey);
     if (!buildConfigurationList) {
-      console.log('build configuration list not found', buildConfigurationListKey);
       return undefined;
     }
     const buildConfiguration = this.getBuildConfigurationByKey(buildConfigurationKey);
     if (!buildConfiguration) {
-      console.log('build configuration not found', buildConfigurationKey);
       return undefined;
     }
     buildConfigurationList.buildConfigurations.push({ value: buildConfigurationKey, comment: buildConfiguration.name });
