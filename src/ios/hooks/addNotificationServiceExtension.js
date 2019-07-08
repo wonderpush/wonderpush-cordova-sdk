@@ -119,6 +119,21 @@ const addExtensionToProject = (contextHelper, project) => {
 
       // Get the build configuration for the extension
       const buildConfigurations = projectHelper.getTargetBuildConfigurations(target.uuid);
+
+      // Get uuids of other build configurations
+      const otherBuildConfigurationKeys = projectHelper.getAllBuildConfigurations()
+        .map(x => x.uuid)
+        .filter(x => buildConfigurations.map(y => y.uuid).indexOf(x) === -1)
+        .sort();
+
+      const changeBuildConfigurationKey = (buildConfiguration) => {
+        projectHelper.removeBuildConfigurationFromBuildConfigurationList(buildConfiguration.uuid, target.pbxNativeTarget.buildConfigurationList);
+        projectHelper.removeBuildConfigurationByKey(buildConfiguration.uuid);
+        buildConfiguration.uuid = projectHelper.project.generateUuid();
+        let result;
+        result = projectHelper.addBuildConfiguration(buildConfiguration.uuid, buildConfiguration.pbxXCBuildConfiguration);
+        result = projectHelper.addBuildConfigurationToBuildConfigurationList(buildConfiguration.uuid, target.pbxNativeTarget.buildConfigurationList);
+      };
       for (const buildConfiguration of buildConfigurations) {
         logHelper.debug('[addExtensionToProject] update build configuration', buildConfiguration.uuid);
 
@@ -143,6 +158,16 @@ const addExtensionToProject = (contextHelper, project) => {
         const bundleIdentifier = projectHelper.getAppBundleIdentifier(environment);
         extensionBundleIdentifier = `${bundleIdentifier}.${ourServiceExtensionName}`;
         buildConfiguration.pbxXCBuildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER = extensionBundleIdentifier;
+
+        // Make sure we're not first or last
+        if (otherBuildConfigurationKeys.length) {
+          while (buildConfiguration.uuid < otherBuildConfigurationKeys[0]
+          || buildConfiguration.uuid > otherBuildConfigurationKeys[otherBuildConfigurationKeys.length - 1]) {
+            const oldKey = buildConfiguration.uuid;
+            changeBuildConfigurationKey(buildConfiguration);
+            logHelper.debug('Changed build configuration key from', oldKey, 'to', buildConfiguration.uuid);
+          }
+        }
       }
 
       // Create our group
