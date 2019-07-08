@@ -110,6 +110,7 @@ const addExtensionToProject = (contextHelper, project) => {
     .then(() => {
 
       // Let's add the extension
+      logHelper.debug('[addExtensionToProject] create target', ourServiceExtensionName);
       const target = project.addTarget(ourServiceExtensionName, 'app_extension', ourServiceExtensionName);
 
       // Get this build configurations for the app
@@ -119,6 +120,8 @@ const addExtensionToProject = (contextHelper, project) => {
       // Get the build configuration for the extension
       const buildConfigurations = projectHelper.getTargetBuildConfigurations(target.uuid);
       for (const buildConfiguration of buildConfigurations) {
+        logHelper.debug('[addExtensionToProject] update build configuration', buildConfiguration.uuid);
+
         const environment = buildConfiguration.pbxXCBuildConfiguration.name;
 
         // Copy CODE_SIGN* entries
@@ -145,11 +148,13 @@ const addExtensionToProject = (contextHelper, project) => {
       // Create our group
       const filePaths = ['NotificationService.m', 'NotificationService.h', `${ourServiceExtensionName}-Info.plist`];
       const group = project.addPbxGroup(filePaths, ourServiceExtensionName, ourServiceExtensionName);
+      logHelper.debug('[addExtensionToProject] created group', group.uuid);
 
       // Add our group to the main group
       const mainGroupId = projectHelper.getProjectMainGroupId();
       if (!mainGroupId) throw  new Error('Could not find main group ID');
       project.addToPbxGroup(group.uuid, mainGroupId);
+      logHelper.debug('[addExtensionToProject] added group', group.uuid, 'to the main group', mainGroupId);
 
       // Only .m files
       const buildPhaseFileKeys = group.pbxGroup.children
@@ -160,17 +165,21 @@ const addExtensionToProject = (contextHelper, project) => {
         .map(x => x.value);
 
       // Add build phase to compile files
-      projectHelper.addSourcesBuildPhase(buildPhaseFileKeys, target);
+      const buildPhase = projectHelper.addSourcesBuildPhase(buildPhaseFileKeys, target);
+      logHelper.debug('[addExtensionToProject] added build phase', buildPhase.uuid);
 
       // Write the project
       projectHelper.saveSync();
+      logHelper.debug('[addExtensionToProject] saved project');
 
       // Read the Podfile
+      logHelper.debug('[addExtensionToProject] read Podfile', contextHelper.podfilePath);
       return fs.readFile(contextHelper.podfilePath);
     })
     .then((buffer) => {
       const podfileContents = buffer.toString('utf8');
       if (podfileContents.indexOf(ProjectHelper.PODFILE_SNIPPET) < 0) {
+        logHelper.debug('[addExtensionToProject] adding snippet to Podfile', contextHelper.podfilePath);
         return fs.writeFile(contextHelper.podfilePath, podfileContents + "\n" + ProjectHelper.PODFILE_SNIPPET)
           .then(() => contextHelper.runPodInstall());
       }
