@@ -243,7 +243,10 @@ class ProjectHelper {
       value: buildPhaseUuid,
       comment: 'Sources',
     });
-    return buildPhase;
+    return {
+      uuid: buildPhaseUuid,
+      pbxSourcesBuildPhase: buildPhase,
+    };
   }
 
   unquote(str) {
