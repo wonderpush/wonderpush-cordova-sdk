@@ -90,7 +90,7 @@
         if ([value isKindOfClass:[NSString class]]) {
             completionHandler([NSURL URLWithString:(NSString *)value]);
         } else {
-            completionHandler(url);
+            completionHandler(nil);
         }
     };
 
@@ -108,7 +108,7 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if (!cbCalled) {
             NSLog(@"[WonderPush] Delegate did not call urlForDeepLink's callback fast enough. Continuing normal processing.");
-            cb(nil);
+            cb([url absoluteString]);
         }
     });
 }
