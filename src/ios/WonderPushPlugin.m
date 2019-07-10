@@ -15,58 +15,7 @@
 #import <WonderPush/WonderPush.h>
 
 
-@implementation WonderPushPluginDelegate
-
-+ (instancetype) newForPlugin:(WonderPushPlugin *)plugin {
-    return [[WonderPushPluginDelegate alloc] initForPlugin:plugin];
-}
-
-- (instancetype) initForPlugin:(WonderPushPlugin *)plugin {
-    self.plugin = plugin;
-    return self;
-}
-
-- (void) wonderPushWillOpenURL:( NSURL * )url withCompletionHandler:(void (^)(NSURL *url))completionHandler {
-    __block bool cbCalled = false;
-    void (^cb)(id value) = ^(id value) {
-        if (cbCalled) {
-            return;
-        } else {
-            cbCalled = YES;
-        }
-        if ([value isKindOfClass:[NSString class]]) {
-            completionHandler([NSURL URLWithString:(NSString *)value]);
-        } else {
-            completionHandler(url);
-        }
-    };
-
-    // Call to the JavaScript application code
-    NSString *callbackId = [self.plugin createJsCallbackWaiter:cb];
-    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
-                                                                                                          @"method": @"wonderPushWillOpenURL",
-                                                                                                          @"__callbackId": callbackId,
-                                                                                                          @"url": url.absoluteString,
-                                                                                                          }];
-    [result setKeepCallbackAsBool:YES];
-    [self.plugin sendPluginResult:result callbackId:self.command.callbackId];
-
-    // Ensure we don't wait too long and proceed anyway
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if (!cbCalled) {
-            NSLog(@"[WonderPush] Delegate did not call urlForDeepLink's callback fast enough. Continuing normal processing.");
-            cb(nil);
-        }
-    });
-}
-
-@end
-
-@implementation WonderPushPlugin {
-    WonderPushPluginDelegate *nativeDelegate;
-    NSLock *jsCallbackWaitersLock;
-    NSMutableDictionary<NSString *, void(^)(id value)> *jsCallbackWaiters;
-}
+@implementation WonderPushPlugin
 
 #pragma mark - Initialization
 
@@ -77,9 +26,8 @@
     [WonderPush setLogging:[@"true" isEqualToString:[self.commandDelegate.settings objectForKey:[@"WONDERPUSH_LOGGING" lowercaseString]]]];
     [WonderPush setRequiresUserConsent:[@"true" isEqualToString:[self.commandDelegate.settings objectForKey:[@"WONDERPUSH_REQUIRES_USER_CONSENT" lowercaseString]]]];
 
-    self->nativeDelegate = [WonderPushPluginDelegate newForPlugin:self];
-    self->jsCallbackWaitersLock = [NSLock new];
-    self->jsCallbackWaiters = [NSMutableDictionary new];
+    self.jsCallbackWaitersLock = [NSLock new];
+    self.jsCallbackWaiters = [NSMutableDictionary new];
 
     // Stop initialization here if told to
     if ([@"false" isEqualToString:[self.commandDelegate.settings objectForKey:[@"WONDERPUSH_AUTO_INIT" lowercaseString]]]) {
@@ -106,32 +54,6 @@
     [WonderPush application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:launchOptions];
 }
 
-- (NSString *)createJsCallbackWaiter:(void (^)(id value))cb {
-    [self->jsCallbackWaitersLock lock];
-    NSString *callbackId = [[NSUUID UUID] UUIDString];
-    self->jsCallbackWaiters[callbackId] = cb;
-    [self->jsCallbackWaitersLock unlock];
-    return callbackId;
-}
-
-- (void)jsCalledBack:(NSString *)callbackId value:(id)value {
-    [self->jsCallbackWaitersLock lock];
-    void (^cb)(id value) = self->jsCallbackWaiters[callbackId];
-    self->jsCallbackWaiters[callbackId] = nil;
-    [self->jsCallbackWaitersLock unlock];
-    cb(value);
-}
-
-- (void)sendPluginResult:(CDVPluginResult *)result callbackId:(NSString *)callbackId {
-    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-}
-
-- (void)__callback:(CDVInvokedUrlCommand *)command {
-    NSString *callbackId = (NSString *)command.arguments[0];
-    id value = command.arguments[1];
-    [self jsCalledBack:callbackId value:value];
-}
-
 - (void)setUserId:(CDVInvokedUrlCommand *)command {
     NSString *userId = (NSString *)command.arguments[0];
     if ((id)userId == [NSNull null]) userId = nil;
@@ -155,10 +77,69 @@
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
+#pragma mark - Delegate
+
+- (void) wonderPushWillOpenURL:( NSURL * )url withCompletionHandler:(void (^)(NSURL *url))completionHandler {
+    __block bool cbCalled = false;
+    void (^cb)(id value) = ^(id value) {
+        if (cbCalled) {
+            return;
+        } else {
+            cbCalled = YES;
+        }
+        if ([value isKindOfClass:[NSString class]]) {
+            completionHandler([NSURL URLWithString:(NSString *)value]);
+        } else {
+            completionHandler(url);
+        }
+    };
+
+    // Call to the JavaScript application code
+    NSString *callbackId = [self createJsCallbackWaiter:cb];
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
+                                                                                                          @"method": @"wonderPushWillOpenURL",
+                                                                                                          @"__callbackId": callbackId,
+                                                                                                          @"url": url.absoluteString,
+                                                                                                          }];
+    [result setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:result callbackId:self.jsDelegateCommand.callbackId];
+
+    // Ensure we don't wait too long and proceed anyway
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (!cbCalled) {
+            NSLog(@"[WonderPush] Delegate did not call urlForDeepLink's callback fast enough. Continuing normal processing.");
+            cb(nil);
+        }
+    });
+}
+
+
+- (NSString *)createJsCallbackWaiter:(void (^)(id value))cb {
+    [self.jsCallbackWaitersLock lock];
+    NSString *callbackId = [[NSUUID UUID] UUIDString];
+    self.jsCallbackWaiters[callbackId] = cb;
+    [self.jsCallbackWaitersLock unlock];
+    return callbackId;
+}
+
+- (void)jsCalledBack:(NSString *)callbackId value:(id)value {
+    [self.jsCallbackWaitersLock lock];
+    void (^cb)(id value) = self.jsCallbackWaiters[callbackId];
+    self.jsCallbackWaiters[callbackId] = nil;
+    [self.jsCallbackWaitersLock unlock];
+    cb(value);
+}
+
+- (void)__callback:(CDVInvokedUrlCommand *)command {
+    NSString *callbackId = (NSString *)command.arguments[0];
+    id value = command.arguments[1];
+    [self jsCalledBack:callbackId value:value];
+}
+
 - (void)setDelegate:(CDVInvokedUrlCommand *)command {
     NSNumber *enabled = (NSNumber *)command.arguments[0];
-    self->nativeDelegate.command = command;
-    [WonderPush setDelegate:([enabled boolValue] ? self->nativeDelegate : nil)];
+    self.jsDelegateCommand = command;
+    [WonderPush setDelegate:([enabled boolValue] ? self : nil)];
     CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [result setKeepCallbackAsBool:YES];
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
