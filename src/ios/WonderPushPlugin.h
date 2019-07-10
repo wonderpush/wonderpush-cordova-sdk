@@ -17,15 +17,23 @@
 
 #import <WonderPush/WonderPush.h>
 
+@class WonderPushPluginDelegate;
+
 @interface WonderPushPlugin : CDVPlugin
+
+- (void)__callback:(CDVInvokedUrlCommand *)command;
 
 // Initialization
 - (void)pluginInitialize;
 - (void)UIApplicationDidFinishLaunchingNotification:(NSNotification *)notification;
+- (void)sendPluginResult:(CDVPluginResult *)result callbackId:(NSString *)callbackId;
+- (NSString *)createJsCallbackWaiter:(void (^)(id value))cb;
+- (void)jsCalledBack:(NSString *)callbackId value:(id)value;
 
 - (void)setUserId:(CDVInvokedUrlCommand *)command;
 - (void)isReady:(CDVInvokedUrlCommand *)command;
 - (void)setLogging:(CDVInvokedUrlCommand *)command;
+- (void)setDelegate:(CDVInvokedUrlCommand *)command;
 
 // Core information
 - (void)getUserId:(CDVInvokedUrlCommand *)command;
@@ -66,4 +74,12 @@
 - (void)clearPreferences:(CDVInvokedUrlCommand *)command;
 - (void)downloadAllData:(CDVInvokedUrlCommand *)command;
 
+@end
+
+@interface WonderPushPluginDelegate : NSObject<WonderPushDelegate>
+@property (strong, atomic) CDVInvokedUrlCommand *command;
+@property (weak, atomic) WonderPushPlugin *plugin;
++ (instancetype) newForPlugin:(WonderPushPlugin *)plugin;
+- (instancetype) initForPlugin:(WonderPushPlugin *)plugin;
+- (void) wonderPushWillOpenURL:( NSURL * )url withCompletionHandler:(void (^)(NSURL *url))completionHandler;
 @end
