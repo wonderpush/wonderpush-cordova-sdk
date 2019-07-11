@@ -35,6 +35,11 @@ public class WonderPushPlugin extends CordovaPlugin {
     private Map<String, BlockingQueue<Object>> jsCallbackWaiters = new ConcurrentHashMap<>();
 
     @Override
+    protected void pluginInitialize() {
+        WonderPush.setIntegrator("wonderpush-cordova-sdk-2.0.0");
+    }
+
+    @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         // Internal
         if (action.equals("__callback")) {
