@@ -2,6 +2,7 @@ package com.wonderpush.sdk.cordova;
 
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +25,12 @@ import org.json.JSONObject;
 
 import com.wonderpush.sdk.DeepLinkEvent;
 import com.wonderpush.sdk.WonderPush;
+import com.wonderpush.sdk.WonderPushChannel;
+import com.wonderpush.sdk.WonderPushChannelGroup;
 import com.wonderpush.sdk.WonderPushDelegate;
+import com.wonderpush.sdk.WonderPushUserPreferences;
+
+import com.wonderpush.sdk.cordova.JSONUtil;
 
 public class WonderPushPlugin extends CordovaPlugin {
 
@@ -261,11 +267,170 @@ public class WonderPushPlugin extends CordovaPlugin {
             WonderPush.downloadAllData();
             callbackContext.success();
 
+        } else if (action.equals("UserPreferences_getDefaultChannelId")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPushUserPreferences.getDefaultChannelId()));
+
+        } else if (action.equals("UserPreferences_setDefaultChannelId")) {
+
+            String id = args.getString(0);
+            WonderPushUserPreferences.setDefaultChannelId(id);
+            callbackContext.success();
+
+        } else if (action.equals("UserPreferences_getChannelGroup")) {
+
+            String id = args.getString(0);
+            JSONObject rtn = this.jsonSerializeWonderPushChannelGroup(WonderPushUserPreferences.getChannelGroup(id));
+            if (rtn == null) {
+                callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, (String) null));
+            } else {
+                callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, rtn));
+            }
+
+        } else if (action.equals("UserPreferences_getChannel")) {
+
+            String id = args.getString(0);
+            JSONObject rtn = this.jsonSerializeWonderPushChannel(WonderPushUserPreferences.getChannel(id));
+            if (rtn == null) {
+                callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, (String) null));
+            } else {
+                callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, rtn));
+            }
+
+        } else if (action.equals("UserPreferences_setChannelGroups")) {
+
+            JSONArray groupsJson = args.getJSONArray(0);
+            List<WonderPushChannelGroup> groups = new ArrayList<>(groupsJson.length());
+            for (int i = 0, e = groupsJson.length(); i < e; ++i) {
+                groups.add(this.jsonDeserializeWonderPushChannelGroup(groupsJson.optJSONObject(i)));
+            }
+            WonderPushUserPreferences.setChannelGroups(groups);
+            callbackContext.success();
+
+        } else if (action.equals("UserPreferences_setChannels")) {
+
+            JSONArray channelsJson = args.getJSONArray(0);
+            List<WonderPushChannel> channels = new ArrayList<>(channelsJson.length());
+            for (int i = 0, e = channelsJson.length(); i < e; ++i) {
+                channels.add(this.jsonDeserializeWonderPushChannel(channelsJson.optJSONObject(i)));
+            }
+            WonderPushUserPreferences.setChannels(channels);
+            callbackContext.success();
+
+        } else if (action.equals("UserPreferences_putChannelGroup")) {
+
+            JSONObject groupJson = args.getJSONObject(0);
+            WonderPushChannelGroup group = this.jsonDeserializeWonderPushChannelGroup(groupJson);
+            WonderPushUserPreferences.putChannelGroup(group);
+            callbackContext.success();
+
+        } else if (action.equals("UserPreferences_putChannel")) {
+
+            JSONObject channelJson = args.getJSONObject(0);
+            WonderPushChannel channel = this.jsonDeserializeWonderPushChannel(channelJson);
+            WonderPushUserPreferences.putChannel(channel);
+            callbackContext.success();
+
+        } else if (action.equals("UserPreferences_removeChannelGroup")) {
+
+            String id = args.getString(0);
+            WonderPushUserPreferences.removeChannelGroup(id);
+            callbackContext.success();
+
+        } else if (action.equals("UserPreferences_removeChannel")) {
+
+            String id = args.getString(0);
+            WonderPushUserPreferences.removeChannel(id);
+            callbackContext.success();
+
         } else {
             return false;
         }
 
         return true;
+    }
+
+    private JSONObject jsonSerializeWonderPushChannelGroup(WonderPushChannelGroup group) {
+        JSONObject rtn = null;
+        if (group != null) {
+            rtn = new JSONObject();
+            try {
+                rtn.putOpt("id", group.getId());
+                rtn.putOpt("name", group.getName());
+            } catch (JSONException ex) {
+                Log.e("WonderPush", "Unexpected error while serializing the WonderPushChannelGroup " + group, ex);
+            }
+        }
+        return rtn;
+    }
+
+    private WonderPushChannelGroup jsonDeserializeWonderPushChannelGroup(JSONObject input) {
+        WonderPushChannelGroup rtn = null;
+        if (input != null) {
+            try {
+                rtn = new WonderPushChannelGroup(input.getString("id"))
+                        .setName(JSONUtil.optString(input, "name"));
+            } catch (JSONException ex) {
+                Log.e("WonderPush", "Unexpected error while deserializing into a WonderPushChannelGroup " + input, ex);
+            }
+        }
+        return rtn;
+    }
+
+    private JSONObject jsonSerializeWonderPushChannel(WonderPushChannel channel) {
+        JSONObject rtn = null;
+        if (channel != null) {
+            rtn = new JSONObject();
+            try {
+                rtn.putOpt("bypassDnd", channel.getBypassDnd());
+                rtn.putOpt("color", channel.getColor());
+                rtn.putOpt("description", channel.getDescription());
+                rtn.putOpt("groupId", channel.getGroupId());
+                rtn.putOpt("id", channel.getId());
+                rtn.putOpt("importance", channel.getImportance());
+                rtn.putOpt("lightColor", channel.getLightColor());
+                rtn.putOpt("lights", channel.getLights());
+                rtn.putOpt("localOnly", channel.getLocalOnly());
+                rtn.putOpt("lockscreenVisibility", channel.getLockscreenVisibility());
+                rtn.putOpt("name", channel.getName());
+                rtn.putOpt("showBadge", channel.getShowBadge());
+                rtn.putOpt("sound", channel.getSound());
+                rtn.putOpt("soundUri", channel.getSoundUri() == null ? null : channel.getSoundUri().toString());
+                rtn.putOpt("vibrate", channel.getVibrate());
+                rtn.putOpt("vibrateInSilentMode", channel.getVibrateInSilentMode());
+                rtn.putOpt("vibrationPattern", JSONUtil.wrap(channel.getVibrationPattern()));
+            } catch (JSONException ex) {
+                Log.e("WonderPush", "Unexpected error while serializing the WonderPushChannel " + channel, ex);
+            }
+        }
+        return rtn;
+    }
+
+    private WonderPushChannel jsonDeserializeWonderPushChannel(JSONObject input) {
+        WonderPushChannel rtn = null;
+        if (input != null) {
+            try {
+                rtn = new WonderPushChannel(input.getString("id"), JSONUtil.optString(input, "groupId"))
+                        .setName(JSONUtil.optString(input, "name"))
+                        .setDescription(JSONUtil.optString(input, "description"))
+                        .setBypassDnd(JSONUtil.optBoolean(input, "bypassDnd"))
+                        .setShowBadge(JSONUtil.optBoolean(input, "showBadge"))
+                        .setImportance(JSONUtil.optInteger(input, "importance"))
+                        .setLights(JSONUtil.optBoolean(input, "lights"))
+                        .setVibrate(JSONUtil.optBoolean(input, "vibrate"))
+                        .setVibrationPattern(JSONUtil.optLongArray(input, "vibrationPattern"))
+                        .setLightColor(JSONUtil.optInteger(input, "lightColor"))
+                        .setLockscreenVisibility(JSONUtil.optInteger(input, "lockscreenVisibility"))
+                        .setSound(JSONUtil.optBoolean(input, "sound"))
+                        .setSoundUri(JSONUtil.optUri(input, "soundUri"))
+                        .setVibrateInSilentMode(JSONUtil.optBoolean(input, "vibrateInSilentMode"))
+                        .setColor(JSONUtil.optInteger(input, "color"))
+                        .setLocalOnly(JSONUtil.optBoolean(input, "localOnly"));
+            } catch (JSONException ex) {
+                Log.e("WonderPush", "Unexpected error while deserializing into a WonderPushChannel " + input, ex);
+            }
+        }
+        return rtn;
     }
 
     private class Delegate implements WonderPushDelegate {

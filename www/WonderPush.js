@@ -662,6 +662,153 @@ function downloadAllData (cb) {
 }
 
 ///
+/// WonderPushUserPreferences
+///
+
+/**
+ * @interface WonderPushChannel
+ */
+
+/**
+ * Get the default channel id.
+ * @param {cordova.plugins.WonderPush~StringCallback} cb
+ */
+function UserPreferences_getDefaultChannelId(cb) {
+  if (cordova.platformId === "android") {
+    _callNative('UserPreferences_getDefaultChannelId', [], cb);
+  } else {
+    setTimeout(cb.bind(null, 'default'), 0);
+  }
+}
+
+/**
+ * Set the default channel id.
+ * @param {string} id
+ * @param {cordova.plugins.WonderPush~StringCallback} cb
+ */
+function UserPreferences_setDefaultChannelId(id, cb) {
+  if (cordova.platformId === "android") {
+    _callNative('UserPreferences_setDefaultChannelId', [id], cb);
+  } else {
+    setTimeout(cb, 0);
+  }
+}
+
+/**
+ * This callback is called with a single argument when the call succeeds.
+ * @callback cordova.plugins.WonderPush~WonderPushChannelGroupCallback
+ * @param {?WonderPushChannelGroup} value - The return value.
+ */
+/**
+ * Get a channel group.
+ * @param {string} groupId
+ * @param {cordova.plugins.WonderPush~WonderPushChannelCallback} cb
+ */
+function UserPreferences_getChannelGroup(groupId, cb) {
+  if (cordova.platformId === "android") {
+    _callNative('UserPreferences_getChannelGroup', [groupId], cb);
+  } else {
+    setTimeout(cb.bind(null, null), 0);
+  }
+}
+
+/**
+ * This callback is called with a single argument when the call succeeds.
+ * @callback cordova.plugins.WonderPush~WonderPushChannelCallback
+ * @param {?WonderPushChannel} value - The return value.
+ */
+/**
+ * Get a channel.
+ * @param {string} channelId
+ * @param {cordova.plugins.WonderPush~WonderPushChannelCallback} cb
+ */
+function UserPreferences_getChannel(channelId, cb) {
+  if (cordova.platformId === "android") {
+    _callNative('UserPreferences_getChannel', [channelId], cb);
+  } else {
+    setTimeout(cb.bind(null, null), 0);
+  }
+}
+
+/**
+ * Create, update and remove channel existing groups to match the given channel groups.
+ * @param {cordova.plugins.WonderPushChannelGroup[]} channelGroups
+ * @param {cordova.plugins.WonderPush~SuccessCallback} cb
+ */
+function UserPreferences_setChannelGroups(channelGroups, cb) {
+  if (cordova.platformId === "android") {
+    _callNative('UserPreferences_setChannelGroups', [channelGroups], cb);
+  } else {
+    setTimeout(cb, 0);
+  }
+}
+
+/**
+ * Create, update and remove channels to match the given channels.
+ * @param {cordova.plugins.WonderPushChannel[]} channels
+ * @param {cordova.plugins.WonderPush~SuccessCallback} cb
+ */
+function UserPreferences_setChannels(channels, cb) {
+  if (cordova.platformId === "android") {
+    _callNative('UserPreferences_setChannels', [channels], cb);
+  } else {
+    setTimeout(cb, 0);
+  }
+}
+
+/**
+ * Create or update a channel group.
+ * @param {cordova.plugins.WonderPushChannelGroup} channelGroup
+ * @param {cordova.plugins.WonderPush~SuccessCallback} cb
+ */
+function UserPreferences_putChannelGroup(channelGroup, cb) {
+  if (cordova.platformId === "android") {
+    _callNative('UserPreferences_putChannelGroup', [channelGroup], cb);
+  } else {
+    setTimeout(cb, 0);
+  }
+}
+
+/**
+ * Create or update a channel.
+ * @param {cordova.plugins.WonderPushChannel} channel
+ * @param {cordova.plugins.WonderPush~SuccessCallback} cb
+ */
+function UserPreferences_putChannel(channel, cb) {
+  if (cordova.platformId === "android") {
+    _callNative('UserPreferences_putChannel', [channel], cb);
+  } else {
+    setTimeout(cb, 0);
+  }
+}
+
+/**
+ * Remove a channel group.
+ * @param {string} channelId
+ * @param {cordova.plugins.WonderPush~SuccessCallback} cb
+ */
+function UserPreferences_removeChannelGroup(groupId, cb) {
+  if (cordova.platformId === "android") {
+    _callNative('UserPreferences_removeChannelGroup', [groupId], cb);
+  } else {
+    setTimeout(cb, 0);
+  }
+}
+
+/**
+ * Remove a channel.
+ * @param {string} channelId
+ * @param {cordova.plugins.WonderPush~SuccessCallback} cb
+ */
+function UserPreferences_removeChannel(channelId, cb) {
+  if (cordova.platformId === "android") {
+    _callNative('UserPreferences_removeChannel', [channelId], cb);
+  } else {
+    setTimeout(cb, 0);
+  }
+}
+
+///
 /// Plugin interface
 ///
 
@@ -730,6 +877,19 @@ var WonderPush = {
   clearEventsHistory: clearEventsHistory,
   clearPreferences: clearPreferences,
   downloadAllData: downloadAllData,
+  // UserPreferences (Android only, safe no-op on other platforms)
+  UserPreferences: {
+    getDefaultChannelId: UserPreferences_getDefaultChannelId,
+    setDefaultChannelId: UserPreferences_setDefaultChannelId,
+    getChannelGroup: UserPreferences_getChannelGroup,
+    getChannel: UserPreferences_getChannel,
+    setChannelGroups: UserPreferences_setChannelGroups,
+    setChannels: UserPreferences_setChannels,
+    putChannelGroup: UserPreferences_putChannelGroup,
+    putChannel: UserPreferences_putChannel,
+    removeChannelGroup: UserPreferences_removeChannelGroup,
+    removeChannel: UserPreferences_removeChannel,
+  },
 }
 
 module.exports = WonderPush
