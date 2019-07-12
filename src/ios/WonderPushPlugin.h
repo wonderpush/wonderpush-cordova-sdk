@@ -19,6 +19,8 @@
 
 @interface WonderPushPlugin : CDVPlugin <WonderPushDelegate>
 
+@property (strong, nonatomic) CDVInvokedUrlCommand *jsEventForwarder;
+
 @property (strong, nonatomic) CDVInvokedUrlCommand *jsDelegateCommand;
 @property (strong, nonatomic) NSLock *jsCallbackWaitersLock;
 @property (strong, nonatomic) NSMutableDictionary<NSString *, void(^)(id value)> *jsCallbackWaiters;
@@ -26,6 +28,9 @@
 // Initialization
 - (void)pluginInitialize;
 - (void)UIApplicationDidFinishLaunchingNotification:(NSNotification *)notification;
+- (void)onNotificationReceived:(NSNotification *)notification;
+- (void)onNotificationOpened:(NSNotification *)notification;
+- (void)__setEventForwarder:(CDVInvokedUrlCommand *)command;
 
 - (void)setUserId:(CDVInvokedUrlCommand *)command;
 - (void)isReady:(CDVInvokedUrlCommand *)command;

@@ -49,11 +49,79 @@
                                              selector:@selector(UIApplicationDidFinishLaunchingNotification:)
                                                  name:UIApplicationDidFinishLaunchingNotification
                                                object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(onNotificationReceived:)
+                                                 name:WP_NOTIFICATION_RECEIVED
+                                               object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(onNotificationOpened:)
+                                                 name:WP_NOTIFICATION_OPENED
+                                               object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(onRegisteredCallback:)
+                                                 name:WP_NOTIFICATION_REGISTERED_CALLBACK
+                                               object:nil];
+
 }
 
 - (void)UIApplicationDidFinishLaunchingNotification:(NSNotification *)notification {
     NSDictionary *launchOptions = [notification userInfo];
     [WonderPush application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:launchOptions];
+}
+
+- (void)onNotificationReceived:(NSNotification *)notification {
+    NSDictionary *pushNotification = notification.userInfo;
+    NSDictionary *wpData = pushNotification[@"_wp"];
+    if (![wpData isKindOfClass:[NSDictionary class]]) wpData = @{};
+    NSString *pushNotificationType = wpData[@"type"];
+    if (![pushNotificationType isKindOfClass:[NSString class]]) pushNotificationType = @"simple";
+    if ([pushNotificationType isEqualToString:@"data"]) {
+        // Send the notificationOpen event for data notifications just like it does on Android
+        CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
+                                                                                                              @"type": @"notificationOpen",
+                                                                                                              @"notification": pushNotification,
+                                                                                                              @"notificationType": pushNotificationType,
+                                                                                                              }];
+        [result setKeepCallbackAsBool:YES];
+        [self.commandDelegate sendPluginResult:result callbackId:self.jsEventForwarder.callbackId];
+    }
+}
+
+- (void)onNotificationOpened:(NSNotification *)notification {
+    NSDictionary *pushNotification = notification.userInfo;
+    NSDictionary *wpData = pushNotification[@"_wp"];
+    if (![wpData isKindOfClass:[NSDictionary class]]) wpData = @{};
+    NSString *pushNotificationType = wpData[@"type"];
+    if (![pushNotificationType isKindOfClass:[NSString class]]) pushNotificationType = @"simple";
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
+                                                                                                          @"type": @"notificationOpen",
+                                                                                                          @"notification": pushNotification,
+                                                                                                          @"notificationType": pushNotificationType,
+                                                                                                          }];
+    [result setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:result callbackId:self.jsEventForwarder.callbackId];
+}
+
+- (void)onRegisteredCallback:(NSNotification *)notification {
+    NSString *method = notification.userInfo[WP_REGISTERED_CALLBACK_PARAMETER_KEY];
+    NSString *arg = notification.userInfo[WP_REGISTERED_CALLBACK_METHOD_KEY];
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
+                                                                                                          @"type": @"registeredCallback",
+                                                                                                          @"method": method,
+                                                                                                          @"arg": arg,
+                                                                                                          }];
+    [result setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:result callbackId:self.jsEventForwarder.callbackId];
+}
+
+- (void)__setEventForwarder:(CDVInvokedUrlCommand *)command {
+    self.jsEventForwarder = command;
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [result setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
 - (void)setUserId:(CDVInvokedUrlCommand *)command {

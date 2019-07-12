@@ -52,6 +52,27 @@ function _callNative (actionName, args, successCb, errorCb) {
   cordova.exec(successCb || null, errorCb || _errorHandler, _serviceName, actionName, args || [])
 }
 
+_callNative('__setEventForwarder', [], function(event) {
+  if (!event) return;
+  switch (event.type) {
+    case 'notificationOpen':
+      cordova.fireDocumentEvent('wonderpush.notificationOpen', {
+        notification: event.notification,
+        notificationType: event.notificationType,
+      })
+      break
+    case 'registeredCallback':
+      cordova.fireDocumentEvent('wonderpush.registeredCallback', {
+        method: event.method,
+        arg: event.arg,
+      })
+      break
+    default:
+      console.warn('[WonderPush] Unknown native to JavaScript event of type ' + event.type, event);
+      break
+  }
+})
+
 ///
 /// Plugin helpers - Custom properties
 ///
