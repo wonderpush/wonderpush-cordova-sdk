@@ -841,12 +841,17 @@ function UserPreferences_removeChannel(channelId, cb) {
 function WonderPushDelegate () {}
 
 /**
- * @param {string} url - The URL to be opened
- * @return {string} The URL to open instead
+ * This callback is called with a single string argument when the call succeeds.
+ * @callback cordova.plugins.WonderPushDelegate~UrlForDeepLinkCallback
+ * @param {string?} url - The URL to open instead
  */
-WonderPushDelegate.prototype.urlForDeepLink = function (url) {
+/**
+ * @param {string} url - The URL to be opened
+ * @param {cordova.plugins.WonderPushDelegate~UrlForDeepLinkCallback} cb - The callback to call with the URL to be opened
+ */
+WonderPushDelegate.prototype.urlForDeepLink = function (url, cb) {
   // Stub, no-op implementation
-  return url;
+  cb(url);
 }
 
 /**
