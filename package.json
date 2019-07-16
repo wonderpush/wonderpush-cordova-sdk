@@ -33,7 +33,11 @@
   },
   "engines": {
     "cordovaDependencies": {
-      "<3.0.0": {
+      "<2.0.0": {
+        "cordova-android": "<7.0.0",
+        "cordova-ios": "<5.0.0"
+      },
+      "2.0.0": {
         "cordova-android": ">=8.0.0",
         "cordova-ios": ">=5.0.0"
       }
