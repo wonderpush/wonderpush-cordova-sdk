@@ -32,6 +32,7 @@
 - (void)onNotificationOpened:(NSNotification *)notification;
 - (void)__setEventForwarder:(CDVInvokedUrlCommand *)command;
 
+- (void)initialize:(CDVInvokedUrlCommand *)command;
 - (void)setUserId:(CDVInvokedUrlCommand *)command;
 - (void)isReady:(CDVInvokedUrlCommand *)command;
 - (void)setLogging:(CDVInvokedUrlCommand *)command;

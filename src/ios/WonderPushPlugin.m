@@ -124,6 +124,15 @@
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
+- (void)initialize:(CDVInvokedUrlCommand *)command {
+    NSString *clientId = (NSString *)command.arguments[0];
+    NSString *clientSecret = (NSString *)command.arguments[1];
+
+    [WonderPush setClientId:clientId secret:clientSecret];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
 - (void)setUserId:(CDVInvokedUrlCommand *)command {
     NSString *userId = (NSString *)command.arguments[0];
     if ((id)userId == [NSNull null]) userId = nil;

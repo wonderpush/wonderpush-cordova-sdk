@@ -100,6 +100,16 @@ function _checkAllowedKeys (obj) {
 ///
 
 /**
+ * Initializes the SDK, if you've opted to disable auto-initialization using the AUTO_INIT plugin variable.
+ * @param {string} clientId
+ * @param {string} clientSecret
+ * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ */
+function initialize (clientId, clientSecret, cb) {
+  _callNative('initialize', [clientId, clientSecret], cb)
+}
+
+/**
  * Sets the user id, used to identify a single identity across multiple devices,
  * and to correctly identify multiple users on a single device.
  *
@@ -862,6 +872,7 @@ WonderPushDelegate.prototype.urlForDeepLink = function (url, cb) {
  */
 var WonderPush = {
   // Initialization
+  initialize: initialize,
   setUserId: setUserId,
   isReady: isReady,
   setLogging: setLogging,

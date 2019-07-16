@@ -146,6 +146,13 @@ public class WonderPushPlugin extends CordovaPlugin {
             callbackContext.sendPluginResult(result);
 
         // Initialization
+        } else if (action.equals("initialize")) {
+
+            String clientId = args.getString(0);
+            String clientSecret = args.getString(1);
+            WonderPush.initialize(cordova.getContext(), clientId, clientSecret);
+            callbackContext.success();
+
         } else if (action.equals("setUserId")) {
 
             String userId = args.isNull(0) ? null : args.getString(0);
