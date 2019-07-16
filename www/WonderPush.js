@@ -61,12 +61,24 @@ _callNative('__setEventForwarder', [], function(event) {
   if (!event) return;
   switch (event.type) {
     case 'notificationOpen':
+      /**
+       * Triggered when a notification is clicked.
+       * @event WonderPush#event:"wonderpush.notificationOpen"
+       * @property {object} notification - The received notification.
+       * @property {string} notificationType - The notification type, useful for filtering `"data"` notifications from the rest.
+       */
       cordova.fireDocumentEvent('wonderpush.notificationOpen', {
         notification: event.notification,
         notificationType: event.notificationType,
       });
       break;
     case 'registeredCallback':
+      /**
+       * Registered callback
+       * @event WonderPush#event:"wonderpush.registeredCallback"
+       * @property {string} method - The registered callback name.
+       * @property {string} arg - The argument provided.
+       */
       cordova.fireDocumentEvent('wonderpush.registeredCallback', {
         method: event.method,
         arg: event.arg,
