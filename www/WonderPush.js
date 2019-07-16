@@ -816,7 +816,7 @@ function UserPreferences_putChannel(channel, cb) {
 
 /**
  * Remove a channel group.
- * @param {string} channelId
+ * @param {string} groupId
  * @param {WonderPush~SuccessCallback} cb
  * @alias WonderPush.UserPreferences.removeChannelGroup
  */
