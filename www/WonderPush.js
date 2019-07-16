@@ -1,40 +1,45 @@
 /**
  * This callback is called with no argument when the call succeeds.
- * @callback cordova.plugins.WonderPush~SuccessCallback
+ * @callback WonderPush~SuccessCallback
  */
 /**
  * This callback is called with a single boolean argument when the call succeeds.
- * @callback cordova.plugins.WonderPush~BooleanCallback
+ * @callback WonderPush~BooleanCallback
  * @param {boolean} value - The return value.
  */
 /**
  * This callback is called with a single string argument when the call succeeds.
- * @callback cordova.plugins.WonderPush~StringCallback
+ * @callback WonderPush~StringCallback
  * @param {string} value - The return value.
  */
 /**
  * This callback is called with a single string argument when the call succeeds.
- * @callback cordova.plugins.WonderPush~StringArrayCallback
+ * @callback WonderPush~StringArrayCallback
  * @param {string[]} value - The return value.
  */
 /**
  * This callback is called with a single nullable string argument when the call succeeds.
- * @callback cordova.plugins.WonderPush~NullableStringCallback
+ * @callback WonderPush~NullableStringCallback
  * @param {?string} value - The return value.
  */
 /**
  * This callback is called with a single object argument when the call succeeds.
- * @callback cordova.plugins.WonderPush~ObjectCallback
+ * @callback WonderPush~ObjectCallback
  * @param {object} value - The return value.
  */
 /**
  * This callback is called with a single argument of varying type when the call succeeds.
- * @callback cordova.plugins.WonderPush~MixedCallback
+ * @callback WonderPush~MixedCallback
  * @param {*} value - The return value.
  */
 /**
  * This callback is called with a single argument of varying type when the call succeeds.
- * @callback cordova.plugins.WonderPush~DelegateCallback
+ * @callback WonderPush~MixedArrayCallback
+ * @param {Array<*>} value - The return value.
+ */
+/**
+ * This callback is called with a single argument of varying type when the call succeeds.
+ * @callback WonderPush~DelegateCallback
  * @param {?WonderPushDelegate} value - The return value.
  */
 
@@ -103,7 +108,8 @@ function _checkAllowedKeys (obj) {
  * Initializes the SDK, if you've opted to disable auto-initialization using the AUTO_INIT plugin variable.
  * @param {string} clientId
  * @param {string} clientSecret
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function initialize (clientId, clientSecret, cb) {
   _callNative('initialize', [clientId, clientSecret], cb)
@@ -122,9 +128,8 @@ function initialize (clientId, clientSecret, cb) {
  *   Use `null` for anonymous users.
  *
  *   You are strongly encouraged to use your own unique internal identifier.
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function setUserId (userId, cb) {
   if (userId === null || userId === undefined) {
@@ -140,9 +145,8 @@ function setUserId (userId, cb) {
  * Whether the SDK is ready to operate.
  *
  * The SDK is ready when it is initialized and has fetched an access token.
- * @param {cordova.plugins.WonderPush~BooleanCallback} cb - Callback called with `true` if the SDK is ready, `false` otherwise.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~BooleanCallback} cb - Callback called with `true` if the SDK is ready, `false` otherwise.
+ * @memberof WonderPush
  */
 function isReady (cb) {
   _callNative('isReady', [], cb)
@@ -151,9 +155,8 @@ function isReady (cb) {
 /**
  * Controls native SDK logging.
  * @param {boolean} enabled - Whether to enable logs.
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function setLogging (enabled, cb) {
   if (typeof enabled !== 'boolean') {
@@ -165,6 +168,7 @@ function setLogging (enabled, cb) {
 
 /**
  * @type {WonderPushDelegate}
+ * @private
  */
 var currentDelegate = null
 
@@ -185,9 +189,8 @@ function delegateNativeCallback (call) {
 /**
  * Sets up a delegate for tighter integration, or removes it.
  * @param {?WonderPushDelegate} delegate - The delegate to set, or `null` to remove it.
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function setDelegate (delegate, cb) {
   cb = cb || function(){} // ensure cb is set to consume first result properly
@@ -206,9 +209,8 @@ function setDelegate (delegate, cb) {
 
 /**
  * Gets the current delegate for tighter integration.
- * @param {cordova.plugins.WonderPush~DelegateCallback} [cb] - The success callback called with the current delegate.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~DelegateCallback} cb - Callback called with the current delegate.
+ * @memberof WonderPush
  */
 function getDelegate (cb) {
     cb = cb || function(){} // ensure cb is set to consume first result properly
@@ -221,9 +223,8 @@ function getDelegate (cb) {
 
 /**
  * Returns the userId currently in use, `null` by default.
- * @param {cordova.plugins.WonderPush~NullableStringCallback} cb - Callback called with the current userId, which may be `null`.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~NullableStringCallback} cb - Callback called with the current userId, which may be `null`.
+ * @memberof WonderPush
  */
 function getUserId (cb) {
   _callNative('getUserId', [], cb)
@@ -233,9 +234,8 @@ function getUserId (cb) {
  * Returns the installationId identifying your application on a device, bond to a specific userId.
  * If you want to store this information on your servers, keep the corresponding userId with it.
  * Will return `null` until the SDK is properly initialized.
- * @param {cordova.plugins.WonderPush~NullableStringCallback} cb - Callback called with the current installationId, which may be `null`.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~NullableStringCallback} cb - Callback called with the current installationId, which may be `null`.
+ * @memberof WonderPush
  */
 function getInstallationId (cb) {
   _callNative('getInstallationId', [], cb)
@@ -243,9 +243,8 @@ function getInstallationId (cb) {
 
 /**
  * Returns the unique device identifier
- * @param {cordova.plugins.WonderPush~StringCallback} cb - Callback called with the current deviceId.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~StringCallback} cb - Callback called with the current deviceId.
+ * @memberof WonderPush
  */
 function getDeviceId (cb) {
   _callNative('getDeviceId', [], cb)
@@ -254,9 +253,8 @@ function getDeviceId (cb) {
 /**
  * Returns the push token.
  * Returns `null` if the user is not opt-in.
- * @param {cordova.plugins.WonderPush~NullableStringCallback} cb - Callback called with the push token, which may be `null`.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~NullableStringCallback} cb - Callback called with the push token, which may be `null`.
+ * @memberof WonderPush
  */
 function getPushToken (cb) {
   _callNative('getPushToken', [], cb)
@@ -266,9 +264,8 @@ function getPushToken (cb) {
  * Returns the currently used access token.
  * Returns `null` until the SDK is properly initialized.
  * This together with your client secret gives entire control to the current installation and associated user, you should not disclose it unnecessarily.
- * @param {cordova.plugins.WonderPush~NullableStringCallback} cb - Callback called with the current access token, which may be `null`.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~NullableStringCallback} cb - Callback called with the current access token, which may be `null`.
+ * @memberof WonderPush
  */
 function getAccessToken (cb) {
   _callNative('getAccessToken', [], cb)
@@ -287,9 +284,8 @@ function getAccessToken (cb) {
  *
  *   The keys should be prefixed according to the type of their values.
  *   You can find the details in the [Concepts > Custom fields](https://www.wonderpush.com/docs/guide/custom-fields) section of the documentation.
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function trackEvent (type, attributes, cb) {
   var args = [type]
@@ -315,9 +311,8 @@ function trackEvent (type, attributes, cb) {
 /**
  * Adds one or more tags to the installation.
  * @param {string|string[]} tag - The tags to add to the installation. You can use either a single string argument or an array of strings.
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function addTag (tag, cb) {
   return _callNative('addTag', [tag], cb)
@@ -326,9 +321,8 @@ function addTag (tag, cb) {
 /**
  * Removes one or more tags from the installation.
  * @param {string|string[]} tag - The tags to remove from the installation. You can use either a single string argument or an array of strings.
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function removeTag (tag, cb) {
   return _callNative('removeTag', [tag], cb)
@@ -336,9 +330,8 @@ function removeTag (tag, cb) {
 
 /**
  * Removes all tags from the installation.
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function removeAllTags (cb) {
   return _callNative('removeAllTags', [], cb)
@@ -346,9 +339,8 @@ function removeAllTags (cb) {
 
 /**
  * Returns all the tags of the installation.
- * @param {cordova.plugins.WonderPush~StringArrayCallback} [cb] - The callback called with an array of string tags.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~StringArrayCallback} cb - The callback called with an array of string tags.
+ * @memberof WonderPush
  */
 function getTags (cb) {
   return _callNative('getTags', [], cb)
@@ -357,9 +349,8 @@ function getTags (cb) {
 /**
  * Tests whether the installation has the given tag attached to it.
  * @param {string} tag - The tag to test.
- * @param {cordova.plugins.WonderPush~BooleanCallback} [cb] - The callback called with `true` if the given tag is attached to the installation, `false` otherwise.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~BooleanCallback} cb - The callback called with `true` if the given tag is attached to the installation, `false` otherwise.
+ * @memberof WonderPush
  */
 function hasTag (tag, cb) {
   return _callNative('hasTag', [tag], cb)
@@ -369,13 +360,12 @@ function hasTag (tag, cb) {
  * Sets the value to a given installation property.
  *
  * The previous value is replaced entirely.
- * Setting `undefined` or `null` has the same effect as {@link cordova.plugins.WonderPush#unsetProperty}.
+ * Setting `undefined` or `null` has the same effect as {@link WonderPush.unsetProperty}.
  *
  * @param {string} field - The name of the property to set
  * @param {mixed} value - The value to be set, can be an array
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function setProperty (field, value, cb) {
   return _callNative('setProperty', [field, value], cb)
@@ -387,9 +377,8 @@ function setProperty (field, value, cb) {
  * The previous value is replaced with `null`.
  *
  * @param {string} field - The name of the property to set
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function unsetProperty (field, cb) {
   return _callNative('unsetProperty', [field], cb)
@@ -404,9 +393,8 @@ function unsetProperty (field, cb) {
  *
  * @param {string} field - The name of the property to add values to
  * @param {*|Array.<*>|...*} value - The value(s) to be added, can be an array or multiple arguments
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function addProperty (field, value, cb) {
   return _callNative('addProperty', [field, value], cb)
@@ -421,9 +409,8 @@ function addProperty (field, value, cb) {
  *
  * @param {string} field - The name of the property to read values from
  * @param {*|Array.<*>|...*} value - The value(s) to be removed, can be an array or multiple arguments
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function removeProperty (field, value, cb) {
   return _callNative('removeProperty', [field, value], cb)
@@ -437,9 +424,8 @@ function removeProperty (field, value, cb) {
  * Returns `null` if the property is absent or has an empty array value.
  *
  * @param {string} field - The name of the property to read values from
- * @param {cordova.plugins.WonderPush~MixedCallback} cb - Callback called with `null` or a single value stored in the property, never an array or `undefined`.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~MixedCallback} cb - Callback called with `null` or a single value stored in the property, never an array or `undefined`.
+ * @memberof WonderPush
  */
 function getPropertyValue (field, cb) {
   return _callNative('getPropertyValue', [field], function(wrappedValue) {
@@ -456,9 +442,8 @@ function getPropertyValue (field, cb) {
  * Returns an array wrapping any scalar value held by the property.
  *
  * @param {string} field - The name of the property to read values from
- * @param {cordova.plugins.WonderPush~MixedArrayCallback} cb - Callback called with a possibly empty array of the values stored in the property, but never `null` nor `undefined`
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~MixedArrayCallback} cb - Callback called with a possibly empty array of the values stored in the property, but never `null` nor `undefined`
+ * @memberof WonderPush
  */
 function getPropertyValues (field, cb) {
   return _callNative('getPropertyValues', [field], cb)
@@ -466,9 +451,8 @@ function getPropertyValues (field, cb) {
 
 /**
  * Returns the latest known custom properties attached to the current installation object stored by WonderPush.
- * @param {cordova.plugins.WonderPush~ObjectCallback} cb - Callback called with the current installation custom properties.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~ObjectCallback} cb - Callback called with the current installation custom properties.
+ * @memberof WonderPush
  */
 function getProperties (cb) {
   return _callNative('getProperties', [], cb)
@@ -483,9 +467,8 @@ function getProperties (cb) {
  *
  * The keys should be prefixed according to the type of their values.
  * You can find the details in the [Segmentation > Properties](https://docs.wonderpush.com/docs/properties#section-custom-properties) section of the documentation.
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function putProperties (properties, cb) {
   if (!properties) {
@@ -499,10 +482,10 @@ function putProperties (properties, cb) {
 
 /**
  * Returns the latest known custom properties attached to the current installation object stored by WonderPush.
- * @param {cordova.plugins.WonderPush~ObjectCallback} cb - Callback called with the current installation custom properties.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~ObjectCallback} cb - Callback called with the current installation custom properties.
+ * @memberof WonderPush
  * @deprecated
+ * @see WonderPush.getProperties
  */
 function getInstallationCustomProperties (cb) {
   return _callNative('getInstallationCustomProperties', [], cb)
@@ -517,10 +500,10 @@ function getInstallationCustomProperties (cb) {
  *
  * The keys should be prefixed according to the type of their values.
  * You can find the details in the [Segmentation > Properties](https://docs.wonderpush.com/docs/properties#section-custom-properties) section of the documentation.
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  * @deprecated
+ * @see WonderPush.putProperties
  */
 function putInstallationCustomProperties (customProperties, cb) {
   if (!customProperties) {
@@ -548,9 +531,8 @@ function putInstallationCustomProperties (customProperties, cb) {
  * Because in iOS you only have *one* chance for prompting the user, you should find a good timing for that.
  * For a start, you can systematically call it when the application starts, so that the user will be prompted directly at the first launch.
  *
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function subscribeToNotifications (cb) {
   _callNative('subscribeToNotifications', [], cb)
@@ -558,9 +540,8 @@ function subscribeToNotifications (cb) {
 
 /**
  * Returns whether the notifications are enabled.
- * @param {cordova.plugins.WonderPush~BooleanCallback} cb - Callback called with either `true` or false.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~BooleanCallback} cb - Callback called with either `true` or false.
+ * @memberof WonderPush
  */
 function isSubscribedToNotifications (cb) {
   _callNative('isSubscribedToNotifications', [], cb)
@@ -571,9 +552,8 @@ function isSubscribedToNotifications (cb) {
  *
  * This method marks the user as soft opt-out.
  *
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function unsubscribeFromNotifications (cb) {
   _callNative('unsubscribeFromNotifications', [], cb)
@@ -581,11 +561,10 @@ function unsubscribeFromNotifications (cb) {
 
 /**
  * Returns whether the notifications are enabled.
- * @param {cordova.plugins.WonderPush~BooleanCallback} cb - Callback called with either `true` or false.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~BooleanCallback} cb - Callback called with either `true` or false.
+ * @memberof WonderPush
  * @deprecated
- * @see cordova.plugins.WonderPush.isSubscribedToNotifications
+ * @see WonderPush.isSubscribedToNotifications
  */
 function getNotificationEnabled (cb) {
   _callNative('getNotificationEnabled', [], cb)
@@ -605,12 +584,11 @@ function getNotificationEnabled (cb) {
  * For a start, you can systematically call it when the application starts, so that the user will be prompted directly at the first launch.
  *
  * @param {boolean} enabled - The new activation state of push notifications.
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  * @deprecated
- * @see cordova.plugins.WonderPush.subscribeToNotifications
- * @see cordova.plugins.WonderPush.unsubscribeFromNotifications
+ * @see WonderPush.subscribeToNotifications
+ * @see WonderPush.unsubscribeFromNotifications
  */
 function setNotificationEnabled (enabled, cb) {
   if (typeof enabled !== 'boolean') {
@@ -627,9 +605,8 @@ function setNotificationEnabled (enabled, cb) {
 /**
  * Reads user consent state.
  * Returns undefined if no explicit consent was set.
- * @param {cordova.plugins.WonderPush~BooleanCallback} [cb] - The callback called with either true or false.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~BooleanCallback} cb - The callback called with either true or false.
+ * @memberof WonderPush
  */
 function getUserConsent (cb) {
   _callNative('getUserConsent', [], cb)
@@ -640,9 +617,8 @@ function getUserConsent (cb) {
  * If the `requiresUserConsent` initialization option is true,
  * the whole SDK is paused and no data is sent to WonderPush, until consent is provided.
  * @param {boolean} consent -
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function setUserConsent (consent, cb) {
   _callNative('setUserConsent', [consent], cb)
@@ -651,9 +627,8 @@ function setUserConsent (consent, cb) {
 /**
  * Remove any local storage and ask the WonderPush servers to delete any data associated with the all local installations and related users.
  *
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function clearAllData (cb) {
   _callNative('clearAllData', [], cb)
@@ -662,9 +637,8 @@ function clearAllData (cb) {
 /**
  * Ask the WonderPush servers to delete any event associated with the all local installations.
  *
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function clearEventsHistory (cb) {
   _callNative('clearEventsHistory', [], cb)
@@ -673,9 +647,8 @@ function clearEventsHistory (cb) {
 /**
  * Ask the WonderPush servers to delete any custom data associated with the all local installations and related users.
  *
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function clearPreferences (cb) {
   _callNative('clearPreferences', [], cb)
@@ -684,9 +657,8 @@ function clearPreferences (cb) {
 /**
  * Initiates the download of all user remote and local data.
  *
- * @param {cordova.plugins.WonderPush~SuccessCallback} [cb] - The success callback.
- * @memberof cordova.plugins.WonderPush
- * @instance
+ * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @memberof WonderPush
  */
 function downloadAllData (cb) {
   _callNative('downloadAllData', [], cb)
@@ -697,12 +669,34 @@ function downloadAllData (cb) {
 ///
 
 /**
+ * @interface WonderPushChannelGroup
+ * @property {string} id - The id of this group.
+ * @property {string} name - The user visible name of this group.
+ */
+/**
  * @interface WonderPushChannel
+ * @property {string} id - The id of the group this channel belongs to, if any.
+ * @property {string} name - The user visible name of this channel.
+ * @property {string} description - The user visible description of this channel.
+ * @property {boolean} bypassDnd - Whether or not notifications posted to this channel can bypass the Do Not Disturb mode.
+ * @property {boolean} showBadge - Whether notifications posted to this channel can appear as application icon badges in a Launcher.
+ * @property {number} importance - The user specified importance for notifications posted to this channel.
+ * @property {boolean} lights - Whether notifications posted to this channel should display notification lights.
+ * @property {boolean} vibrate - Whether notifications posted to this channel always vibrate.
+ * @property {number[]} vibrationPattern - The vibration pattern for notifications posted to this channel.
+ * @property {number} lightColor - The notification light color for notifications posted to this channel.
+ * @property {number} lockscreenVisibility - Whether or not notifications posted to this channel are shown on the lockscreen in full or redacted form.
+ * @property {boolean} sound - Whether a sound should be played for notifications posted to this channel.
+ * @property {string} soundUri - The notification sound for this channel.
+ * @property {boolean} vibrateInSilentMode - Whether notifications posted to this channel vibrate if the device is in silent mode.
+ * @property {number} color - The color to impose on all notifications posted to this channel.
+ * @property {boolean} localOnly - Whether notifications posted to this channel should be local to this device.
  */
 
 /**
  * Get the default channel id.
- * @param {cordova.plugins.WonderPush~StringCallback} cb
+ * @param {WonderPush~StringCallback} cb
+ * @alias WonderPush.UserPreferences.getDefaultChannelId
  */
 function UserPreferences_getDefaultChannelId(cb) {
   if (cordova.platformId === "android") {
@@ -715,7 +709,8 @@ function UserPreferences_getDefaultChannelId(cb) {
 /**
  * Set the default channel id.
  * @param {string} id
- * @param {cordova.plugins.WonderPush~StringCallback} cb
+ * @param {WonderPush~StringCallback} cb
+ * @alias WonderPush.UserPreferences.setDefaultChannelId
  */
 function UserPreferences_setDefaultChannelId(id, cb) {
   if (cordova.platformId === "android") {
@@ -727,13 +722,14 @@ function UserPreferences_setDefaultChannelId(id, cb) {
 
 /**
  * This callback is called with a single argument when the call succeeds.
- * @callback cordova.plugins.WonderPush~WonderPushChannelGroupCallback
+ * @callback WonderPush~WonderPushChannelGroupCallback
  * @param {?WonderPushChannelGroup} value - The return value.
  */
 /**
  * Get a channel group.
  * @param {string} groupId
- * @param {cordova.plugins.WonderPush~WonderPushChannelCallback} cb
+ * @param {WonderPush~WonderPushChannelCallback} cb
+ * @alias WonderPush.UserPreferences.getChannelGroups
  */
 function UserPreferences_getChannelGroup(groupId, cb) {
   if (cordova.platformId === "android") {
@@ -745,13 +741,14 @@ function UserPreferences_getChannelGroup(groupId, cb) {
 
 /**
  * This callback is called with a single argument when the call succeeds.
- * @callback cordova.plugins.WonderPush~WonderPushChannelCallback
+ * @callback WonderPush~WonderPushChannelCallback
  * @param {?WonderPushChannel} value - The return value.
  */
 /**
  * Get a channel.
  * @param {string} channelId
- * @param {cordova.plugins.WonderPush~WonderPushChannelCallback} cb
+ * @param {WonderPush~WonderPushChannelCallback} cb
+ * @alias WonderPush.UserPreferences.getChannel
  */
 function UserPreferences_getChannel(channelId, cb) {
   if (cordova.platformId === "android") {
@@ -763,8 +760,9 @@ function UserPreferences_getChannel(channelId, cb) {
 
 /**
  * Create, update and remove channel existing groups to match the given channel groups.
- * @param {cordova.plugins.WonderPushChannelGroup[]} channelGroups
- * @param {cordova.plugins.WonderPush~SuccessCallback} cb
+ * @param {WonderPushChannelGroup[]} channelGroups
+ * @param {WonderPush~SuccessCallback} cb
+ * @alias WonderPush.UserPreferences.setChannelGroups
  */
 function UserPreferences_setChannelGroups(channelGroups, cb) {
   if (cordova.platformId === "android") {
@@ -776,8 +774,9 @@ function UserPreferences_setChannelGroups(channelGroups, cb) {
 
 /**
  * Create, update and remove channels to match the given channels.
- * @param {cordova.plugins.WonderPushChannel[]} channels
- * @param {cordova.plugins.WonderPush~SuccessCallback} cb
+ * @param {WonderPushChannel[]} channels
+ * @param {WonderPush~SuccessCallback} cb
+ * @alias WonderPush.UserPreferences.setChannels
  */
 function UserPreferences_setChannels(channels, cb) {
   if (cordova.platformId === "android") {
@@ -789,8 +788,9 @@ function UserPreferences_setChannels(channels, cb) {
 
 /**
  * Create or update a channel group.
- * @param {cordova.plugins.WonderPushChannelGroup} channelGroup
- * @param {cordova.plugins.WonderPush~SuccessCallback} cb
+ * @param {WonderPushChannelGroup} channelGroup
+ * @param {WonderPush~SuccessCallback} cb
+ * @alias WonderPush.UserPreferences.putChannelGroup
  */
 function UserPreferences_putChannelGroup(channelGroup, cb) {
   if (cordova.platformId === "android") {
@@ -802,8 +802,9 @@ function UserPreferences_putChannelGroup(channelGroup, cb) {
 
 /**
  * Create or update a channel.
- * @param {cordova.plugins.WonderPushChannel} channel
- * @param {cordova.plugins.WonderPush~SuccessCallback} cb
+ * @param {WonderPushChannel} channel
+ * @param {WonderPush~SuccessCallback} cb
+ * @alias WonderPush.UserPreferences.putChannel
  */
 function UserPreferences_putChannel(channel, cb) {
   if (cordova.platformId === "android") {
@@ -816,7 +817,8 @@ function UserPreferences_putChannel(channel, cb) {
 /**
  * Remove a channel group.
  * @param {string} channelId
- * @param {cordova.plugins.WonderPush~SuccessCallback} cb
+ * @param {WonderPush~SuccessCallback} cb
+ * @alias WonderPush.UserPreferences.removeChannelGroup
  */
 function UserPreferences_removeChannelGroup(groupId, cb) {
   if (cordova.platformId === "android") {
@@ -829,7 +831,8 @@ function UserPreferences_removeChannelGroup(groupId, cb) {
 /**
  * Remove a channel.
  * @param {string} channelId
- * @param {cordova.plugins.WonderPush~SuccessCallback} cb
+ * @param {WonderPush~SuccessCallback} cb
+ * @alias WonderPush.UserPreferences.removeChannel
  */
 function UserPreferences_removeChannel(channelId, cb) {
   if (cordova.platformId === "android") {
@@ -845,19 +848,19 @@ function UserPreferences_removeChannel(channelId, cb) {
 
 /**
  * Delegate interface
- * @interface cordova.plugins.WonderPushDelegate
+ * @interface WonderPushDelegate
  * @interface WonderPushDelegate
  */
 function WonderPushDelegate () {}
 
 /**
  * This callback is called with a single string argument when the call succeeds.
- * @callback cordova.plugins.WonderPushDelegate~UrlForDeepLinkCallback
- * @param {string?} url - The URL to open instead
+ * @callback WonderPushDelegate~UrlForDeepLinkCallback
+ * @param {string?} url - The URL to open instead, or `null` to avoid opening anything.
  */
 /**
  * @param {string} url - The URL to be opened
- * @param {cordova.plugins.WonderPushDelegate~UrlForDeepLinkCallback} cb - The callback to call with the URL to be opened
+ * @param {WonderPushDelegate~UrlForDeepLinkCallback} cb - The callback to call with the URL to open instead.
  */
 WonderPushDelegate.prototype.urlForDeepLink = function (url, cb) {
   // Stub, no-op implementation
@@ -865,9 +868,26 @@ WonderPushDelegate.prototype.urlForDeepLink = function (url, cb) {
 }
 
 /**
+ * UserPreferences part of the WonderPush SDK.
+ * @public
+ * @namespace WonderPush.UserPreferences
+ */
+var UserPreferences = {
+  getDefaultChannelId: UserPreferences_getDefaultChannelId,
+  setDefaultChannelId: UserPreferences_setDefaultChannelId,
+  getChannelGroup: UserPreferences_getChannelGroup,
+  getChannel: UserPreferences_getChannel,
+  setChannelGroups: UserPreferences_setChannelGroups,
+  setChannels: UserPreferences_setChannels,
+  putChannelGroup: UserPreferences_putChannelGroup,
+  putChannel: UserPreferences_putChannel,
+  removeChannelGroup: UserPreferences_removeChannelGroup,
+  removeChannel: UserPreferences_removeChannel,
+};
+
+/**
  * Main object of the WonderPush SDK.
  * @public
- * @namespace cordova.plugins.WonderPush {WonderPush}
  * @namespace WonderPush {WonderPush}
  */
 var WonderPush = {
@@ -915,18 +935,7 @@ var WonderPush = {
   clearPreferences: clearPreferences,
   downloadAllData: downloadAllData,
   // UserPreferences (Android only, safe no-op on other platforms)
-  UserPreferences: {
-    getDefaultChannelId: UserPreferences_getDefaultChannelId,
-    setDefaultChannelId: UserPreferences_setDefaultChannelId,
-    getChannelGroup: UserPreferences_getChannelGroup,
-    getChannel: UserPreferences_getChannel,
-    setChannelGroups: UserPreferences_setChannelGroups,
-    setChannels: UserPreferences_setChannels,
-    putChannelGroup: UserPreferences_putChannelGroup,
-    putChannel: UserPreferences_putChannel,
-    removeChannelGroup: UserPreferences_removeChannelGroup,
-    removeChannel: UserPreferences_removeChannel,
-  },
+  UserPreferences: UserPreferences,
 }
 
 module.exports = WonderPush
