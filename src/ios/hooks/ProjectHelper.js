@@ -334,7 +334,7 @@ class ProjectHelper {
   }
 }
 
-ProjectHelper.POD_VERSION = '3.1.1';
+ProjectHelper.POD_VERSION = '3.1.2';
 ProjectHelper.PODFILE_SNIPPET = "target 'WonderPushNotificationServiceExtension' do\n" +
   "  platform :ios, '10.0'\n" +
   "  use_frameworks!\n" +
