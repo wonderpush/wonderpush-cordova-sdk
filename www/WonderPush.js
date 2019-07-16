@@ -47,14 +47,14 @@
 /// Plugin helpers - Foreign interface
 ///
 
-var _serviceName = 'WonderPushPlugin'
+var _serviceName = 'WonderPushPlugin';
 
-function _errorHandler (error) {
-  console.error('[WonderPush] error calling native method:', error)
+function _errorHandler(error) {
+  console.error('[WonderPush] error calling native method:', error);
 }
 
-function _callNative (actionName, args, successCb, errorCb) {
-  cordova.exec(successCb || null, errorCb || _errorHandler, _serviceName, actionName, args || [])
+function _callNative(actionName, args, successCb, errorCb) {
+  cordova.exec(successCb || null, errorCb || _errorHandler, _serviceName, actionName, args || []);
 }
 
 _callNative('__setEventForwarder', [], function(event) {
@@ -64,38 +64,38 @@ _callNative('__setEventForwarder', [], function(event) {
       cordova.fireDocumentEvent('wonderpush.notificationOpen', {
         notification: event.notification,
         notificationType: event.notificationType,
-      })
-      break
+      });
+      break;
     case 'registeredCallback':
       cordova.fireDocumentEvent('wonderpush.registeredCallback', {
         method: event.method,
         arg: event.arg,
-      })
-      break
+      });
+      break;
     default:
       console.warn('[WonderPush] Unknown native to JavaScript event of type ' + event.type, event);
-      break
+      break;
   }
-})
+});
 
 ///
 /// Plugin helpers - Custom properties
 ///
 
-function _isKeyAllowed (key) {
-  return _allowedPrefixes.some(function (prefix) {
-    return key.indexOf(prefix) === 0
+function _isKeyAllowed(key) {
+  return _allowedPrefixes.some(function(prefix) {
+    return key.indexOf(prefix) === 0;
   })
 }
 
 var _allowedPrefixes = 'byte short int long float double bool string date geoloc object ignore'
     .split(' ')
-    .map(function (type) { return type + '_' })
+    .map(function(type) { return type + '_' });
 
-function _checkAllowedKeys (obj) {
+function _checkAllowedKeys(obj) {
   for (var key in obj) {
     if (!_isKeyAllowed(key)) {
-      throw new Error('The key "' + key + '" is not allowed. Allowed prefixes for keys are: ' + _allowedPrefixes.join(', '))
+      throw new Error('The key "' + key + '" is not allowed. Allowed prefixes for keys are: ' + _allowedPrefixes.join(', '));
     }
   }
 }
@@ -111,8 +111,8 @@ function _checkAllowedKeys (obj) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function initialize (clientId, clientSecret, cb) {
-  _callNative('initialize', [clientId, clientSecret], cb)
+function initialize(clientId, clientSecret, cb) {
+  _callNative('initialize', [clientId, clientSecret], cb);
 }
 
 /**
@@ -131,14 +131,14 @@ function initialize (clientId, clientSecret, cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function setUserId (userId, cb) {
+function setUserId(userId, cb) {
   if (userId === null || userId === undefined) {
-    userId = null
+    userId = null;
   } else if (typeof userId !== 'string') {
-    throw new Error('Given parameter is neither a string nor null/undefined')
+    throw new Error('Given parameter is neither a string nor null/undefined');
   }
 
-  _callNative('setUserId', [userId], cb)
+  _callNative('setUserId', [userId], cb);
 }
 
 /**
@@ -148,8 +148,8 @@ function setUserId (userId, cb) {
  * @param {WonderPush~BooleanCallback} cb - Callback called with `true` if the SDK is ready, `false` otherwise.
  * @memberof WonderPush
  */
-function isReady (cb) {
-  _callNative('isReady', [], cb)
+function isReady(cb) {
+  _callNative('isReady', [], cb);
 }
 
 /**
@@ -158,31 +158,31 @@ function isReady (cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function setLogging (enabled, cb) {
+function setLogging(enabled, cb) {
   if (typeof enabled !== 'boolean') {
-    throw new Error('Given parameter is not a boolean')
+    throw new Error('Given parameter is not a boolean');
   }
 
-  _callNative('setLogging', [enabled], cb)
+  _callNative('setLogging', [enabled], cb);
 }
 
 /**
  * @type {WonderPushDelegate}
  * @private
  */
-var currentDelegate = null
+var currentDelegate = null;
 
-function delegateNativeCallback (call) {
+function delegateNativeCallback(call) {
   if (!call || !currentDelegate) {
-    return
+    return;
   }
   switch (call.method) {
     case 'urlForDeepLink': // fallthrough // Android name
     case 'wonderPushWillOpenURL': // iOS name
       currentDelegate.urlForDeepLink(call['url'], function(url) {
-        _callNative('__callback', [call.__callbackId, url])
-      })
-      return
+        _callNative('__callback', [call.__callbackId, url]);
+      });
+      return;
   }
 }
 
@@ -192,19 +192,19 @@ function delegateNativeCallback (call) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function setDelegate (delegate, cb) {
-  cb = cb || function(){} // ensure cb is set to consume first result properly
-  currentDelegate = delegate
+function setDelegate(delegate, cb) {
+  cb = cb || function(){}; // ensure cb is set to consume first result properly
+  currentDelegate = delegate;
   _callNative('setDelegate', [currentDelegate != null], function(call) {
     if (cb) {
       // Consuming first return
-      cb()
-      cb = null
+      cb();
+      cb = null;
     } else {
       // Forwarding successive calls
-      delegateNativeCallback(call)
+      delegateNativeCallback(call);
     }
-  })
+  });
 }
 
 /**
@@ -212,9 +212,9 @@ function setDelegate (delegate, cb) {
  * @param {WonderPush~DelegateCallback} cb - Callback called with the current delegate.
  * @memberof WonderPush
  */
-function getDelegate (cb) {
-    cb = cb || function(){} // ensure cb is set to consume first result properly
-    cb(currentDelegate)
+function getDelegate(cb) {
+    cb = cb || function(){}; // ensure cb is set to consume first result properly
+    cb(currentDelegate);
 }
 
 ///
@@ -226,8 +226,8 @@ function getDelegate (cb) {
  * @param {WonderPush~NullableStringCallback} cb - Callback called with the current userId, which may be `null`.
  * @memberof WonderPush
  */
-function getUserId (cb) {
-  _callNative('getUserId', [], cb)
+function getUserId(cb) {
+  _callNative('getUserId', [], cb);
 }
 
 /**
@@ -237,8 +237,8 @@ function getUserId (cb) {
  * @param {WonderPush~NullableStringCallback} cb - Callback called with the current installationId, which may be `null`.
  * @memberof WonderPush
  */
-function getInstallationId (cb) {
-  _callNative('getInstallationId', [], cb)
+function getInstallationId(cb) {
+  _callNative('getInstallationId', [], cb);
 }
 
 /**
@@ -246,8 +246,8 @@ function getInstallationId (cb) {
  * @param {WonderPush~StringCallback} cb - Callback called with the current deviceId.
  * @memberof WonderPush
  */
-function getDeviceId (cb) {
-  _callNative('getDeviceId', [], cb)
+function getDeviceId(cb) {
+  _callNative('getDeviceId', [], cb);
 }
 
 /**
@@ -256,8 +256,8 @@ function getDeviceId (cb) {
  * @param {WonderPush~NullableStringCallback} cb - Callback called with the push token, which may be `null`.
  * @memberof WonderPush
  */
-function getPushToken (cb) {
-  _callNative('getPushToken', [], cb)
+function getPushToken(cb) {
+  _callNative('getPushToken', [], cb);
 }
 
 /**
@@ -267,8 +267,8 @@ function getPushToken (cb) {
  * @param {WonderPush~NullableStringCallback} cb - Callback called with the current access token, which may be `null`.
  * @memberof WonderPush
  */
-function getAccessToken (cb) {
-  _callNative('getAccessToken', [], cb)
+function getAccessToken(cb) {
+  _callNative('getAccessToken', [], cb);
 }
 
 ///
@@ -287,25 +287,25 @@ function getAccessToken (cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function trackEvent (type, attributes, cb) {
-  var args = [type]
+function trackEvent(type, attributes, cb) {
+  var args = [type];
 
   if (!type) {
-    throw new Error('Missing event type')
+    throw new Error('Missing event type');
   }
 
   if (attributes && !cb && typeof attributes === "function") {
-    cb = attributes
-    attributes = null
+    cb = attributes;
+    attributes = null;
   }
 
   if (attributes) {
-    _checkAllowedKeys(attributes)
+    _checkAllowedKeys(attributes);
 
-    args.push(attributes)
+    args.push(attributes);
   }
 
-  _callNative('trackEvent', args, cb)
+  _callNative('trackEvent', args, cb);
 }
 
 /**
@@ -314,8 +314,8 @@ function trackEvent (type, attributes, cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function addTag (tag, cb) {
-  return _callNative('addTag', [tag], cb)
+function addTag(tag, cb) {
+  return _callNative('addTag', [tag], cb);
 }
 
 /**
@@ -324,8 +324,8 @@ function addTag (tag, cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function removeTag (tag, cb) {
-  return _callNative('removeTag', [tag], cb)
+function removeTag(tag, cb) {
+  return _callNative('removeTag', [tag], cb);
 }
 
 /**
@@ -333,8 +333,8 @@ function removeTag (tag, cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function removeAllTags (cb) {
-  return _callNative('removeAllTags', [], cb)
+function removeAllTags(cb) {
+  return _callNative('removeAllTags', [], cb);
 }
 
 /**
@@ -342,8 +342,8 @@ function removeAllTags (cb) {
  * @param {WonderPush~StringArrayCallback} cb - The callback called with an array of string tags.
  * @memberof WonderPush
  */
-function getTags (cb) {
-  return _callNative('getTags', [], cb)
+function getTags(cb) {
+  return _callNative('getTags', [], cb);
 }
 
 /**
@@ -352,8 +352,8 @@ function getTags (cb) {
  * @param {WonderPush~BooleanCallback} cb - The callback called with `true` if the given tag is attached to the installation, `false` otherwise.
  * @memberof WonderPush
  */
-function hasTag (tag, cb) {
-  return _callNative('hasTag', [tag], cb)
+function hasTag(tag, cb) {
+  return _callNative('hasTag', [tag], cb);
 }
 
 /**
@@ -367,9 +367,9 @@ function hasTag (tag, cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function setProperty (field, value, cb) {
-  return _callNative('setProperty', [field, value], cb)
-};
+function setProperty(field, value, cb) {
+  return _callNative('setProperty', [field, value], cb);
+}
 
 /**
  * Removes the value of a given installation property.
@@ -380,9 +380,9 @@ function setProperty (field, value, cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function unsetProperty (field, cb) {
-  return _callNative('unsetProperty', [field], cb)
-};
+function unsetProperty(field, cb) {
+  return _callNative('unsetProperty', [field], cb);
+}
 
 /**
  * Adds the value to a given installation property.
@@ -396,8 +396,8 @@ function unsetProperty (field, cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function addProperty (field, value, cb) {
-  return _callNative('addProperty', [field, value], cb)
+function addProperty(field, value, cb) {
+  return _callNative('addProperty', [field, value], cb);
 }
 
 /**
@@ -412,8 +412,8 @@ function addProperty (field, value, cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function removeProperty (field, value, cb) {
-  return _callNative('removeProperty', [field, value], cb)
+function removeProperty(field, value, cb) {
+  return _callNative('removeProperty', [field, value], cb);
 }
 
 /**
@@ -427,7 +427,7 @@ function removeProperty (field, value, cb) {
  * @param {WonderPush~MixedCallback} cb - Callback called with `null` or a single value stored in the property, never an array or `undefined`.
  * @memberof WonderPush
  */
-function getPropertyValue (field, cb) {
+function getPropertyValue(field, cb) {
   return _callNative('getPropertyValue', [field], function(wrappedValue) {
       cb && cb(wrappedValue.__wrapped);
   })
@@ -445,8 +445,8 @@ function getPropertyValue (field, cb) {
  * @param {WonderPush~MixedArrayCallback} cb - Callback called with a possibly empty array of the values stored in the property, but never `null` nor `undefined`
  * @memberof WonderPush
  */
-function getPropertyValues (field, cb) {
-  return _callNative('getPropertyValues', [field], cb)
+function getPropertyValues(field, cb) {
+  return _callNative('getPropertyValues', [field], cb);
 }
 
 /**
@@ -454,8 +454,8 @@ function getPropertyValues (field, cb) {
  * @param {WonderPush~ObjectCallback} cb - Callback called with the current installation custom properties.
  * @memberof WonderPush
  */
-function getProperties (cb) {
-  return _callNative('getProperties', [], cb)
+function getProperties(cb) {
+  return _callNative('getProperties', [], cb);
 }
 
 /**
@@ -470,14 +470,14 @@ function getProperties (cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function putProperties (properties, cb) {
+function putProperties(properties, cb) {
   if (!properties) {
-    throw new Error('Missing properties')
+    throw new Error('Missing properties');
   }
 
-  _checkAllowedKeys(properties)
+  _checkAllowedKeys(properties);
 
-  _callNative('putProperties', [properties], cb)
+  _callNative('putProperties', [properties], cb);
 }
 
 /**
@@ -487,8 +487,8 @@ function putProperties (properties, cb) {
  * @deprecated
  * @see WonderPush.getProperties
  */
-function getInstallationCustomProperties (cb) {
-  return _callNative('getInstallationCustomProperties', [], cb)
+function getInstallationCustomProperties(cb) {
+  return _callNative('getInstallationCustomProperties', [], cb);
 }
 
 /**
@@ -505,14 +505,14 @@ function getInstallationCustomProperties (cb) {
  * @deprecated
  * @see WonderPush.putProperties
  */
-function putInstallationCustomProperties (customProperties, cb) {
+function putInstallationCustomProperties(customProperties, cb) {
   if (!customProperties) {
-    throw new Error('Missing custom properties')
+    throw new Error('Missing custom properties');
   }
 
-  _checkAllowedKeys(customProperties)
+  _checkAllowedKeys(customProperties);
 
-  _callNative('putInstallationCustomProperties', [customProperties], cb)
+  _callNative('putInstallationCustomProperties', [customProperties], cb);
 }
 
 ///
@@ -534,8 +534,8 @@ function putInstallationCustomProperties (customProperties, cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function subscribeToNotifications (cb) {
-  _callNative('subscribeToNotifications', [], cb)
+function subscribeToNotifications(cb) {
+  _callNative('subscribeToNotifications', [], cb);
 }
 
 /**
@@ -543,8 +543,8 @@ function subscribeToNotifications (cb) {
  * @param {WonderPush~BooleanCallback} cb - Callback called with either `true` or false.
  * @memberof WonderPush
  */
-function isSubscribedToNotifications (cb) {
-  _callNative('isSubscribedToNotifications', [], cb)
+function isSubscribedToNotifications(cb) {
+  _callNative('isSubscribedToNotifications', [], cb);
 }
 
 /**
@@ -555,8 +555,8 @@ function isSubscribedToNotifications (cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function unsubscribeFromNotifications (cb) {
-  _callNative('unsubscribeFromNotifications', [], cb)
+function unsubscribeFromNotifications(cb) {
+  _callNative('unsubscribeFromNotifications', [], cb);
 }
 
 /**
@@ -566,8 +566,8 @@ function unsubscribeFromNotifications (cb) {
  * @deprecated
  * @see WonderPush.isSubscribedToNotifications
  */
-function getNotificationEnabled (cb) {
-  _callNative('getNotificationEnabled', [], cb)
+function getNotificationEnabled(cb) {
+  _callNative('getNotificationEnabled', [], cb);
 }
 
 /**
@@ -590,12 +590,12 @@ function getNotificationEnabled (cb) {
  * @see WonderPush.subscribeToNotifications
  * @see WonderPush.unsubscribeFromNotifications
  */
-function setNotificationEnabled (enabled, cb) {
+function setNotificationEnabled(enabled, cb) {
   if (typeof enabled !== 'boolean') {
-    throw new Error('Given parameter is not a boolean')
+    throw new Error('Given parameter is not a boolean');
   }
 
-  _callNative('setNotificationEnabled', [enabled], cb)
+  _callNative('setNotificationEnabled', [enabled], cb);
 }
 
 ///
@@ -608,8 +608,8 @@ function setNotificationEnabled (enabled, cb) {
  * @param {WonderPush~BooleanCallback} cb - The callback called with either true or false.
  * @memberof WonderPush
  */
-function getUserConsent (cb) {
-  _callNative('getUserConsent', [], cb)
+function getUserConsent(cb) {
+  _callNative('getUserConsent', [], cb);
 }
 
 /**
@@ -620,8 +620,8 @@ function getUserConsent (cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function setUserConsent (consent, cb) {
-  _callNative('setUserConsent', [consent], cb)
+function setUserConsent(consent, cb) {
+  _callNative('setUserConsent', [consent], cb);
 }
 
 /**
@@ -630,8 +630,8 @@ function setUserConsent (consent, cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function clearAllData (cb) {
-  _callNative('clearAllData', [], cb)
+function clearAllData(cb) {
+  _callNative('clearAllData', [], cb);
 }
 
 /**
@@ -640,8 +640,8 @@ function clearAllData (cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function clearEventsHistory (cb) {
-  _callNative('clearEventsHistory', [], cb)
+function clearEventsHistory(cb) {
+  _callNative('clearEventsHistory', [], cb);
 }
 
 /**
@@ -650,8 +650,8 @@ function clearEventsHistory (cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function clearPreferences (cb) {
-  _callNative('clearPreferences', [], cb)
+function clearPreferences(cb) {
+  _callNative('clearPreferences', [], cb);
 }
 
 /**
@@ -660,8 +660,8 @@ function clearPreferences (cb) {
  * @param {WonderPush~SuccessCallback} [cb] - The success callback.
  * @memberof WonderPush
  */
-function downloadAllData (cb) {
-  _callNative('downloadAllData', [], cb)
+function downloadAllData(cb) {
+  _callNative('downloadAllData', [], cb);
 }
 
 ///
@@ -851,7 +851,7 @@ function UserPreferences_removeChannel(channelId, cb) {
  * @interface WonderPushDelegate
  * @interface WonderPushDelegate
  */
-function WonderPushDelegate () {}
+function WonderPushDelegate() {}
 
 /**
  * This callback is called with a single string argument when the call succeeds.
@@ -862,10 +862,10 @@ function WonderPushDelegate () {}
  * @param {string} url - The URL to be opened
  * @param {WonderPushDelegate~UrlForDeepLinkCallback} cb - The callback to call with the URL to open instead.
  */
-WonderPushDelegate.prototype.urlForDeepLink = function (url, cb) {
+WonderPushDelegate.prototype.urlForDeepLink = function(url, cb) {
   // Stub, no-op implementation
   cb(url);
-}
+};
 
 /**
  * UserPreferences part of the WonderPush SDK.
@@ -936,6 +936,6 @@ var WonderPush = {
   downloadAllData: downloadAllData,
   // UserPreferences (Android only, safe no-op on other platforms)
   UserPreferences: UserPreferences,
-}
+};
 
-module.exports = WonderPush
+module.exports = WonderPush;
