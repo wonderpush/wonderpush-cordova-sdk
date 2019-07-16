@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "ink-docstrap": "^1.3.2",
-    "jsdoc": "^3.5.5"
+    "jsdoc": "^3.6.3"
   },
   "scripts": {
     "doc": "          jsdoc -c jsdoc-conf.json --access public,undefined",
