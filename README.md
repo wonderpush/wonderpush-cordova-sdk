@@ -1,75 +1,33 @@
-# WonderPush Cordova / PhoneGap SDK
+# WonderPush Cordova SDK
 
-[WonderPush](https://www.wonderpush.com) is an advanced push notification service for iOS and Android applications and Websites. High volume and fast delivery. [Start for free](https://dashboard.wonderpush.com/account/signup).
+[WonderPush](https://www.wonderpush.com) is an advanced push notification service for iOS and Android applications and Websites. High volume and fast delivery. [Get started in minutes](https://dashboard.wonderpush.com/account/signup).
 
-This a Cordova / PhoneGap SDK.
+## Installation
 
-Quick links:
-* [**Getting started guide**](https://www.wonderpush.com/docs/cordova/getting-started)
-* [**Latest SDK documentation**](https://wonderpush.github.io/wonderpush-cordova-sdk/)
-* [**Latest API reference**](https://wonderpush.github.io/wonderpush-cordova-sdk/api.html)
-* [**Demo application**](https://github.com/wonderpush/wonderpush-cordova-demo)
+Follow the [**quickstart guide**](https://docs.wonderpush.com/v1/docs/cordova-quickstart).
 
-## Getting started
+## Reference
 
-Please see [our guide](https://www.wonderpush.com/docs/cordova/getting-started) for more information.
+Check out the [**API reference**](https://docs.wonderpush.com/docs/cordova-sdk) for a list of available methods.
 
-### 1) Create your application if needed
+## JSdoc
 
-Use cordova tool to create an application, see the [official Cordova guide](https://cordova.apache.org/docs/en/latest/guide/cli/) for more details.
+The [**latest JSdoc**](https://wonderpush.github.io/wonderpush-cordova-sdk/) will show you an exhaustive documentation of every methods and fields available.
 
-```sh
-cordova create cordova-demo com.wonderpush.demo WonderPushCordovaDemo
-cd cordova-demo
-```
+## Demo project
 
-Add the Android and iOS platforms:
+Check the [**demo application**](https://github.com/wonderpush/wonderpush-cordova-demo) repository.
 
-```sh
-cordova platform add android --save
-cordova platform add ios --save
-```
+## Change log and releases
 
-### 2) Add the WonderPush SDK
+See the [**releases page**](https://github.com/wonderpush/wonderpush-cordova-sdk/releases) on GitHub.
 
-For developing the SDK itself, do this first: `npm link ../wondeprush-cordova-sdk`
+Follow our [**announcements**](https://discuss.wonderpush.com/c/announcements) on our community forum.
 
-```sh
-cordova plugin add wonderpush-cordova-sdk --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'
-```
+## Support
 
-### 3) Use WonderPush SDK in your application
+Contact support using the **live chat** on your [dashboard](https://dashboard.wonderpush.com/).
 
-#### a) Notification permission and SDK initialization
+Ask for help on our [**community forum**](https://discuss.wonderpush.com/c/support).
 
-On iOS, you must call the `WonderPush.subscribeToNotifications()` function at some time, preferably after presenting the user what benefit will push notifications bring to him.
-
-The SDK initializes itself on the start of the application.
-You don't need to do anything.
-
-#### b) Use WonderPush features
-
-See our [Cordova quickstart](https://docs.wonderpush.com/docs/cordova-quickstart) for guidance about using our features.
-
-### 4) Test your app
-
-```
-cordova run --device
-```
-
-## Updating
-
-```
-cordova plugin update wonderpush-cordova-sdk
-
-# If Cordova finds this insufficient, remove and re-add the plugin:
-cordova plugin rm wonderpush-cordova-sdk
-cordova plugin add wonderpush-cordova-sdk --variable CLIENT_ID='id' --variable CLIENT_SECRET='secret'
-```
-
-## Advanced usage
-
-### Handling your own deep links
-
-WonderPush allows you to open a deep link with your notifications (`targetUrl` of your notification object, or set the tap/click action while composing your notification with our dashboard).
-To use deep links with cordova, you can use [a plugin](https://github.com/EddyVerbruggen/Custom-URL-scheme) maintained by the community.
+Report a bug, file a feature request or send a pull request in the [**issue tracker**](https://github.com/wonderpush/wonderpush-cordova-sdk/issues).
