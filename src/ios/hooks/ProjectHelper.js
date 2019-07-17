@@ -116,10 +116,11 @@ class ProjectHelper {
   }
   findFileByName(name) {
     const fileRefSection = this.project.pbxFileReferenceSection();
+    const unquotedName = this.unquote(name);
     for (const key in fileRefSection) {
       const pbxFile = fileRefSection[key];
       if (typeof pbxFile !== 'object') continue;
-      if (pbxFile.name === name) return {
+      if (this.unquote(pbxFile.name) === unquotedName) return {
         uuid: key,
         pbxFile,
       }
