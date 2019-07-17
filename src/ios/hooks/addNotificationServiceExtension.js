@@ -113,6 +113,23 @@ const addExtensionToProject = (contextHelper, project) => {
       logHelper.debug('[addExtensionToProject] create target', ourServiceExtensionName);
       const target = project.addTarget(ourServiceExtensionName, 'app_extension', ourServiceExtensionName);
 
+      // Create our group
+      const filePaths = [
+        'NotificationService.m',
+        'NotificationService.h',
+        `${ourServiceExtensionName}-Info.plist`,
+        'wonderpushnotificationserviceextension-debug.xcconfig',
+        'wonderpushnotificationserviceextension-release.xcconfig',
+      ];
+      const group = project.addPbxGroup(filePaths, ourServiceExtensionName, ourServiceExtensionName);
+      logHelper.debug('[addExtensionToProject] created group', group.uuid);
+
+      // Add our group to the main group
+      const mainGroupId = projectHelper.getProjectMainGroupId();
+      if (!mainGroupId) throw  new Error('Could not find main group ID');
+      project.addToPbxGroup(group.uuid, mainGroupId);
+      logHelper.debug('[addExtensionToProject] added group', group.uuid, 'to the main group', mainGroupId);
+
       // Get this build configurations for the app
       const appTargetKey = projectHelper.getAppTargetKey();
       const appBuildConfigurations = projectHelper.getTargetBuildConfigurations(appTargetKey);
@@ -154,6 +171,13 @@ const addExtensionToProject = (contextHelper, project) => {
         Object.assign(buildConfiguration.pbxXCBuildConfiguration.buildSettings, EXTENSION_TARGET_BUILD_SETTINGS.Common);
         Object.assign(buildConfiguration.pbxXCBuildConfiguration.buildSettings, EXTENSION_TARGET_BUILD_SETTINGS[environment]);
 
+        // set baseConfigurationReference
+        const baseConfigurationFileReference = projectHelper.findFileByName(`wonderpushnotificationserviceextension-${environment.toLowerCase()}.xcconfig`);
+        if (baseConfigurationFileReference) {
+          logHelper.debug('Setting baseConfigurationReference to', baseConfigurationFileReference);
+          buildConfiguration.pbxXCBuildConfiguration.baseConfigurationReference = baseConfigurationFileReference.uuid;
+          buildConfiguration.pbxXCBuildConfiguration.baseConfigurationReference_comment = baseConfigurationFileReference.pbxFile.name;
+        }
         // Copy bundle identifier
         const bundleIdentifier = projectHelper.getAppBundleIdentifier(environment);
         extensionBundleIdentifier = `${bundleIdentifier}.${ourServiceExtensionName}`;
@@ -170,18 +194,7 @@ const addExtensionToProject = (contextHelper, project) => {
         }
       }
 
-      // Create our group
-      const filePaths = ['NotificationService.m', 'NotificationService.h', `${ourServiceExtensionName}-Info.plist`];
-      const group = project.addPbxGroup(filePaths, ourServiceExtensionName, ourServiceExtensionName);
-      logHelper.debug('[addExtensionToProject] created group', group.uuid);
-
-      // Add our group to the main group
-      const mainGroupId = projectHelper.getProjectMainGroupId();
-      if (!mainGroupId) throw  new Error('Could not find main group ID');
-      project.addToPbxGroup(group.uuid, mainGroupId);
-      logHelper.debug('[addExtensionToProject] added group', group.uuid, 'to the main group', mainGroupId);
-
-      // Only .m files
+      // Make sure .m files get compiled
       const buildPhaseFileKeys = group.pbxGroup.children
         .filter(x => {
           const f = projectHelper.getFileByKey(x.value);
