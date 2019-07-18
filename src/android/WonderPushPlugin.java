@@ -141,7 +141,7 @@ public class WonderPushPlugin extends CordovaPlugin {
         } else if (action.equals("__setEventForwarder")) {
 
             jsEventForwarder = callbackContext;
-            PluginResult result = new PluginResult(PluginResult.Status.OK);
+            PluginResult result = new PluginResult(PluginResult.Status.OK, (String) null);
             result.setKeepCallback(true);
             callbackContext.sendPluginResult(result);
 
