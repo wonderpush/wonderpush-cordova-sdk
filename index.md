@@ -1,6 +1,6 @@
 # WonderPush Cordova SDK Guide
 
-[WonderPush](https://www.wonderpush.com) is an advanced push notification service for iOS and Android applications and Websites. High volume and fast delivery. [Start for free](https://dashboard.wonderpush.com/account/signup).
+[WonderPush](https://www.wonderpush.com) is an advanced push notification service for iOS and Android applications and Websites. High volume and fast delivery. [Get started in minutes](https://dashboard.wonderpush.com/account/signup).
 
 Push notifications allow your users to opt-in to timely updates from
 your application and allow you to effectively re-engage them with customized,
@@ -13,7 +13,7 @@ it shows you how to get push messaging up and running on your application in min
 <a id="demo-app"></a>Demo application
 =====================================
 
-Check the [demo application](https://github.com/wonderpush/wonderpush-cordova-demo) repository.
+You can read an example integration by looking at the code of our [Demo Application, available on GitHub](https://github.com/wonderpush/wonderpush-cordova-demo).
 
 
 <a id="reference"></a>API Reference
