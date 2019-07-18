@@ -3,6 +3,10 @@
  * @callback WonderPush~SuccessCallback
  */
 /**
+ * This callback is called with an Error argument when the call fails.
+ * @callback WonderPush~ErrorCallback
+ */
+/**
  * This callback is called with a single boolean argument when the call succeeds.
  * @callback WonderPush~BooleanCallback
  * @param {boolean} value - The return value.
@@ -120,11 +124,12 @@ function _checkAllowedKeys(obj) {
  * Initializes the SDK, if you've opted to disable auto-initialization using the AUTO_INIT plugin variable.
  * @param {string} clientId
  * @param {string} clientSecret
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function initialize(clientId, clientSecret, cb) {
-  _callNative('initialize', [clientId, clientSecret], cb);
+function initialize(clientId, clientSecret, onSuccess, onFailure) {
+  _callNative('initialize', [clientId, clientSecret], onSuccess, onFailure);
 }
 
 /**
@@ -140,17 +145,18 @@ function initialize(clientId, clientSecret, cb) {
  *   Use `null` for anonymous users.
  *
  *   You are strongly encouraged to use your own unique internal identifier.
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function setUserId(userId, cb) {
+function setUserId(userId, onSuccess, onFailure) {
   if (userId === null || userId === undefined) {
     userId = null;
   } else if (typeof userId !== 'string') {
     throw new Error('Given parameter is neither a string nor null/undefined');
   }
 
-  _callNative('setUserId', [userId], cb);
+  _callNative('setUserId', [userId], onSuccess, onFailure);
 }
 
 /**
@@ -158,24 +164,26 @@ function setUserId(userId, cb) {
  *
  * The SDK is ready when it is initialized and has fetched an access token.
  * @param {WonderPush~BooleanCallback} cb - Callback called with `true` if the SDK is ready, `false` otherwise.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function isReady(cb) {
-  _callNative('isReady', [], cb);
+function isReady(cb, onFailure) {
+  _callNative('isReady', [], cb, onFailure);
 }
 
 /**
  * Controls native SDK logging.
  * @param {boolean} enabled - Whether to enable logs.
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function setLogging(enabled, cb) {
+function setLogging(enabled, onSuccess, onFailure) {
   if (typeof enabled !== 'boolean') {
     throw new Error('Given parameter is not a boolean');
   }
 
-  _callNative('setLogging', [enabled], cb);
+  _callNative('setLogging', [enabled], onSuccess, onFailure);
 }
 
 /**
@@ -201,30 +209,32 @@ function delegateNativeCallback(call) {
 /**
  * Sets up a delegate for tighter integration, or removes it.
  * @param {?WonderPushDelegate} delegate - The delegate to set, or `null` to remove it.
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function setDelegate(delegate, cb) {
-  cb = cb || function(){}; // ensure cb is set to consume first result properly
+function setDelegate(delegate, onSuccess, onFailure) {
+  onSuccess = onSuccess || function(){}; // ensure cb is set to consume first result properly
   currentDelegate = delegate;
   _callNative('setDelegate', [currentDelegate != null], function(call) {
-    if (cb) {
+    if (onSuccess) {
       // Consuming first return
-      cb();
-      cb = null;
+      onSuccess();
+      onSuccess = null;
     } else {
       // Forwarding successive calls
       delegateNativeCallback(call);
     }
-  });
+  }, onFailure);
 }
 
 /**
  * Gets the current delegate for tighter integration.
  * @param {WonderPush~DelegateCallback} cb - Callback called with the current delegate.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function getDelegate(cb) {
+function getDelegate(cb, onFailure) {
     cb = cb || function(){}; // ensure cb is set to consume first result properly
     cb(currentDelegate);
 }
@@ -236,10 +246,11 @@ function getDelegate(cb) {
 /**
  * Returns the userId currently in use, `null` by default.
  * @param {WonderPush~NullableStringCallback} cb - Callback called with the current userId, which may be `null`.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function getUserId(cb) {
-  _callNative('getUserId', [], cb);
+function getUserId(cb, onFailure) {
+  _callNative('getUserId', [], cb, onFailure);
 }
 
 /**
@@ -247,29 +258,32 @@ function getUserId(cb) {
  * If you want to store this information on your servers, keep the corresponding userId with it.
  * Will return `null` until the SDK is properly initialized.
  * @param {WonderPush~NullableStringCallback} cb - Callback called with the current installationId, which may be `null`.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function getInstallationId(cb) {
-  _callNative('getInstallationId', [], cb);
+function getInstallationId(cb, onFailure) {
+  _callNative('getInstallationId', [], cb, onFailure);
 }
 
 /**
  * Returns the unique device identifier
  * @param {WonderPush~StringCallback} cb - Callback called with the current deviceId.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function getDeviceId(cb) {
-  _callNative('getDeviceId', [], cb);
+function getDeviceId(cb, onFailure) {
+  _callNative('getDeviceId', [], cb, onFailure);
 }
 
 /**
  * Returns the push token.
  * Returns `null` if the user is not opt-in.
  * @param {WonderPush~NullableStringCallback} cb - Callback called with the push token, which may be `null`.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function getPushToken(cb) {
-  _callNative('getPushToken', [], cb);
+function getPushToken(cb, onFailure) {
+  _callNative('getPushToken', [], cb, onFailure);
 }
 
 /**
@@ -277,10 +291,11 @@ function getPushToken(cb) {
  * Returns `null` until the SDK is properly initialized.
  * This together with your client secret gives entire control to the current installation and associated user, you should not disclose it unnecessarily.
  * @param {WonderPush~NullableStringCallback} cb - Callback called with the current access token, which may be `null`.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function getAccessToken(cb) {
-  _callNative('getAccessToken', [], cb);
+function getAccessToken(cb, onFailure) {
+  _callNative('getAccessToken', [], cb, onFailure);
 }
 
 ///
@@ -296,18 +311,20 @@ function getAccessToken(cb) {
  *
  *   The keys should be prefixed according to the type of their values.
  *   You can find the details in the [Concepts > Custom fields](https://www.wonderpush.com/docs/guide/custom-fields) section of the documentation.
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function trackEvent(type, attributes, cb) {
+function trackEvent(type, attributes, onSuccess, onFailure) {
   var args = [type];
 
   if (!type) {
     throw new Error('Missing event type');
   }
 
-  if (attributes && !cb && typeof attributes === "function") {
-    cb = attributes;
+  if (attributes && typeof attributes === "function") {
+    onFailure = onSuccess;
+    onSuccess = attributes;
     attributes = null;
   }
 
@@ -317,55 +334,60 @@ function trackEvent(type, attributes, cb) {
     args.push(attributes);
   }
 
-  _callNative('trackEvent', args, cb);
+  _callNative('trackEvent', args, onSuccess, onFailure);
 }
 
 /**
  * Adds one or more tags to the installation.
  * @param {string|string[]} tag - The tags to add to the installation. You can use either a single string argument or an array of strings.
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function addTag(tag, cb) {
-  return _callNative('addTag', [tag], cb);
+function addTag(tag, onSuccess, onFailure) {
+  return _callNative('addTag', [tag], onSuccess, onFailure);
 }
 
 /**
  * Removes one or more tags from the installation.
  * @param {string|string[]} tag - The tags to remove from the installation. You can use either a single string argument or an array of strings.
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function removeTag(tag, cb) {
-  return _callNative('removeTag', [tag], cb);
+function removeTag(tag, onSuccess, onFailure) {
+  return _callNative('removeTag', [tag], onSuccess, onFailure);
 }
 
 /**
  * Removes all tags from the installation.
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function removeAllTags(cb) {
-  return _callNative('removeAllTags', [], cb);
+function removeAllTags(onSuccess, onFailure) {
+  return _callNative('removeAllTags', [], onSuccess, onFailure);
 }
 
 /**
  * Returns all the tags of the installation.
  * @param {WonderPush~StringArrayCallback} cb - The callback called with an array of string tags.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function getTags(cb) {
-  return _callNative('getTags', [], cb);
+function getTags(cb, onFailure) {
+  return _callNative('getTags', [], cb, onFailure);
 }
 
 /**
  * Tests whether the installation has the given tag attached to it.
  * @param {string} tag - The tag to test.
  * @param {WonderPush~BooleanCallback} cb - The callback called with `true` if the given tag is attached to the installation, `false` otherwise.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function hasTag(tag, cb) {
-  return _callNative('hasTag', [tag], cb);
+function hasTag(tag, cb, onFailure) {
+  return _callNative('hasTag', [tag], cb, onFailure);
 }
 
 /**
@@ -376,11 +398,12 @@ function hasTag(tag, cb) {
  *
  * @param {string} field - The name of the property to set
  * @param {mixed} value - The value to be set, can be an array
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function setProperty(field, value, cb) {
-  return _callNative('setProperty', [field, value], cb);
+function setProperty(field, value, onSuccess, onFailure) {
+  return _callNative('setProperty', [field, value], onSuccess, onFailure);
 }
 
 /**
@@ -389,11 +412,12 @@ function setProperty(field, value, cb) {
  * The previous value is replaced with `null`.
  *
  * @param {string} field - The name of the property to set
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function unsetProperty(field, cb) {
-  return _callNative('unsetProperty', [field], cb);
+function unsetProperty(field, onSuccess, onFailure) {
+  return _callNative('unsetProperty', [field], onSuccess, onFailure);
 }
 
 /**
@@ -405,11 +429,12 @@ function unsetProperty(field, cb) {
  *
  * @param {string} field - The name of the property to add values to
  * @param {*|Array.<*>|...*} value - The value(s) to be added, can be an array or multiple arguments
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function addProperty(field, value, cb) {
-  return _callNative('addProperty', [field, value], cb);
+function addProperty(field, value, onSuccess, onFailure) {
+  return _callNative('addProperty', [field, value], onSuccess, onFailure);
 }
 
 /**
@@ -421,11 +446,12 @@ function addProperty(field, value, cb) {
  *
  * @param {string} field - The name of the property to read values from
  * @param {*|Array.<*>|...*} value - The value(s) to be removed, can be an array or multiple arguments
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function removeProperty(field, value, cb) {
-  return _callNative('removeProperty', [field, value], cb);
+function removeProperty(field, value, onSuccess, onFailure) {
+  return _callNative('removeProperty', [field, value], onSuccess, onFailure);
 }
 
 /**
@@ -437,12 +463,13 @@ function removeProperty(field, value, cb) {
  *
  * @param {string} field - The name of the property to read values from
  * @param {WonderPush~MixedCallback} cb - Callback called with `null` or a single value stored in the property, never an array or `undefined`.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function getPropertyValue(field, cb) {
+function getPropertyValue(field, cb, onFailure) {
   return _callNative('getPropertyValue', [field], function(wrappedValue) {
       cb && cb(wrappedValue.__wrapped);
-  })
+  }, onFailure)
 }
 
 /**
@@ -455,19 +482,21 @@ function getPropertyValue(field, cb) {
  *
  * @param {string} field - The name of the property to read values from
  * @param {WonderPush~MixedArrayCallback} cb - Callback called with a possibly empty array of the values stored in the property, but never `null` nor `undefined`
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function getPropertyValues(field, cb) {
-  return _callNative('getPropertyValues', [field], cb);
+function getPropertyValues(field, cb, onFailure) {
+  return _callNative('getPropertyValues', [field], cb, onFailure);
 }
 
 /**
  * Returns the latest known custom properties attached to the current installation object stored by WonderPush.
  * @param {WonderPush~ObjectCallback} cb - Callback called with the current installation custom properties.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function getProperties(cb) {
-  return _callNative('getProperties', [], cb);
+function getProperties(cb, onFailure) {
+  return _callNative('getProperties', [], cb, onFailure);
 }
 
 /**
@@ -479,28 +508,30 @@ function getProperties(cb) {
  *
  * The keys should be prefixed according to the type of their values.
  * You can find the details in the [Segmentation > Properties](https://docs.wonderpush.com/docs/properties#section-custom-properties) section of the documentation.
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function putProperties(properties, cb) {
+function putProperties(properties, onSuccess, onFailure) {
   if (!properties) {
     throw new Error('Missing properties');
   }
 
   _checkAllowedKeys(properties);
 
-  _callNative('putProperties', [properties], cb);
+  _callNative('putProperties', [properties], onSuccess, onFailure);
 }
 
 /**
  * Returns the latest known custom properties attached to the current installation object stored by WonderPush.
  * @param {WonderPush~ObjectCallback} cb - Callback called with the current installation custom properties.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  * @deprecated
  * @see WonderPush.getProperties
  */
-function getInstallationCustomProperties(cb) {
-  return _callNative('getInstallationCustomProperties', [], cb);
+function getInstallationCustomProperties(cb, onFailure) {
+  return _callNative('getInstallationCustomProperties', [], cb, onFailure);
 }
 
 /**
@@ -512,19 +543,20 @@ function getInstallationCustomProperties(cb) {
  *
  * The keys should be prefixed according to the type of their values.
  * You can find the details in the [Segmentation > Properties](https://docs.wonderpush.com/docs/properties#section-custom-properties) section of the documentation.
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  * @deprecated
  * @see WonderPush.putProperties
  */
-function putInstallationCustomProperties(customProperties, cb) {
+function putInstallationCustomProperties(customProperties, onSuccess, onFailure) {
   if (!customProperties) {
     throw new Error('Missing custom properties');
   }
 
   _checkAllowedKeys(customProperties);
 
-  _callNative('putInstallationCustomProperties', [customProperties], cb);
+  _callNative('putInstallationCustomProperties', [customProperties], onSuccess, onFailure);
 }
 
 ///
@@ -543,20 +575,22 @@ function putInstallationCustomProperties(customProperties, cb) {
  * Because in iOS you only have *one* chance for prompting the user, you should find a good timing for that.
  * For a start, you can systematically call it when the application starts, so that the user will be prompted directly at the first launch.
  *
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function subscribeToNotifications(cb) {
-  _callNative('subscribeToNotifications', [], cb);
+function subscribeToNotifications(onSuccess, onFailure) {
+  _callNative('subscribeToNotifications', [], onSuccess, onFailure);
 }
 
 /**
  * Returns whether the notifications are enabled.
  * @param {WonderPush~BooleanCallback} cb - Callback called with either `true` or false.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function isSubscribedToNotifications(cb) {
-  _callNative('isSubscribedToNotifications', [], cb);
+function isSubscribedToNotifications(cb, onFailure) {
+  _callNative('isSubscribedToNotifications', [], cb, onFailure);
 }
 
 /**
@@ -564,22 +598,24 @@ function isSubscribedToNotifications(cb) {
  *
  * This method marks the user as soft opt-out.
  *
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function unsubscribeFromNotifications(cb) {
-  _callNative('unsubscribeFromNotifications', [], cb);
+function unsubscribeFromNotifications(onSuccess, onFailure) {
+  _callNative('unsubscribeFromNotifications', [], onSuccess, onFailure);
 }
 
 /**
  * Returns whether the notifications are enabled.
  * @param {WonderPush~BooleanCallback} cb - Callback called with either `true` or false.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  * @deprecated
  * @see WonderPush.isSubscribedToNotifications
  */
-function getNotificationEnabled(cb) {
-  _callNative('getNotificationEnabled', [], cb);
+function getNotificationEnabled(cb, onFailure) {
+  _callNative('getNotificationEnabled', [], cb, onFailure);
 }
 
 /**
@@ -596,18 +632,19 @@ function getNotificationEnabled(cb) {
  * For a start, you can systematically call it when the application starts, so that the user will be prompted directly at the first launch.
  *
  * @param {boolean} enabled - The new activation state of push notifications.
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  * @deprecated
  * @see WonderPush.subscribeToNotifications
  * @see WonderPush.unsubscribeFromNotifications
  */
-function setNotificationEnabled(enabled, cb) {
+function setNotificationEnabled(enabled, onSuccess, onFailure) {
   if (typeof enabled !== 'boolean') {
     throw new Error('Given parameter is not a boolean');
   }
 
-  _callNative('setNotificationEnabled', [enabled], cb);
+  _callNative('setNotificationEnabled', [enabled], onSuccess, onFailure);
 }
 
 ///
@@ -618,10 +655,11 @@ function setNotificationEnabled(enabled, cb) {
  * Reads user consent state.
  * Returns undefined if no explicit consent was set.
  * @param {WonderPush~BooleanCallback} cb - The callback called with either true or false.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function getUserConsent(cb) {
-  _callNative('getUserConsent', [], cb);
+function getUserConsent(cb, onFailure) {
+  _callNative('getUserConsent', [], cb, onFailure);
 }
 
 /**
@@ -629,51 +667,56 @@ function getUserConsent(cb) {
  * If the `requiresUserConsent` initialization option is true,
  * the whole SDK is paused and no data is sent to WonderPush, until consent is provided.
  * @param {boolean} consent -
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function setUserConsent(consent, cb) {
-  _callNative('setUserConsent', [consent], cb);
+function setUserConsent(consent, onSuccess, onFailure) {
+  _callNative('setUserConsent', [consent], onSuccess, onFailure);
 }
 
 /**
  * Remove any local storage and ask the WonderPush servers to delete any data associated with the all local installations and related users.
  *
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function clearAllData(cb) {
-  _callNative('clearAllData', [], cb);
+function clearAllData(onSuccess, onFailure) {
+  _callNative('clearAllData', [], onSuccess, onFailure);
 }
 
 /**
  * Ask the WonderPush servers to delete any event associated with the all local installations.
  *
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function clearEventsHistory(cb) {
-  _callNative('clearEventsHistory', [], cb);
+function clearEventsHistory(onSuccess, onFailure) {
+  _callNative('clearEventsHistory', [], onSuccess, onFailure);
 }
 
 /**
  * Ask the WonderPush servers to delete any custom data associated with the all local installations and related users.
  *
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function clearPreferences(cb) {
-  _callNative('clearPreferences', [], cb);
+function clearPreferences(onSuccess, onFailure) {
+  _callNative('clearPreferences', [], onSuccess, onFailure);
 }
 
 /**
  * Initiates the download of all user remote and local data.
  *
- * @param {WonderPush~SuccessCallback} [cb] - The success callback.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function downloadAllData(cb) {
-  _callNative('downloadAllData', [], cb);
+function downloadAllData(onSuccess, onFailure) {
+  _callNative('downloadAllData', [], onSuccess, onFailure);
 }
 
 ///
@@ -708,11 +751,12 @@ function downloadAllData(cb) {
 /**
  * Get the default channel id.
  * @param {WonderPush~StringCallback} cb
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @alias WonderPush.UserPreferences.getDefaultChannelId
  */
-function UserPreferences_getDefaultChannelId(cb) {
+function UserPreferences_getDefaultChannelId(cb, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_getDefaultChannelId', [], cb);
+    _callNative('UserPreferences_getDefaultChannelId', [], cb, onFailure);
   } else {
     setTimeout(cb.bind(null, 'default'), 0);
   }
@@ -722,11 +766,12 @@ function UserPreferences_getDefaultChannelId(cb) {
  * Set the default channel id.
  * @param {string} id
  * @param {WonderPush~StringCallback} cb
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @alias WonderPush.UserPreferences.setDefaultChannelId
  */
-function UserPreferences_setDefaultChannelId(id, cb) {
+function UserPreferences_setDefaultChannelId(id, cb, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_setDefaultChannelId', [id], cb);
+    _callNative('UserPreferences_setDefaultChannelId', [id], cb, onFailure);
   } else {
     setTimeout(cb, 0);
   }
@@ -741,11 +786,12 @@ function UserPreferences_setDefaultChannelId(id, cb) {
  * Get a channel group.
  * @param {string} groupId
  * @param {WonderPush~WonderPushChannelCallback} cb
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @alias WonderPush.UserPreferences.getChannelGroups
  */
-function UserPreferences_getChannelGroup(groupId, cb) {
+function UserPreferences_getChannelGroup(groupId, cb, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_getChannelGroup', [groupId], cb);
+    _callNative('UserPreferences_getChannelGroup', [groupId], cb, onFailure);
   } else {
     setTimeout(cb.bind(null, null), 0);
   }
@@ -760,11 +806,12 @@ function UserPreferences_getChannelGroup(groupId, cb) {
  * Get a channel.
  * @param {string} channelId
  * @param {WonderPush~WonderPushChannelCallback} cb
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @alias WonderPush.UserPreferences.getChannel
  */
-function UserPreferences_getChannel(channelId, cb) {
+function UserPreferences_getChannel(channelId, cb, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_getChannel', [channelId], cb);
+    _callNative('UserPreferences_getChannel', [channelId], cb, onFailure);
   } else {
     setTimeout(cb.bind(null, null), 0);
   }
@@ -773,84 +820,90 @@ function UserPreferences_getChannel(channelId, cb) {
 /**
  * Create, update and remove channel existing groups to match the given channel groups.
  * @param {WonderPushChannelGroup[]} channelGroups
- * @param {WonderPush~SuccessCallback} cb
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @alias WonderPush.UserPreferences.setChannelGroups
  */
-function UserPreferences_setChannelGroups(channelGroups, cb) {
+function UserPreferences_setChannelGroups(channelGroups, onSuccess, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_setChannelGroups', [channelGroups], cb);
+    _callNative('UserPreferences_setChannelGroups', [channelGroups], onSuccess, onFailure);
   } else {
-    setTimeout(cb, 0);
+    setTimeout(onSuccess, 0);
   }
 }
 
 /**
  * Create, update and remove channels to match the given channels.
  * @param {WonderPushChannel[]} channels
- * @param {WonderPush~SuccessCallback} cb
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @alias WonderPush.UserPreferences.setChannels
  */
-function UserPreferences_setChannels(channels, cb) {
+function UserPreferences_setChannels(channels, onSuccess, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_setChannels', [channels], cb);
+    _callNative('UserPreferences_setChannels', [channels], onSuccess, onFailure);
   } else {
-    setTimeout(cb, 0);
+    setTimeout(onSuccess, 0);
   }
 }
 
 /**
  * Create or update a channel group.
  * @param {WonderPushChannelGroup} channelGroup
- * @param {WonderPush~SuccessCallback} cb
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @alias WonderPush.UserPreferences.putChannelGroup
  */
-function UserPreferences_putChannelGroup(channelGroup, cb) {
+function UserPreferences_putChannelGroup(channelGroup, onSuccess, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_putChannelGroup', [channelGroup], cb);
+    _callNative('UserPreferences_putChannelGroup', [channelGroup], onSuccess, onFailure);
   } else {
-    setTimeout(cb, 0);
+    setTimeout(onSuccess, 0);
   }
 }
 
 /**
  * Create or update a channel.
  * @param {WonderPushChannel} channel
- * @param {WonderPush~SuccessCallback} cb
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @alias WonderPush.UserPreferences.putChannel
  */
-function UserPreferences_putChannel(channel, cb) {
+function UserPreferences_putChannel(channel, onSuccess, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_putChannel', [channel], cb);
+    _callNative('UserPreferences_putChannel', [channel], onSuccess, onFailure);
   } else {
-    setTimeout(cb, 0);
+    setTimeout(onSuccess, 0);
   }
 }
 
 /**
  * Remove a channel group.
  * @param {string} groupId
- * @param {WonderPush~SuccessCallback} cb
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @alias WonderPush.UserPreferences.removeChannelGroup
  */
-function UserPreferences_removeChannelGroup(groupId, cb) {
+function UserPreferences_removeChannelGroup(groupId, onSuccess, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_removeChannelGroup', [groupId], cb);
+    _callNative('UserPreferences_removeChannelGroup', [groupId], onSuccess, onFailure);
   } else {
-    setTimeout(cb, 0);
+    setTimeout(onSuccess, 0);
   }
 }
 
 /**
  * Remove a channel.
  * @param {string} channelId
- * @param {WonderPush~SuccessCallback} cb
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @alias WonderPush.UserPreferences.removeChannel
  */
-function UserPreferences_removeChannel(channelId, cb) {
+function UserPreferences_removeChannel(channelId, onSuccess, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_removeChannel', [channelId], cb);
+    _callNative('UserPreferences_removeChannel', [channelId], onSuccess, onFailure);
   } else {
-    setTimeout(cb, 0);
+    setTimeout(onSuccess, 0);
   }
 }
 
