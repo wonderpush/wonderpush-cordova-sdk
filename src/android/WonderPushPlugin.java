@@ -50,7 +50,7 @@ public class WonderPushPlugin extends CordovaPlugin {
 
     @Override
     protected void pluginInitialize() {
-        WonderPush.setIntegrator("wonderpush-cordova-sdk-2.0.0");
+        WonderPush.setIntegrator("wonderpush-cordova-sdk-2.0.1");
 
         // Forward notification clicks and data notifications receipt
         LocalBroadcastManager.getInstance(cordova.getContext()).registerReceiver(new BroadcastReceiver() {
