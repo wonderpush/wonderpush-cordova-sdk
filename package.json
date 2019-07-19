@@ -1,7 +1,7 @@
 {
   "name": "wonderpush-cordova-sdk",
   "version": "2.0.0",
-  "description": "Cordova / PhoneGap SDK for WonderPush − Advanced push notification service for iOS and Android applications and Websites. High volume and fast delivery. Start for free.",
+  "description": "Mobile push notification delivery with the WonderPush service. The WonderPush Cordova SDK is compatible with iOS and Android.",
   "dependencies": {
     "fs-extra": "^8.1.0",
     "xcode": "^2.0.0"
