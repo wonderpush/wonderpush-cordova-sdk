@@ -18,6 +18,18 @@ class ContextHelper {
   get podfilePath() {
     return this.projectRoot && path.join(this.projectRoot, 'platforms', 'ios', 'Podfile');
   }
+  get bundleIdentifier() {
+    const projectRoot = this.projectRoot;
+    if (!projectRoot) return undefined;
+    try {
+      const contents = fs.readFileSync(path.join(projectRoot, 'config.xml'));
+      const regex = /widget id="(.+?)"/;
+      const matches = regex.exec(contents);
+      return matches[1];
+    } catch (e) {
+      return undefined;
+    }
+  }
   readConfig() {
     const projectRoot = this.projectRoot;
     if (!projectRoot) return Promise.reject(new Error('Missing project root'));
