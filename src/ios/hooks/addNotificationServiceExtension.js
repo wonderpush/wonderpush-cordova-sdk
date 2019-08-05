@@ -88,10 +88,11 @@ const addExtensionToProject = (contextHelper, project) => {
 
   const ourServiceExtensionName = ProjectHelper.NOTIFICATION_SERVICE_EXTENSION_NAME;
   const projectHelper = new ProjectHelper(project);
+
   const existingServiceExtensions = projectHelper.getAppExtensionTargets();
 
   // Message user if another extension that is not ours is found
-  if (existingServiceExtensions.find(x => x.name !== ourServiceExtensionName)) logHelper.warn('You already have a notification service extension. Please follow our guide to support rich push notifications: https://docs.wonderpush.com/docs/adding-a-notification-service-extension');
+  if (existingServiceExtensions.find(x => projectHelper.unquote(x.name) !== ourServiceExtensionName)) logHelper.warn('You already have a notification service extension. Please follow our guide to support rich push notifications: https://docs.wonderpush.com/docs/adding-a-notification-service-extension');
 
   // Exit right there
   if (existingServiceExtensions.length) {
