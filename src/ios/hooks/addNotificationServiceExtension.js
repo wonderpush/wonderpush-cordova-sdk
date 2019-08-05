@@ -53,7 +53,7 @@ const ensureProductBundleIdentifier = (contextHelper, projectHelper) => {
   const logHelper = new LogHelper(contextHelper.context);
   let mustSave = false;
   for (const environment of ['Debug', 'Release']) {
-    const appBundleIdentifier = projectHelper.getAppBundleIdentifier(environment);
+    const appBundleIdentifier = projectHelper.getAppBundleIdentifier(environment) || contextHelper.bundleIdentifier;
     if (!appBundleIdentifier) {
       logHelper.debug('[ensureProductBundleIdentifier] Could not determine bundle ID');
       return;
@@ -97,6 +97,15 @@ const addExtensionToProject = (contextHelper, project) => {
   if (existingServiceExtensions.length) {
     logHelper.debug('[addExtensionToProject] existing service extension, exiting');
     return ensureProductBundleIdentifier(contextHelper, projectHelper);
+  }
+
+  // Check that we have a bundle identifier
+  for (const environment of ['Debug', 'Release']) {
+    const bundleIdentifier = projectHelper.getAppBundleIdentifier(environment) || contextHelper.bundleIdentifier;
+    if (!bundleIdentifier) {
+      logHelper.warn('Could not add notification service extension: missing product bundle identifier');
+      return Promise.resolve();
+    }
   }
 
   // Copy files
@@ -155,6 +164,7 @@ const addExtensionToProject = (contextHelper, project) => {
         logHelper.debug('[addExtensionToProject] update build configuration', buildConfiguration.uuid);
 
         const environment = buildConfiguration.pbxXCBuildConfiguration.name;
+        const bundleIdentifier = projectHelper.getAppBundleIdentifier(environment) || contextHelper.bundleIdentifier;
 
         // Copy CODE_SIGN* entries
         const correspondingAppBuildConfiguration = appBuildConfigurations.find(x => x.pbxXCBuildConfiguration.name === environment);
@@ -179,7 +189,6 @@ const addExtensionToProject = (contextHelper, project) => {
           buildConfiguration.pbxXCBuildConfiguration.baseConfigurationReference_comment = baseConfigurationFileReference.pbxFile.name;
         }
         // Copy bundle identifier
-        const bundleIdentifier = projectHelper.getAppBundleIdentifier(environment);
         extensionBundleIdentifier = `${bundleIdentifier}.${ourServiceExtensionName}`;
         buildConfiguration.pbxXCBuildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER = extensionBundleIdentifier;
 
