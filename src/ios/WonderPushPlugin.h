@@ -82,4 +82,19 @@
 - (void)clearPreferences:(CDVInvokedUrlCommand *)command;
 - (void)downloadAllData:(CDVInvokedUrlCommand *)command;
 
+// Geolocation
+- (void) enableGeolocation:(CDVInvokedUrlCommand *)command;
+- (void) disableGeolocation:(CDVInvokedUrlCommand *)command;
+- (void) setGeolocation:(CDVInvokedUrlCommand *)command;
+
+// Country, currency, locale, timeZone
+- (void) country:(CDVInvokedUrlCommand *)command;
+- (void) setCountry:(CDVInvokedUrlCommand *)command;
+- (void) currency:(CDVInvokedUrlCommand *)command;
+- (void) setCurrency:(CDVInvokedUrlCommand *)command;
+- (void) locale:(CDVInvokedUrlCommand *)command;
+- (void) setLocale:(CDVInvokedUrlCommand *)command;
+- (void) timeZone:(CDVInvokedUrlCommand *)command;
+- (void) setTimeZone:(CDVInvokedUrlCommand *)command;
+
 @end

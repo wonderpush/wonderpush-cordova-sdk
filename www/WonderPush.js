@@ -719,6 +719,131 @@ function downloadAllData(onSuccess, onFailure) {
   _callNative('downloadAllData', [], onSuccess, onFailure);
 }
 
+/**
+ * Gets the user's country, either as previously stored, or as guessed from the system.
+ * @param {WonderPush~StringCallback} cb
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function country(cb, onFailure) {
+  _callNative('country', [], cb, onFailure);
+}
+
+/**
+ * Overrides the user's country. You should use an ISO 3166-1 alpha-2 country code. Defaults to getting the country code from the system default locale.
+ * Use `null` to disable the override.
+ * @param {string} country -
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function setCountry(country, onSuccess, onFailure) {
+  _callNative('setCountry', [country], onSuccess, onFailure);
+}
+
+/**
+ * Gets the user's currency, either as previously stored, or as guessed from the system.
+ * @param {WonderPush~StringCallback} cb
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function currency(cb, onFailure) {
+  _callNative('currency', [], cb, onFailure);
+}
+
+/**
+ * Overrides the user's currency. You should use an ISO 4217 currency code. Defaults to getting the currency code from the system default locale.
+ * Use `null` to disable the override.
+ * @param {string} currency -
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function setCurrency(currency, onSuccess, onFailure) {
+  _callNative('setCurrency', [currency], onSuccess, onFailure);
+}
+
+/**
+ * Gets the user's locale, either as previously stored, or as guessed from the system.
+ * @param {WonderPush~StringCallback} cb
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function locale(cb, onFailure) {
+  _callNative('locale', [], cb, onFailure);
+}
+
+/**
+ * Overrides the user's locale.
+ * You should use an `xx-XX` form of RFC 1766, composed of a lowercase ISO 639-1 language code, an underscore or a dash, and an uppercase ISO 3166-1 alpha-2 country code.
+ * Defaults to getting the locale code from the system default locale.
+ * Use `null` to disable the override.
+ * @param {string} locale -
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function setLocale(locale, onSuccess, onFailure) {
+  _callNative('setLocale', [locale], onSuccess, onFailure);
+}
+
+/**
+ * Gets the user's time zone, either as previously stored, or as guessed from the system.
+ * @param {WonderPush~StringCallback} cb
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function timeZone(cb, onFailure) {
+  _callNative('timeZone', [], cb, onFailure);
+}
+
+/**
+ * You should use an IANA time zone database codes, `Continent/Country` style preferably, abbreviations like `CET`, `PST`, `UTC`, which have the drawback of changing on daylight saving transitions.
+ * Defaults to getting the time zone code from the system default locale.
+ * Use `null` to disable the override.
+ * @param {string} timeZone -
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function setTimeZone(timeZone, onSuccess, onFailure) {
+  _callNative('setTimeZone', [timeZone], onSuccess, onFailure);
+}
+
+/**
+ * Enables the collection of the user's geolocation.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function enableGeolocation(onSuccess, onFailure) {
+  _callNative('enableGeolocation', [], onSuccess, onFailure);
+}
+
+/**
+ * Disables the collection of the user's geolocation.
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function disableGeolocation(onSuccess, onFailure) {
+  _callNative('disableGeolocation', [], onSuccess, onFailure);
+}
+
+/**
+ * Overrides the user's geolocation.
+ * Using this method you can have the user's location be set to wherever you want.
+ * This may be useful to use a pre-recorded location.
+ * @param {number} latitude
+ * @param {number} longitude
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function setGeolocation(latitude, longitude, onSuccess, onFailure) {
+  _callNative('setGeolocation', [latitude, longitude], onSuccess, onFailure);
+}
+
 ///
 /// WonderPushUserPreferences
 ///
@@ -1001,6 +1126,17 @@ var WonderPush = {
   downloadAllData: downloadAllData,
   // UserPreferences (Android only, safe no-op on other platforms)
   UserPreferences: UserPreferences,
+  country: country,
+  setCountry: setCountry,
+  currency: currency,
+  setCurrency: setCurrency,
+  timeZone: timeZone,
+  setTimeZone: setTimeZone,
+  locale: locale,
+  setLocale: setLocale,
+  setGeolocation: setGeolocation,
+  enableGeolocation: enableGeolocation,
+  disableGeolocation: disableGeolocation,
 };
 
 module.exports = WonderPush;

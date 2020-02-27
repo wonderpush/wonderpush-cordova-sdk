@@ -13,7 +13,7 @@
 
 #import "WonderPushPlugin.h"
 #import <WonderPush/WonderPush.h>
-
+#import <CoreLocation/CoreLocation.h>
 
 @implementation WonderPushPlugin
 
@@ -473,6 +473,91 @@
             [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
         }];
     }];
+}
+
+#pragma mark - Geolocation
+- (void) enableGeolocation:(CDVInvokedUrlCommand *)command {
+    [WonderPush enableGeolocation];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void) disableGeolocation:(CDVInvokedUrlCommand *)command {
+    [WonderPush disableGeolocation];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void) setGeolocation:(CDVInvokedUrlCommand *)command {
+    double latitude, longitude;
+    if (command.arguments.count > 0 && [command.arguments[0] isKindOfClass:NSDictionary.class]) {
+        NSDictionary *dict = command.arguments[0];
+        NSNumber *latitudeNumber = [dict objectForKey:@"latitude"];
+        NSNumber *longitudeNumber = [dict objectForKey:@"longitude"];
+        latitude = latitudeNumber ? latitudeNumber.doubleValue : 0;
+        longitude = longitudeNumber ? longitudeNumber.doubleValue : 0;
+     } else if (command.arguments.count > 1
+        && [command.arguments[0] isKindOfClass:NSNumber.class]
+        && [command.arguments[1] isKindOfClass:NSNumber.class]) {
+        latitude = [command.arguments[0] doubleValue];
+        longitude = [command.arguments[1] doubleValue];
+    } else if (command.arguments.count > 1
+        && [command.arguments[0] isKindOfClass:NSString.class]
+        && [command.arguments[1] isKindOfClass:NSString.class]) {
+        latitude = [command.arguments[0] doubleValue];
+        longitude = [command.arguments[1] doubleValue];
+    }
+
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:latitude longitude:longitude];
+    [WonderPush setGeolocation:location];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+#pragma mark - Country, currency, locale, timeZone
+- (void) country:(CDVInvokedUrlCommand *)command {
+    NSString *rtn = [WonderPush country];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
+}
+
+- (void) setCountry:(CDVInvokedUrlCommand *)command {
+    NSString *val = (NSString *)command.arguments[0];
+    if ((id)val == [NSNull null]) val = nil;
+    [WonderPush setCountry:val];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void) currency:(CDVInvokedUrlCommand *)command {
+    NSString *rtn = [WonderPush currency];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
+}
+
+- (void) setCurrency:(CDVInvokedUrlCommand *)command {
+    NSString *val = (NSString *)command.arguments[0];
+    if ((id)val == [NSNull null]) val = nil;
+    [WonderPush setCurrency:val];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void) locale:(CDVInvokedUrlCommand *)command {
+    NSString *rtn = [WonderPush locale];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
+}
+
+- (void) setLocale:(CDVInvokedUrlCommand *)command {
+    NSString *val = (NSString *)command.arguments[0];
+    if ((id)val == [NSNull null]) val = nil;
+    [WonderPush setLocale:val];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void) timeZone:(CDVInvokedUrlCommand *)command {
+    NSString *rtn = [WonderPush timeZone];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
+}
+
+- (void) setTimeZone:(CDVInvokedUrlCommand *)command {
+    NSString *val = (NSString *)command.arguments[0];
+    if ((id)val == [NSNull null]) val = nil;
+    [WonderPush setTimeZone:val];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
 @end
