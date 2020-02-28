@@ -88,13 +88,13 @@
 - (void) setGeolocation:(CDVInvokedUrlCommand *)command;
 
 // Country, currency, locale, timeZone
-- (void) country:(CDVInvokedUrlCommand *)command;
+- (void) getCountry:(CDVInvokedUrlCommand *)command;
 - (void) setCountry:(CDVInvokedUrlCommand *)command;
-- (void) currency:(CDVInvokedUrlCommand *)command;
+- (void) getCurrency:(CDVInvokedUrlCommand *)command;
 - (void) setCurrency:(CDVInvokedUrlCommand *)command;
-- (void) locale:(CDVInvokedUrlCommand *)command;
+- (void) getLocale:(CDVInvokedUrlCommand *)command;
 - (void) setLocale:(CDVInvokedUrlCommand *)command;
-- (void) timeZone:(CDVInvokedUrlCommand *)command;
+- (void) getTimeZone:(CDVInvokedUrlCommand *)command;
 - (void) setTimeZone:(CDVInvokedUrlCommand *)command;
 
 @end

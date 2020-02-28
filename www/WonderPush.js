@@ -725,8 +725,8 @@ function downloadAllData(onSuccess, onFailure) {
  * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function country(cb, onFailure) {
-  _callNative('country', [], cb, onFailure);
+function getCountry(cb, onFailure) {
+  _callNative('getCountry', [], cb, onFailure);
 }
 
 /**
@@ -747,8 +747,8 @@ function setCountry(country, onSuccess, onFailure) {
  * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function currency(cb, onFailure) {
-  _callNative('currency', [], cb, onFailure);
+function getCurrency(cb, onFailure) {
+  _callNative('getCurrency', [], cb, onFailure);
 }
 
 /**
@@ -769,8 +769,8 @@ function setCurrency(currency, onSuccess, onFailure) {
  * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function locale(cb, onFailure) {
-  _callNative('locale', [], cb, onFailure);
+function getLocale(cb, onFailure) {
+  _callNative('getLocale', [], cb, onFailure);
 }
 
 /**
@@ -793,8 +793,8 @@ function setLocale(locale, onSuccess, onFailure) {
  * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function timeZone(cb, onFailure) {
-  _callNative('timeZone', [], cb, onFailure);
+function getTimeZone(cb, onFailure) {
+  _callNative('getTimeZone', [], cb, onFailure);
 }
 
 /**
@@ -1126,13 +1126,13 @@ var WonderPush = {
   downloadAllData: downloadAllData,
   // UserPreferences (Android only, safe no-op on other platforms)
   UserPreferences: UserPreferences,
-  country: country,
+  getCountry: getCountry,
   setCountry: setCountry,
-  currency: currency,
+  getCurrency: getCurrency,
   setCurrency: setCurrency,
-  timeZone: timeZone,
+  getTimeZone: getTimeZone,
   setTimeZone: setTimeZone,
-  locale: locale,
+  getLocale: getLocale,
   setLocale: setLocale,
   setGeolocation: setGeolocation,
   enableGeolocation: enableGeolocation,

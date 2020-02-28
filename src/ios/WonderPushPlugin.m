@@ -512,7 +512,7 @@
 }
 
 #pragma mark - Country, currency, locale, timeZone
-- (void) country:(CDVInvokedUrlCommand *)command {
+- (void) getCountry:(CDVInvokedUrlCommand *)command {
     NSString *rtn = [WonderPush country];
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
 }
@@ -524,7 +524,7 @@
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
-- (void) currency:(CDVInvokedUrlCommand *)command {
+- (void) getCurrency:(CDVInvokedUrlCommand *)command {
     NSString *rtn = [WonderPush currency];
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
 }
@@ -536,7 +536,7 @@
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
-- (void) locale:(CDVInvokedUrlCommand *)command {
+- (void) getLocale:(CDVInvokedUrlCommand *)command {
     NSString *rtn = [WonderPush locale];
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
 }
@@ -548,7 +548,7 @@
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
-- (void) timeZone:(CDVInvokedUrlCommand *)command {
+- (void) getTimeZone:(CDVInvokedUrlCommand *)command {
     NSString *rtn = [WonderPush timeZone];
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
 }
