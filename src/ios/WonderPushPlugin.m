@@ -35,7 +35,7 @@
         return;
     }
 
-    [WonderPush setIntegrator:@"wonderpush-cordova-sdk-2.1.0"];
+    [WonderPush setIntegrator:@"wonderpush-cordova-sdk-2.1.1"];
 
     NSString *clientId = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_CLIENT_ID" lowercaseString]];
     NSString *clientSecret = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_CLIENT_SECRET" lowercaseString]];
