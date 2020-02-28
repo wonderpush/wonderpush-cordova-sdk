@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -335,6 +336,65 @@ public class WonderPushPlugin extends CordovaPlugin {
             WonderPush.setNotificationEnabled(enabled);
             callbackContext.success();
 
+        // Geolocation
+        } else if (action.equals("enableGeolocation")) {
+
+            WonderPush.enableGeolocation();
+            callbackContext.success();
+
+        } else if (action.equals("disableGeolocation")) {
+
+            WonderPush.disableGeolocation();
+            callbackContext.success();
+
+        } else if (action.equals("setGeolocation")) {
+
+            double latitude = args.getDouble(0);
+            double longitude = args.getDouble(1);
+            Location location = new Location("");
+            location.setLatitude(latitude);
+            location.setLongitude(longitude);
+            WonderPush.setLocation(location);
+            callbackContext.success();
+
+        // Country, currency, locale, timeZone
+        } else if (action.equals("getCountry")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getCountry()));
+
+        } else if (action.equals("setCountry")) {
+
+            WonderPush.setCountry(args.getString(0));
+            callbackContext.success();
+
+        } else if (action.equals("getCurrency")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getCurrency()));
+
+        } else if (action.equals("setCurrency")) {
+
+            WonderPush.setCurrency(args.getString(0));
+            callbackContext.success();
+
+        } else if (action.equals("getLocale")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getLocale()));
+
+        } else if (action.equals("setLocale")) {
+
+            WonderPush.setLocale(args.getString(0));
+            callbackContext.success();
+
+        } else if (action.equals("getTimeZone")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getTimeZone()));
+
+        } else if (action.equals("setTimeZone")) {
+
+            WonderPush.setTimeZone(args.getString(0));
+            callbackContext.success();
+
+        // User consent
         } else if (action.equals("getUserConsent")) {
 
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getUserConsent()));
