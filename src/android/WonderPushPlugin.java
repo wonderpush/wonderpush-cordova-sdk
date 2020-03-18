@@ -354,7 +354,7 @@ public class WonderPushPlugin extends CordovaPlugin {
             Location location = new Location("");
             location.setLatitude(latitude);
             location.setLongitude(longitude);
-            WonderPush.setLocation(location);
+            WonderPush.setGeolocation(location);
             callbackContext.success();
 
         // Country, currency, locale, timeZone
