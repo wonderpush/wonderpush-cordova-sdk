@@ -142,12 +142,6 @@
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
-- (void)isReady:(CDVInvokedUrlCommand *)command {
-    BOOL rtn = [WonderPush isReady];
-
-    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:rtn] callbackId:command.callbackId];
-}
-
 - (void)setLogging:(CDVInvokedUrlCommand *)command {
     NSNumber *enabled = (NSNumber *)command.arguments[0];
 

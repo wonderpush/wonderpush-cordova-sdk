@@ -160,10 +160,6 @@ public class WonderPushPlugin extends CordovaPlugin {
             WonderPush.setUserId(userId);
             callbackContext.success();
 
-        } else if (action.equals("isReady")) {
-
-            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.isReady()));
-
         } else if (action.equals("setLogging")) {
 
             boolean enabled = args.getBoolean(0);

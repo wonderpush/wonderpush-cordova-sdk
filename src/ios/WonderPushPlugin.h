@@ -34,7 +34,6 @@
 
 - (void)initialize:(CDVInvokedUrlCommand *)command;
 - (void)setUserId:(CDVInvokedUrlCommand *)command;
-- (void)isReady:(CDVInvokedUrlCommand *)command;
 - (void)setLogging:(CDVInvokedUrlCommand *)command;
 
 // Delegate
