@@ -20,7 +20,6 @@
   <platform name="android">
     <preference name="CLIENT_ID" />
     <preference name="CLIENT_SECRET" />
-    <preference name="SENDER_ID" default="default" />
     <preference name="LOGGING" default="false" />
     <preference name="AUTO_INIT" default="true" />
     <preference name="REQUIRES_USER_CONSENT" default="false" />

@@ -1,0 +1,52 @@
+{
+  "name": "wonderpush-cordova-sdk-fcm",
+  "version": "1.0.1",
+  "description": "Mobile push notification delivery with the WonderPush service. The WonderPush Cordova SDK is compatible with iOS and Android. Firebase compatibility module.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wonderpush/wonderpush-cordova-sdk"
+  },
+  "standard": {
+    "globals": [
+      "cordova"
+    ]
+  },
+  "cordova": {
+    "id": "wonderpush-cordova-sdk-fcm",
+    "platforms": [
+      "android"
+    ]
+  },
+  "engines": {
+    "cordovaDependencies": {
+      "1.0.1": {
+        "cordova-android": ">=8.0.0"
+      }
+    }
+  },
+  "bugs": {
+    "url": "https://github.com/wonderpush/wonderpush-cordova-sdk/issues"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "wonderpush",
+    "cordova",
+    "phonegap",
+    "push",
+    "web push",
+    "web push notifications",
+    "webpush",
+    "GDPR",
+    "RGPD",
+    "notification",
+    "notifications",
+    "push notification",
+    "push notifications",
+    "gcm",
+    "fcm"
+  ],
+  "author": "dev@wonderpush.com",
+  "license": "Apache-2.0"
+}
