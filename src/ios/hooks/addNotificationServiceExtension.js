@@ -118,6 +118,19 @@ const addExtensionToProject = (contextHelper, project) => {
 
   return fs.copy(source, destination)
     .then(() => {
+      // Adapt source files
+      return Promise.all([contextHelper.readClientId(), contextHelper.readClientSecret()]);
+    })
+    .then(([clientId, clientSecret]) => {
+      const notificationServiceSourceFilePath = path.join(destination, 'NotificationService.m');
+      if (fs.existsSync(notificationServiceSourceFilePath)) {
+        let contents = fs.readFileSync(notificationServiceSourceFilePath, 'utf-8');
+        contents = contents.replace("YOUR_CLIENT_ID", clientId);
+        contents = contents.replace("YOUR_CLIENT_SECRET", clientSecret);
+        fs.writeFileSync(notificationServiceSourceFilePath, contents);
+      }
+    })
+    .then(() => {
 
       // Let's add the extension
       logHelper.debug('[addExtensionToProject] create target', ourServiceExtensionName);

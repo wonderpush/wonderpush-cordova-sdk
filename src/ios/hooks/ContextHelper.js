@@ -30,6 +30,45 @@ class ContextHelper {
       return undefined;
     }
   }
+  get pluginId() {
+    return this.context && this.context.opts && this.context.opts.plugin ? this.context.opts.plugin.id : undefined;
+  }
+  readClientId() {
+    return this.readPackage()
+      .then(p => {
+        const pluginId = this.pluginId;
+        if (!pluginId) throw new Error('Missing plugin ID in context');
+        if (p && p.cordova && p.cordova.plugins && p.cordova.plugins[pluginId]) {
+          return p.cordova.plugins[pluginId].CLIENT_ID;
+        }
+      });
+  }
+  readClientSecret() {
+    return this.readPackage()
+      .then(p => {
+        const pluginId = this.pluginId;
+        if (!pluginId) throw new Error('Missing plugin ID in context');
+        if (p && p.cordova && p.cordova.plugins && p.cordova.plugins[pluginId]) {
+          return p.cordova.plugins[pluginId].CLIENT_SECRET;
+        }
+      });
+  }
+  readPackage() {
+    const projectRoot = this.projectRoot;
+    if (!projectRoot) return Promise.reject(new Error('Missing project root'));
+    if (!this.context) return Promise.reject(new Error('Missing context'));
+    const packagePath = path.join(projectRoot, 'package.json');
+    return new Promise((res, rej) => {
+      fs.exists(packagePath, (exists) => {
+        if (!exists) {
+          rej(new Error('Missing package.json file'));
+          return;
+        }
+        const contents = fs.readFileSync(packagePath);
+        res(JSON.parse(contents));
+      });
+    });
+  }
   readConfig() {
     const projectRoot = this.projectRoot;
     if (!projectRoot) return Promise.reject(new Error('Missing project root'));
