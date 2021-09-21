@@ -106,8 +106,8 @@
 }
 
 - (void)onRegisteredCallback:(NSNotification *)notification {
-    NSString *method = notification.userInfo[WP_REGISTERED_CALLBACK_PARAMETER_KEY];
-    NSString *arg = notification.userInfo[WP_REGISTERED_CALLBACK_METHOD_KEY];
+    NSString *method = notification.userInfo[WP_REGISTERED_CALLBACK_METHOD_KEY];
+    NSString *arg = notification.userInfo[WP_REGISTERED_CALLBACK_PARAMETER_KEY];
     CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
                                                                                                           @"type": @"registeredCallback",
                                                                                                           @"method": method,
