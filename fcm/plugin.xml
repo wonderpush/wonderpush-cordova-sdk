@@ -10,7 +10,7 @@
   </engines>
   <platform name="android">
     <preference name="SENDER_ID" default="default" />
-    <framework src="com.wonderpush:wonderpush-android-sdk-fcm:1.0.3" />
+    <framework src="com.wonderpush:wonderpush-android-sdk-fcm:1.0.4" />
     <framework src="build-extras.gradle" custom="true" type="gradleReference" />
   </platform>
 </plugin>
