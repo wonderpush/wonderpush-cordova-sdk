@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="wonderpush-cordova-sdk-hcm" version="1.0.2" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+  <name>WonderPush HCM support</name>
+  <description>Advanced push notification service for mobile applications and Websites. High volume, fast delivery and full-featured starting €1/month. Huawei Mobile Services compatibility module.</description>
+  <author>WonderPush</author>
+  <keywords>wonderpush,push,notification,notifications,push notification,push notifications,hcm,huawei,android,ios</keywords>
+  <license>Apache-2.0</license>
+  <engines>
+    <engine name="cordova-android" version=">=8.0.0" />
+  </engines>
+  <platform name="android">
+    <preference name="HCM_APP_ID" default="default" />
+    <framework src="com.wonderpush:wonderpush-android-sdk-hcm:1.0.2" />
+    <framework src="build-extras.gradle" custom="true" type="gradleReference" />
+  </platform>
+</plugin>

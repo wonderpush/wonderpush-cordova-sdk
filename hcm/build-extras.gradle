@@ -1,0 +1,14 @@
+android {
+  defaultConfig {
+    def wonderpushPluginVariables = ({
+      // Read plugin variables from cordova project root package.json
+      // so that they stay in code and do not end-up copied as a resource
+      def packageJsonText = file("../../../package.json").getText()
+      def packageJson = new groovy.json.JsonSlurper().parseText(packageJsonText)
+      return packageJson.cordova.plugins["wonderpush-cordova-sdk-hcm"]
+    })()
+    if (wonderpushPluginVariables.HCM_APP_ID != null && wonderpushPluginVariables.HCM_APP_ID != "default") {
+      buildConfigField 'String', 'WONDERPUSH_HCM_APP_ID', '"' + wonderpushPluginVariables.HCM_APP_ID + '"'
+    }
+  }
+}
