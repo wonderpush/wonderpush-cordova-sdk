@@ -39,7 +39,9 @@
 
     NSString *clientId = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_CLIENT_ID" lowercaseString]];
     NSString *clientSecret = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_CLIENT_SECRET" lowercaseString]];
-    [WonderPush setClientId:clientId secret:clientSecret];
+    if (clientId && clientSecret) {
+        [WonderPush setClientId:clientId secret:clientSecret];
+    }
     [WonderPush setupDelegateForApplication:[UIApplication sharedApplication]];
     [WonderPush setupDelegateForUserNotificationCenter];
 

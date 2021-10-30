@@ -1,25 +1,33 @@
+def wonderpushPluginVariables = ({
+  try {
+    // Read plugin variables from cordova project root package.json
+    // so that they stay in code and do not end-up copied as a resource
+    def packageJsonText = file("../../../package.json").getText()
+    def packageJson = new groovy.json.JsonSlurper().parseText(packageJsonText)
+    return packageJson.cordova.plugins["wonderpush-cordova-sdk"]
+  } catch (Exception ex) {
+    logger.warn("Could not find wonderpush-cordova-sdk plugin configuration. This is expected if you are using Capacitor.")
+    return null
+  }
+})()
+
 android {
   defaultConfig {
-    def wonderpushPluginVariables = ({
-      // Read plugin variables from cordova project root package.json
-      // so that they stay in code and do not end-up copied as a resource
-      def packageJsonText = file("../../../package.json").getText()
-      def packageJson = new groovy.json.JsonSlurper().parseText(packageJsonText)
-      return packageJson.cordova.plugins["wonderpush-cordova-sdk"]
-    })()
-    buildConfigField 'String', 'WONDERPUSH_CLIENT_ID', '"' + wonderpushPluginVariables.get('CLIENT_ID', '" + throw new Error("MISSING WONDERPUSH CLIENT_ID") + "') + '"'
-    buildConfigField 'String', 'WONDERPUSH_CLIENT_SECRET', '"' + wonderpushPluginVariables.get('CLIENT_SECRET', '" + throw new Error("MISSING WONDERPUSH CLIENT_SECRET") + "') + '"'
-    if (wonderpushPluginVariables.SENDER_ID != null && wonderpushPluginVariables.SENDER_ID != "default") {
-      buildConfigField 'String', 'WONDERPUSH_SENDER_ID', '"' + wonderpushPluginVariables.SENDER_ID + '"'
-    }
-    if (wonderpushPluginVariables.LOGGING != null) {
-      buildConfigField 'boolean', 'WONDERPUSH_LOGGING', wonderpushPluginVariables.LOGGING == 'true' ? 'true' : 'false'
-    }
-    if (wonderpushPluginVariables.AUTO_INIT != null) {
-      buildConfigField 'boolean', 'WONDERPUSH_AUTO_INIT', wonderpushPluginVariables.AUTO_INIT == 'true' ? 'true' : 'false'
-    }
-    if (wonderpushPluginVariables.REQUIRES_USER_CONSENT != null) {
-      buildConfigField 'boolean', 'WONDERPUSH_REQUIRES_USER_CONSENT', wonderpushPluginVariables.REQUIRES_USER_CONSENT == 'true' ? 'true' : 'false'
+    if (wonderpushPluginVariables != null) {
+      buildConfigField 'String', 'WONDERPUSH_CLIENT_ID', '"' + wonderpushPluginVariables.get('CLIENT_ID', '" + throw new Error("MISSING WONDERPUSH CLIENT_ID") + "') + '"'
+      buildConfigField 'String', 'WONDERPUSH_CLIENT_SECRET', '"' + wonderpushPluginVariables.get('CLIENT_SECRET', '" + throw new Error("MISSING WONDERPUSH CLIENT_SECRET") + "') + '"'
+      if (wonderpushPluginVariables.SENDER_ID != null && wonderpushPluginVariables.SENDER_ID != "default") {
+        buildConfigField 'String', 'WONDERPUSH_SENDER_ID', '"' + wonderpushPluginVariables.SENDER_ID + '"'
+      }
+      if (wonderpushPluginVariables.LOGGING != null) {
+        buildConfigField 'boolean', 'WONDERPUSH_LOGGING', wonderpushPluginVariables.LOGGING == 'true' ? 'true' : 'false'
+      }
+      if (wonderpushPluginVariables.AUTO_INIT != null) {
+        buildConfigField 'boolean', 'WONDERPUSH_AUTO_INIT', wonderpushPluginVariables.AUTO_INIT == 'true' ? 'true' : 'false'
+      }
+      if (wonderpushPluginVariables.REQUIRES_USER_CONSENT != null) {
+        buildConfigField 'boolean', 'WONDERPUSH_REQUIRES_USER_CONSENT', wonderpushPluginVariables.REQUIRES_USER_CONSENT == 'true' ? 'true' : 'false'
+      }
     }
   }
 }
