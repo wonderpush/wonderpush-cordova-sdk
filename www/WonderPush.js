@@ -53,12 +53,34 @@
 
 var _serviceName = 'WonderPushPlugin';
 
-function _errorHandler(error) {
-  console.error('[WonderPush] error calling native method:', error);
+function _makeDeferred(successCb, errorCb) {
+  return new function() {
+    this.success = null;
+    this.failure = null;
+    this.promise = new Promise(function(res, rej) {
+      this.success = function() {
+        if (typeof successCb === 'function') successCb.apply(null, arguments);
+        res.apply(null, arguments);
+      };
+      this.failure = function() {
+        console.error('[WonderPush] error calling native method:', arguments);
+        if (typeof errorCb === 'function') errorCb.apply(null, arguments);
+        rej.apply(null, arguments);
+      };
+    }.bind(this));
+  }();
 }
 
 function _callNative(actionName, args, successCb, errorCb) {
-  cordova.exec(successCb || null, errorCb || _errorHandler, _serviceName, actionName, args || []);
+  var deferred = _makeDeferred(successCb, errorCb);
+  cordova.exec(deferred.success, deferred.failure, _serviceName, actionName, args || []);
+  return deferred.promise;
+}
+
+function _callCallbackReturnPromise(result, successCb) {
+  var deferred = _makeDeferred(successCb);
+  deferred.success(result);
+  return deferred.promise;
 }
 
 _callNative('__setEventForwarder', [], function(event) {
@@ -129,7 +151,7 @@ function _checkAllowedKeys(obj) {
  * @memberof WonderPush
  */
 function initialize(clientId, clientSecret, onSuccess, onFailure) {
-  _callNative('initialize', [clientId, clientSecret], onSuccess, onFailure);
+  return _callNative('initialize', [clientId, clientSecret], onSuccess, onFailure);
 }
 
 /**
@@ -156,7 +178,7 @@ function setUserId(userId, onSuccess, onFailure) {
     throw new Error('Given parameter is neither a string nor null/undefined');
   }
 
-  _callNative('setUserId', [userId], onSuccess, onFailure);
+  return _callNative('setUserId', [userId], onSuccess, onFailure);
 }
 
 /**
@@ -168,7 +190,7 @@ function setUserId(userId, onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function isReady(cb, onFailure) {
-  _callNative('isReady', [], cb, onFailure);
+  return _callNative('isReady', [], cb, onFailure);
 }
 
 /**
@@ -183,7 +205,7 @@ function setLogging(enabled, onSuccess, onFailure) {
     throw new Error('Given parameter is not a boolean');
   }
 
-  _callNative('setLogging', [enabled], onSuccess, onFailure);
+  return _callNative('setLogging', [enabled], onSuccess, onFailure);
 }
 
 /**
@@ -216,7 +238,7 @@ function delegateNativeCallback(call) {
 function setDelegate(delegate, onSuccess, onFailure) {
   onSuccess = onSuccess || function(){}; // ensure cb is set to consume first result properly
   currentDelegate = delegate;
-  _callNative('setDelegate', [currentDelegate != null], function(call) {
+  return _callNative('setDelegate', [currentDelegate != null], function(call) {
     if (onSuccess) {
       // Consuming first return
       onSuccess();
@@ -250,7 +272,7 @@ function getDelegate(cb, onFailure) {
  * @memberof WonderPush
  */
 function getUserId(cb, onFailure) {
-  _callNative('getUserId', [], cb, onFailure);
+  return _callNative('getUserId', [], cb, onFailure);
 }
 
 /**
@@ -262,7 +284,7 @@ function getUserId(cb, onFailure) {
  * @memberof WonderPush
  */
 function getInstallationId(cb, onFailure) {
-  _callNative('getInstallationId', [], cb, onFailure);
+  return _callNative('getInstallationId', [], cb, onFailure);
 }
 
 /**
@@ -272,7 +294,7 @@ function getInstallationId(cb, onFailure) {
  * @memberof WonderPush
  */
 function getDeviceId(cb, onFailure) {
-  _callNative('getDeviceId', [], cb, onFailure);
+  return _callNative('getDeviceId', [], cb, onFailure);
 }
 
 /**
@@ -283,7 +305,7 @@ function getDeviceId(cb, onFailure) {
  * @memberof WonderPush
  */
 function getPushToken(cb, onFailure) {
-  _callNative('getPushToken', [], cb, onFailure);
+  return _callNative('getPushToken', [], cb, onFailure);
 }
 
 /**
@@ -295,7 +317,7 @@ function getPushToken(cb, onFailure) {
  * @memberof WonderPush
  */
 function getAccessToken(cb, onFailure) {
-  _callNative('getAccessToken', [], cb, onFailure);
+  return _callNative('getAccessToken', [], cb, onFailure);
 }
 
 ///
@@ -334,7 +356,7 @@ function trackEvent(type, attributes, onSuccess, onFailure) {
     args.push(attributes);
   }
 
-  _callNative('trackEvent', args, onSuccess, onFailure);
+  return _callNative('trackEvent', args, onSuccess, onFailure);
 }
 
 /**
@@ -519,7 +541,7 @@ function putProperties(properties, onSuccess, onFailure) {
 
   _checkAllowedKeys(properties);
 
-  _callNative('putProperties', [properties], onSuccess, onFailure);
+  return _callNative('putProperties', [properties], onSuccess, onFailure);
 }
 
 /**
@@ -556,7 +578,7 @@ function putInstallationCustomProperties(customProperties, onSuccess, onFailure)
 
   _checkAllowedKeys(customProperties);
 
-  _callNative('putInstallationCustomProperties', [customProperties], onSuccess, onFailure);
+  return _callNative('putInstallationCustomProperties', [customProperties], onSuccess, onFailure);
 }
 
 ///
@@ -580,7 +602,7 @@ function putInstallationCustomProperties(customProperties, onSuccess, onFailure)
  * @memberof WonderPush
  */
 function subscribeToNotifications(onSuccess, onFailure) {
-  _callNative('subscribeToNotifications', [], onSuccess, onFailure);
+  return _callNative('subscribeToNotifications', [], onSuccess, onFailure);
 }
 
 /**
@@ -590,7 +612,7 @@ function subscribeToNotifications(onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function isSubscribedToNotifications(cb, onFailure) {
-  _callNative('isSubscribedToNotifications', [], cb, onFailure);
+  return _callNative('isSubscribedToNotifications', [], cb, onFailure);
 }
 
 /**
@@ -603,7 +625,7 @@ function isSubscribedToNotifications(cb, onFailure) {
  * @memberof WonderPush
  */
 function unsubscribeFromNotifications(onSuccess, onFailure) {
-  _callNative('unsubscribeFromNotifications', [], onSuccess, onFailure);
+  return _callNative('unsubscribeFromNotifications', [], onSuccess, onFailure);
 }
 
 /**
@@ -615,7 +637,7 @@ function unsubscribeFromNotifications(onSuccess, onFailure) {
  * @see WonderPush.isSubscribedToNotifications
  */
 function getNotificationEnabled(cb, onFailure) {
-  _callNative('getNotificationEnabled', [], cb, onFailure);
+  return _callNative('getNotificationEnabled', [], cb, onFailure);
 }
 
 /**
@@ -644,7 +666,7 @@ function setNotificationEnabled(enabled, onSuccess, onFailure) {
     throw new Error('Given parameter is not a boolean');
   }
 
-  _callNative('setNotificationEnabled', [enabled], onSuccess, onFailure);
+  return _callNative('setNotificationEnabled', [enabled], onSuccess, onFailure);
 }
 
 ///
@@ -659,7 +681,7 @@ function setNotificationEnabled(enabled, onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function getUserConsent(cb, onFailure) {
-  _callNative('getUserConsent', [], cb, onFailure);
+  return _callNative('getUserConsent', [], cb, onFailure);
 }
 
 /**
@@ -672,7 +694,7 @@ function getUserConsent(cb, onFailure) {
  * @memberof WonderPush
  */
 function setUserConsent(consent, onSuccess, onFailure) {
-  _callNative('setUserConsent', [consent], onSuccess, onFailure);
+  return _callNative('setUserConsent', [consent], onSuccess, onFailure);
 }
 
 /**
@@ -683,7 +705,7 @@ function setUserConsent(consent, onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function clearAllData(onSuccess, onFailure) {
-  _callNative('clearAllData', [], onSuccess, onFailure);
+  return _callNative('clearAllData', [], onSuccess, onFailure);
 }
 
 /**
@@ -694,7 +716,7 @@ function clearAllData(onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function clearEventsHistory(onSuccess, onFailure) {
-  _callNative('clearEventsHistory', [], onSuccess, onFailure);
+  return _callNative('clearEventsHistory', [], onSuccess, onFailure);
 }
 
 /**
@@ -705,7 +727,7 @@ function clearEventsHistory(onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function clearPreferences(onSuccess, onFailure) {
-  _callNative('clearPreferences', [], onSuccess, onFailure);
+  return _callNative('clearPreferences', [], onSuccess, onFailure);
 }
 
 /**
@@ -716,7 +738,7 @@ function clearPreferences(onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function downloadAllData(onSuccess, onFailure) {
-  _callNative('downloadAllData', [], onSuccess, onFailure);
+  return _callNative('downloadAllData', [], onSuccess, onFailure);
 }
 
 /**
@@ -726,7 +748,7 @@ function downloadAllData(onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function getCountry(cb, onFailure) {
-  _callNative('getCountry', [], cb, onFailure);
+  return _callNative('getCountry', [], cb, onFailure);
 }
 
 /**
@@ -738,7 +760,7 @@ function getCountry(cb, onFailure) {
  * @memberof WonderPush
  */
 function setCountry(country, onSuccess, onFailure) {
-  _callNative('setCountry', [country], onSuccess, onFailure);
+  return _callNative('setCountry', [country], onSuccess, onFailure);
 }
 
 /**
@@ -748,7 +770,7 @@ function setCountry(country, onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function getCurrency(cb, onFailure) {
-  _callNative('getCurrency', [], cb, onFailure);
+  return _callNative('getCurrency', [], cb, onFailure);
 }
 
 /**
@@ -760,7 +782,7 @@ function getCurrency(cb, onFailure) {
  * @memberof WonderPush
  */
 function setCurrency(currency, onSuccess, onFailure) {
-  _callNative('setCurrency', [currency], onSuccess, onFailure);
+  return _callNative('setCurrency', [currency], onSuccess, onFailure);
 }
 
 /**
@@ -770,7 +792,7 @@ function setCurrency(currency, onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function getLocale(cb, onFailure) {
-  _callNative('getLocale', [], cb, onFailure);
+  return _callNative('getLocale', [], cb, onFailure);
 }
 
 /**
@@ -784,7 +806,7 @@ function getLocale(cb, onFailure) {
  * @memberof WonderPush
  */
 function setLocale(locale, onSuccess, onFailure) {
-  _callNative('setLocale', [locale], onSuccess, onFailure);
+  return _callNative('setLocale', [locale], onSuccess, onFailure);
 }
 
 /**
@@ -794,7 +816,7 @@ function setLocale(locale, onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function getTimeZone(cb, onFailure) {
-  _callNative('getTimeZone', [], cb, onFailure);
+  return _callNative('getTimeZone', [], cb, onFailure);
 }
 
 /**
@@ -807,7 +829,7 @@ function getTimeZone(cb, onFailure) {
  * @memberof WonderPush
  */
 function setTimeZone(timeZone, onSuccess, onFailure) {
-  _callNative('setTimeZone', [timeZone], onSuccess, onFailure);
+  return _callNative('setTimeZone', [timeZone], onSuccess, onFailure);
 }
 
 /**
@@ -817,7 +839,7 @@ function setTimeZone(timeZone, onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function enableGeolocation(onSuccess, onFailure) {
-  _callNative('enableGeolocation', [], onSuccess, onFailure);
+  return _callNative('enableGeolocation', [], onSuccess, onFailure);
 }
 
 /**
@@ -827,7 +849,7 @@ function enableGeolocation(onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function disableGeolocation(onSuccess, onFailure) {
-  _callNative('disableGeolocation', [], onSuccess, onFailure);
+  return _callNative('disableGeolocation', [], onSuccess, onFailure);
 }
 
 /**
@@ -841,7 +863,7 @@ function disableGeolocation(onSuccess, onFailure) {
  * @memberof WonderPush
  */
 function setGeolocation(latitude, longitude, onSuccess, onFailure) {
-  _callNative('setGeolocation', [latitude, longitude], onSuccess, onFailure);
+  return _callNative('setGeolocation', [latitude, longitude], onSuccess, onFailure);
 }
 
 ///
@@ -883,7 +905,7 @@ function UserPreferences_getDefaultChannelId(cb, onFailure) {
   if (cordova.platformId === "android") {
     _callNative('UserPreferences_getDefaultChannelId', [], cb, onFailure);
   } else {
-    setTimeout(cb.bind(null, 'default'), 0);
+    return _callCallbackReturnPromise('default', cb);
   }
 }
 
@@ -896,9 +918,9 @@ function UserPreferences_getDefaultChannelId(cb, onFailure) {
  */
 function UserPreferences_setDefaultChannelId(id, cb, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_setDefaultChannelId', [id], cb, onFailure);
+    return _callNative('UserPreferences_setDefaultChannelId', [id], cb, onFailure);
   } else {
-    setTimeout(cb, 0);
+    return _callCallbackReturnPromise(undefined, cb);
   }
 }
 
@@ -916,9 +938,9 @@ function UserPreferences_setDefaultChannelId(id, cb, onFailure) {
  */
 function UserPreferences_getChannelGroup(groupId, cb, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_getChannelGroup', [groupId], cb, onFailure);
+    return _callNative('UserPreferences_getChannelGroup', [groupId], cb, onFailure);
   } else {
-    setTimeout(cb.bind(null, null), 0);
+    return _callCallbackReturnPromise(null, cb);
   }
 }
 
@@ -936,9 +958,9 @@ function UserPreferences_getChannelGroup(groupId, cb, onFailure) {
  */
 function UserPreferences_getChannel(channelId, cb, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_getChannel', [channelId], cb, onFailure);
+    return _callNative('UserPreferences_getChannel', [channelId], cb, onFailure);
   } else {
-    setTimeout(cb.bind(null, null), 0);
+    return _callCallbackReturnPromise(null, cb);
   }
 }
 
@@ -951,9 +973,9 @@ function UserPreferences_getChannel(channelId, cb, onFailure) {
  */
 function UserPreferences_setChannelGroups(channelGroups, onSuccess, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_setChannelGroups', [channelGroups], onSuccess, onFailure);
+    return _callNative('UserPreferences_setChannelGroups', [channelGroups], onSuccess, onFailure);
   } else {
-    setTimeout(onSuccess, 0);
+    return _callCallbackReturnPromise(undefined, onSuccess);
   }
 }
 
@@ -966,9 +988,9 @@ function UserPreferences_setChannelGroups(channelGroups, onSuccess, onFailure) {
  */
 function UserPreferences_setChannels(channels, onSuccess, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_setChannels', [channels], onSuccess, onFailure);
+    return _callNative('UserPreferences_setChannels', [channels], onSuccess, onFailure);
   } else {
-    setTimeout(onSuccess, 0);
+    return _callCallbackReturnPromise(undefined, onSuccess);
   }
 }
 
@@ -981,9 +1003,9 @@ function UserPreferences_setChannels(channels, onSuccess, onFailure) {
  */
 function UserPreferences_putChannelGroup(channelGroup, onSuccess, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_putChannelGroup', [channelGroup], onSuccess, onFailure);
+    return _callNative('UserPreferences_putChannelGroup', [channelGroup], onSuccess, onFailure);
   } else {
-    setTimeout(onSuccess, 0);
+    return _callCallbackReturnPromise(undefined, onSuccess);
   }
 }
 
@@ -996,9 +1018,9 @@ function UserPreferences_putChannelGroup(channelGroup, onSuccess, onFailure) {
  */
 function UserPreferences_putChannel(channel, onSuccess, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_putChannel', [channel], onSuccess, onFailure);
+    return _callNative('UserPreferences_putChannel', [channel], onSuccess, onFailure);
   } else {
-    setTimeout(onSuccess, 0);
+    return _callCallbackReturnPromise(undefined, onSuccess);
   }
 }
 
@@ -1011,9 +1033,9 @@ function UserPreferences_putChannel(channel, onSuccess, onFailure) {
  */
 function UserPreferences_removeChannelGroup(groupId, onSuccess, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_removeChannelGroup', [groupId], onSuccess, onFailure);
+    return _callNative('UserPreferences_removeChannelGroup', [groupId], onSuccess, onFailure);
   } else {
-    setTimeout(onSuccess, 0);
+    return _callCallbackReturnPromise(undefined, onSuccess);
   }
 }
 
@@ -1026,9 +1048,9 @@ function UserPreferences_removeChannelGroup(groupId, onSuccess, onFailure) {
  */
 function UserPreferences_removeChannel(channelId, onSuccess, onFailure) {
   if (cordova.platformId === "android") {
-    _callNative('UserPreferences_removeChannel', [channelId], onSuccess, onFailure);
+    return _callNative('UserPreferences_removeChannel', [channelId], onSuccess, onFailure);
   } else {
-    setTimeout(onSuccess, 0);
+    return _callCallbackReturnPromise(undefined, onSuccess);
   }
 }
 
