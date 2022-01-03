@@ -1,6 +1,6 @@
 {
   "name": "wonderpush-cordova-sdk-fcm",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Mobile push notification delivery with the WonderPush service. The WonderPush Cordova SDK is compatible with iOS and Android. Firebase compatibility module.",
   "repository": {
     "type": "git",
