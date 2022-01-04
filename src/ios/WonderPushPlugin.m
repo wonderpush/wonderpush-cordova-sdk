@@ -24,7 +24,10 @@
     // - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 
     [WonderPush setLogging:[@"true" isEqualToString:[self.commandDelegate.settings objectForKey:[@"WONDERPUSH_LOGGING" lowercaseString]]]];
-    [WonderPush setRequiresUserConsent:[@"true" isEqualToString:[self.commandDelegate.settings objectForKey:[@"WONDERPUSH_REQUIRES_USER_CONSENT" lowercaseString]]]];
+    NSString *consentString = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_REQUIRES_USER_CONSENT" lowercaseString]];
+    if (consentString) {
+      [WonderPush setRequiresUserConsent:[@"true" isEqualToString:consentString]];
+    }
 
     self.jsCallbackWaitersLock = [NSLock new];
     self.jsCallbackWaiters = [NSMutableDictionary new];
