@@ -73,7 +73,9 @@ function _makeDeferred(successCb, errorCb) {
 
 function _callNative(actionName, args, successCb, errorCb) {
   var deferred = _makeDeferred(successCb, errorCb);
-  cordova.exec(deferred.success, deferred.failure, _serviceName, actionName, args || []);
+  if (typeof cordova !== "undefined") {
+    cordova.exec(deferred.success, deferred.failure, _serviceName, actionName, args || []);
+  }
   return deferred.promise;
 }
 
@@ -85,6 +87,10 @@ function _callCallbackReturnPromise(result, successCb) {
 
 _callNative('__setEventForwarder', [], function(event) {
   if (!event) return;
+  if (typeof cordova === "undefined") {
+    console.warn('[WonderPush] cordova is not defined, could not fireDocumentEvent', event);
+    return;
+  }
   switch (event.type) {
     case 'notificationOpen':
       /**
@@ -902,7 +908,7 @@ function setGeolocation(latitude, longitude, onSuccess, onFailure) {
  * @alias WonderPush.UserPreferences.getDefaultChannelId
  */
 function UserPreferences_getDefaultChannelId(cb, onFailure) {
-  if (cordova.platformId === "android") {
+  if (typeof cordova !== "undefined" && cordova.platformId === "android") {
     _callNative('UserPreferences_getDefaultChannelId', [], cb, onFailure);
   } else {
     return _callCallbackReturnPromise('default', cb);
@@ -917,7 +923,7 @@ function UserPreferences_getDefaultChannelId(cb, onFailure) {
  * @alias WonderPush.UserPreferences.setDefaultChannelId
  */
 function UserPreferences_setDefaultChannelId(id, cb, onFailure) {
-  if (cordova.platformId === "android") {
+  if (typeof cordova !== "undefined" && cordova.platformId === "android") {
     return _callNative('UserPreferences_setDefaultChannelId', [id], cb, onFailure);
   } else {
     return _callCallbackReturnPromise(undefined, cb);
@@ -937,7 +943,7 @@ function UserPreferences_setDefaultChannelId(id, cb, onFailure) {
  * @alias WonderPush.UserPreferences.getChannelGroups
  */
 function UserPreferences_getChannelGroup(groupId, cb, onFailure) {
-  if (cordova.platformId === "android") {
+  if (typeof cordova !== "undefined" && cordova.platformId === "android") {
     return _callNative('UserPreferences_getChannelGroup', [groupId], cb, onFailure);
   } else {
     return _callCallbackReturnPromise(null, cb);
@@ -957,7 +963,7 @@ function UserPreferences_getChannelGroup(groupId, cb, onFailure) {
  * @alias WonderPush.UserPreferences.getChannel
  */
 function UserPreferences_getChannel(channelId, cb, onFailure) {
-  if (cordova.platformId === "android") {
+  if (typeof cordova !== "undefined" && cordova.platformId === "android") {
     return _callNative('UserPreferences_getChannel', [channelId], cb, onFailure);
   } else {
     return _callCallbackReturnPromise(null, cb);
@@ -972,7 +978,7 @@ function UserPreferences_getChannel(channelId, cb, onFailure) {
  * @alias WonderPush.UserPreferences.setChannelGroups
  */
 function UserPreferences_setChannelGroups(channelGroups, onSuccess, onFailure) {
-  if (cordova.platformId === "android") {
+  if (typeof cordova !== "undefined" && cordova.platformId === "android") {
     return _callNative('UserPreferences_setChannelGroups', [channelGroups], onSuccess, onFailure);
   } else {
     return _callCallbackReturnPromise(undefined, onSuccess);
@@ -987,7 +993,7 @@ function UserPreferences_setChannelGroups(channelGroups, onSuccess, onFailure) {
  * @alias WonderPush.UserPreferences.setChannels
  */
 function UserPreferences_setChannels(channels, onSuccess, onFailure) {
-  if (cordova.platformId === "android") {
+  if (typeof cordova !== "undefined" && cordova.platformId === "android") {
     return _callNative('UserPreferences_setChannels', [channels], onSuccess, onFailure);
   } else {
     return _callCallbackReturnPromise(undefined, onSuccess);
@@ -1002,7 +1008,7 @@ function UserPreferences_setChannels(channels, onSuccess, onFailure) {
  * @alias WonderPush.UserPreferences.putChannelGroup
  */
 function UserPreferences_putChannelGroup(channelGroup, onSuccess, onFailure) {
-  if (cordova.platformId === "android") {
+  if (typeof cordova !== "undefined" && cordova.platformId === "android") {
     return _callNative('UserPreferences_putChannelGroup', [channelGroup], onSuccess, onFailure);
   } else {
     return _callCallbackReturnPromise(undefined, onSuccess);
@@ -1017,7 +1023,7 @@ function UserPreferences_putChannelGroup(channelGroup, onSuccess, onFailure) {
  * @alias WonderPush.UserPreferences.putChannel
  */
 function UserPreferences_putChannel(channel, onSuccess, onFailure) {
-  if (cordova.platformId === "android") {
+  if (typeof cordova !== "undefined" && cordova.platformId === "android") {
     return _callNative('UserPreferences_putChannel', [channel], onSuccess, onFailure);
   } else {
     return _callCallbackReturnPromise(undefined, onSuccess);
@@ -1032,7 +1038,7 @@ function UserPreferences_putChannel(channel, onSuccess, onFailure) {
  * @alias WonderPush.UserPreferences.removeChannelGroup
  */
 function UserPreferences_removeChannelGroup(groupId, onSuccess, onFailure) {
-  if (cordova.platformId === "android") {
+  if (typeof cordova !== "undefined" && cordova.platformId === "android") {
     return _callNative('UserPreferences_removeChannelGroup', [groupId], onSuccess, onFailure);
   } else {
     return _callCallbackReturnPromise(undefined, onSuccess);
@@ -1047,7 +1053,7 @@ function UserPreferences_removeChannelGroup(groupId, onSuccess, onFailure) {
  * @alias WonderPush.UserPreferences.removeChannel
  */
 function UserPreferences_removeChannel(channelId, onSuccess, onFailure) {
-  if (cordova.platformId === "android") {
+  if (typeof cordova !== "undefined" && cordova.platformId === "android") {
     return _callNative('UserPreferences_removeChannel', [channelId], onSuccess, onFailure);
   } else {
     return _callCallbackReturnPromise(undefined, onSuccess);
