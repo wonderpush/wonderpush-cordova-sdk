@@ -24,10 +24,6 @@
     // - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 
     [WonderPush setLogging:[@"true" isEqualToString:[self.commandDelegate.settings objectForKey:[@"WONDERPUSH_LOGGING" lowercaseString]]]];
-    NSString *consentString = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_REQUIRES_USER_CONSENT" lowercaseString]];
-    if (consentString) {
-      [WonderPush setRequiresUserConsent:[@"true" isEqualToString:consentString]];
-    }
 
     self.jsCallbackWaitersLock = [NSLock new];
     self.jsCallbackWaiters = [NSMutableDictionary new];
@@ -35,18 +31,22 @@
     // Stop initialization here if told to
     if ([@"false" isEqualToString:[self.commandDelegate.settings objectForKey:[@"WONDERPUSH_AUTO_INIT" lowercaseString]]]) {
         NSLog(@"[WonderPush] Initialization left to the developer as requested (AUTO_INIT=false)");
-        return;
+    } else {
+        NSString *consentString = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_REQUIRES_USER_CONSENT" lowercaseString]];
+        if (consentString) {
+          [WonderPush setRequiresUserConsent:[@"true" isEqualToString:consentString]];
+        }
+        NSString *clientId = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_CLIENT_ID" lowercaseString]];
+        NSString *clientSecret = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_CLIENT_SECRET" lowercaseString]];
+        if (clientId && clientSecret) {
+            [WonderPush setClientId:clientId secret:clientSecret];
+        }
+        [WonderPush setupDelegateForApplication:[UIApplication sharedApplication]];
+        [WonderPush setupDelegateForUserNotificationCenter];
     }
 
     [WonderPush setIntegrator:@"wonderpush-cordova-sdk-3.0.17"];
 
-    NSString *clientId = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_CLIENT_ID" lowercaseString]];
-    NSString *clientSecret = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_CLIENT_SECRET" lowercaseString]];
-    if (clientId && clientSecret) {
-        [WonderPush setClientId:clientId secret:clientSecret];
-    }
-    [WonderPush setupDelegateForApplication:[UIApplication sharedApplication]];
-    [WonderPush setupDelegateForUserNotificationCenter];
 
     // Here we have no access to launchOptions from application:didFinishLaunchingWithOptions:,
     // so we must wait for the notification posted shortly after.
