@@ -45,7 +45,7 @@
         [WonderPush setupDelegateForUserNotificationCenter];
     }
 
-    [WonderPush setIntegrator:@"wonderpush-cordova-sdk-3.2.2"];
+    [WonderPush setIntegrator:@"wonderpush-cordova-sdk-3.2.3"];
 
 
     // Here we have no access to launchOptions from application:didFinishLaunchingWithOptions:,
