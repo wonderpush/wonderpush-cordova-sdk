@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="wonderpush-cordova-sdk" version="3.2.3" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="wonderpush-cordova-sdk" version="3.2.4" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
   <name>WonderPush</name>
   <description>Advanced push notification service for mobile applications and Websites. High volume, fast delivery and full-featured starting €1/month.</description>
   <author>WonderPush</author>
