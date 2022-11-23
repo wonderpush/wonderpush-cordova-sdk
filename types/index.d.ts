@@ -449,6 +449,93 @@ export interface WonderPushPlugin {
    */
   downloadAllData(): Promise<void>;
 
+  /**
+   * UserPreferences part of the WonderPush SDK.
+   * This is only available on Android. On other platforms the methods are implemented by nothing.
+   */
+  UserPreferences: UserPreferences;
+
+  /**
+   * Gets the user's country, either as previously stored, or as guessed from the system.
+   * @returns {Promise<string>}
+   */
+  getCountry(): Promise<string>;
+
+  /**
+   * Overrides the user's country. You should use an ISO 3166-1 alpha-2 country code. Defaults to getting the country code from the system default locale.
+   * Use `null` to disable the override.
+   * @param {string} country
+   * @returns {Promise<void>}
+   */
+  setCountry(country: string): Promise<void>;
+
+  /**
+   * Gets the user's currency, either as previously stored, or as guessed from the system.
+   * @returns {Promise<string>}
+   */
+  getCurrency(): Promise<string>;
+
+  /**
+   * Overrides the user's currency. You should use an ISO 4217 currency code. Defaults to getting the currency code from the system default locale.
+   * Use `null` to disable the override.
+   * @param {string} currency -
+   * @returns {Promise<void>}
+   */
+  setCurrency(currency: string): Promise<void>;
+
+  /**
+   * Gets the user's locale, either as previously stored, or as guessed from the system.
+   * @returns {Promise<string>}
+   */
+  getLocale(): Promise<string>;
+
+  /**
+   * Overrides the user's locale.
+   * You should use an `xx-XX` form of RFC 1766, composed of a lowercase ISO 639-1 language code, an underscore or a dash, and an uppercase ISO 3166-1 alpha-2 country code.
+   * Defaults to getting the locale code from the system default locale.
+   * Use `null` to disable the override.
+   * @param {string} locale -
+   * @returns {Promise<void>}
+   */
+  setLocale(locale: string): Promise<void>;
+
+  /**
+   * Gets the user's time zone, either as previously stored, or as guessed from the system.
+   * @returns {Promise<string>}
+   */
+  getTimeZone(): Promise<string>;
+
+  /**
+   * You should use an IANA time zone database codes, `Continent/Country` style preferably, abbreviations like `CET`, `PST`, `UTC`, which have the drawback of changing on daylight saving transitions.
+   * Defaults to getting the time zone code from the system default locale.
+   * Use `null` to disable the override.
+   * @param {string} timeZone -
+   * @returns {Promise<void>}
+   */
+  setTimeZone(timeZone: string): Promise<void>;
+
+  /**
+   * Enables the collection of the user's geolocation.
+   * @returns {Promise<void>}
+   */
+  enableGeolocation(): Promise<void>;
+
+  /**
+   * Disables the collection of the user's geolocation.
+   * @returns {Promise<void>}
+   */
+  disableGeolocation(): Promise<void>;
+
+  /**
+   * Overrides the user's geolocation.
+   * Using this method you can have the user's location be set to wherever you want.
+   * This may be useful to use a pre-recorded location.
+   * @param {number} latitude
+   * @param {number} longitude
+   * @returns {Promise<void>}
+   */
+  setGeolocation(latitude: number, longitude: number): Promise<void>;
+
 }
 
 export declare const WonderPush: WonderPushPlugin;
