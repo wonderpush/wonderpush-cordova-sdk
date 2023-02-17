@@ -594,21 +594,31 @@ function putInstallationCustomProperties(customProperties, onSuccess, onFailure)
 /**
  * Subscribes to push notification and registers the device token with WondePush.
  *
- * On iOS, you **must** call the following method at least once to make the notification visible to the user.
+ * On iOS and Android 13+, you **must** call the following method at least once to make the notification visible to the user.
  *
- * - You can call this method multiple times. The user is only prompted for permission by iOS once.
+ * - You can call this method multiple times. The user is only prompted for permission by the OS once.
  * - There is no need to call this method if the permission has already been granted, but it does not harm either.
  * - If the permission has been denied in the OS, the user will stay soft opt-out.
  *
- * Because in iOS you only have *one* chance for prompting the user, you should find a good timing for that.
+ * Because the OS will only let you have *one* chance for prompting the user, you should find a good timing for that.
  * For a start, you can systematically call it when the application starts, so that the user will be prompted directly at the first launch.
  *
+ * About Android 13+: If you want to control when the user is prompted, you also need to update your `config.xml` and add:
+ * `<preference name="android-targetSdkVersion" value="33" />` inside `<platform name="android">`.
+ * Otherwise the user will be prompted when the application launches.
+ *
+ * @param {boolean} [fallbackToSettings] - On Android, shows a dialog that leads user to the settings should he refuse the permission.
  * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
  * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
  */
-function subscribeToNotifications(onSuccess, onFailure) {
-  return _callNative('subscribeToNotifications', [], onSuccess, onFailure);
+function subscribeToNotifications(fallbackToSettings, onSuccess, onFailure) {
+  if (typeof fallbackToSettings == 'function') {
+    onFailure = onSuccess;
+    onSuccess = fallbackToSettings;
+    fallbackToSettings = false;
+  }
+  return _callNative('subscribeToNotifications', [fallbackToSettings], onSuccess, onFailure);
 }
 
 /**
