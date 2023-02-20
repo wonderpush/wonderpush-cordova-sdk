@@ -389,9 +389,10 @@ export interface WonderPushPlugin {
    * Because in iOS you only have *one* chance for prompting the user, you should find a good timing for that.
    * For a start, you can systematically call it when the application starts, so that the user will be prompted directly at the first launch.
    *
+   * @param {boolean|undefined} fallbackToSettings - When true, WonderPush will show a dialog prompting the user to go to settings and activate push notifications
    * @return {Promise<void>} Returns a promise that resolves upon successful subscription
    */
-  subscribeToNotifications(): Promise<void>;
+  subscribeToNotifications(fallbackToSettings?:boolean): Promise<void>;
 
   /**
    * Returns whether the notifications are enabled.
