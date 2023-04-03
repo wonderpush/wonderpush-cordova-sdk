@@ -24,7 +24,7 @@
     <preference name="AUTO_INIT" default="true" />
     <preference name="REQUIRES_USER_CONSENT" default="false" />
 
-    <framework src="com.wonderpush:wonderpush-android-sdk:4.3.3" />
+    <framework src="com.wonderpush:wonderpush-android-sdk:4.3.4" />
     <framework src="androidx.localbroadcastmanager:localbroadcastmanager:1.0.0" />
     <config-file parent="/*" target="res/xml/config.xml">
       <feature name="WonderPushPlugin">
