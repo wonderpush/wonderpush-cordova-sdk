@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Bundle;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
+import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,13 +40,12 @@ import com.wonderpush.sdk.WonderPushUserPreferences;
 
 import com.wonderpush.sdk.cordova.JSONUtil;
 
-public class WonderPushPlugin extends CordovaPlugin {
+public class WonderPushPlugin extends CordovaPlugin implements Delegate.SubDelegate {
 
     static final String TAG = "WonderPush";
 
     private CallbackContext jsEventForwarder;
 
-    private Delegate nativeDelegateSingleton = new Delegate();
     private CallbackContext jsDelegate;
     private Map<String, BlockingQueue<Object>> jsCallbackWaiters = new ConcurrentHashMap<>();
 
@@ -128,6 +128,8 @@ public class WonderPushPlugin extends CordovaPlugin {
                 jsEventForwarder.sendPluginResult(result);
             }
         }, registeredMethodIntentFilter);
+
+        Delegate.setSubDelegate(this);
     }
 
     @Override
@@ -169,11 +171,20 @@ public class WonderPushPlugin extends CordovaPlugin {
         } else if (action.equals("setDelegate")) {
 
             boolean enabled = args.getBoolean(0);
-            jsDelegate = callbackContext;
-            WonderPush.setDelegate(enabled ? nativeDelegateSingleton : null);
+            jsDelegate = enabled ? callbackContext : null;
             PluginResult result = new PluginResult(PluginResult.Status.OK);
             result.setKeepCallback(true);
             callbackContext.sendPluginResult(result);
+            if (enabled) {
+                List<JSONObject> receivedNotifications = Delegate.consumeSavedReceivedNotifications();
+                List<Pair<JSONObject, Integer>> openedNotifications = Delegate.consumeSavedOpenedNotifications();
+                for (JSONObject notif : receivedNotifications) {
+                    onNotificationReceived(notif);
+                }
+                for (Pair<JSONObject, Integer> pair : openedNotifications) {
+                    onNotificationOpened(pair.first, pair.second);
+                }
+            }
 
         // Core information
         } else if (action.equals("getUserId")) {
@@ -588,40 +599,79 @@ public class WonderPushPlugin extends CordovaPlugin {
         return rtn;
     }
 
-    private class Delegate implements WonderPushDelegate {
 
-        @Override
-        public String urlForDeepLink(DeepLinkEvent event) {
-            CallbackContext delegate = WonderPushPlugin.this.jsDelegate;
-            if (delegate == null) {
-                return event.getUrl();
-            }
-            String jsCallbackWaiterId = createJsCallbackWaiter();
-            try {
-                JSONObject info = new JSONObject();
-                info.put("method", "urlForDeepLink"); // that's the Android name of this method
-                info.put("__callbackId", jsCallbackWaiterId);
-                info.put("url", event.getUrl());
-                PluginResult call = new PluginResult(PluginResult.Status.OK, info);
-                call.setKeepCallback(true);
-                delegate.sendPluginResult(call);
-            } catch (JSONException ex) {
-                Log.e(TAG, "Unexpected JSONException while calling JavaScript plugin delegate", ex);
-            }
-            AtomicReference<Object> valueRef = waitJsCallback(jsCallbackWaiterId, 3, TimeUnit.SECONDS);
-            Object value = valueRef == null ? null : valueRef.get();
-            if (valueRef != null && value != null && !(value instanceof String)) {
-                Log.e(TAG, "WonderPushDelegate.urlForDeepLink expected a string from JavaScript, got a " + value.getClass().getCanonicalName() + ": " + value, new IllegalArgumentException());
-                valueRef = null;
-                value = null;
-            }
-            if (valueRef != null && (value == null || value instanceof String)) {
-                return (String) value;
-            } else {
-                return event.getUrl();
-            }
+    @Override
+    public String urlForDeepLink(DeepLinkEvent event) {
+        CallbackContext delegate = WonderPushPlugin.this.jsDelegate;
+        if (delegate == null) {
+            return event.getUrl();
         }
+        String jsCallbackWaiterId = createJsCallbackWaiter();
+        try {
+            JSONObject info = new JSONObject();
+            info.put("method", "urlForDeepLink"); // that's the Android name of this method
+            info.put("__callbackId", jsCallbackWaiterId);
+            info.put("url", event.getUrl());
+            PluginResult call = new PluginResult(PluginResult.Status.OK, info);
+            call.setKeepCallback(true);
+            delegate.sendPluginResult(call);
+        } catch (JSONException ex) {
+            Log.e(TAG, "Unexpected JSONException while calling JavaScript plugin delegate", ex);
+        }
+        AtomicReference<Object> valueRef = waitJsCallback(jsCallbackWaiterId, 3, TimeUnit.SECONDS);
+        Object value = valueRef == null ? null : valueRef.get();
+        if (valueRef != null && value != null && !(value instanceof String)) {
+            Log.e(TAG, "WonderPushDelegate.urlForDeepLink expected a string from JavaScript, got a " + value.getClass().getCanonicalName() + ": " + value, new IllegalArgumentException());
+            valueRef = null;
+            value = null;
+        }
+        if (valueRef != null && (value == null || value instanceof String)) {
+            return (String) value;
+        } else {
+            return event.getUrl();
+        }
+    }
 
+    @Override
+    public void onNotificationOpened(JSONObject notif, int buttonIndex) {
+        CallbackContext delegate = this.jsDelegate;
+        if (delegate == null) {
+            return;
+        }
+        try {
+            JSONObject info = new JSONObject();
+            info.put("method", "onNotificationOpened"); // that's the Android name of this method
+            info.put("notification", notif);
+            info.put("buttonIndex", buttonIndex);
+            PluginResult call = new PluginResult(PluginResult.Status.OK, info);
+            call.setKeepCallback(true);
+            delegate.sendPluginResult(call);
+        } catch (JSONException ex) {
+            Log.e(TAG, "Unexpected JSONException while calling JavaScript plugin delegate", ex);
+        }
+    }
+
+    @Override
+    public void onNotificationReceived(JSONObject notif) {
+        CallbackContext delegate = this.jsDelegate;
+        if (delegate == null) {
+            return;
+        }
+        try {
+            JSONObject info = new JSONObject();
+            info.put("method", "onNotificationReceived"); // that's the Android name of this method
+            info.put("notification", notif);
+            PluginResult call = new PluginResult(PluginResult.Status.OK, info);
+            call.setKeepCallback(true);
+            delegate.sendPluginResult(call);
+        } catch (JSONException ex) {
+            Log.e(TAG, "Unexpected JSONException while calling JavaScript plugin delegate", ex);
+        }
+    }
+
+    @Override
+    public boolean subDelegateIsReady() {
+        return this.jsDelegate != null;
     }
 
     private String createJsCallbackWaiter() {

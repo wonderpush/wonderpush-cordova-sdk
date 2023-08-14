@@ -225,11 +225,25 @@ function delegateNativeCallback(call) {
     return;
   }
   switch (call.method) {
+    case 'onNotificationReceived':
+      if (currentDelegate.onNotificationReceived) {
+        currentDelegate.onNotificationReceived(call.notification);
+      }
+      return;
+    case 'onNotificationOpened':
+      if (currentDelegate.onNotificationOpened) {
+        currentDelegate.onNotificationOpened(call.notification, call.buttonIndex);
+      }
+      return;
     case 'urlForDeepLink': // fallthrough // Android name
     case 'wonderPushWillOpenURL': // iOS name
-      currentDelegate.urlForDeepLink(call['url'], function(url) {
-        _callNative('__callback', [call.__callbackId, url]);
-      });
+      if (currentDelegate.urlForDeepLink) {
+        currentDelegate.urlForDeepLink(call['url'], function(url) {
+          _callNative('__callback', [call.__callbackId, url]);
+        });
+      } else {
+        _callNative('__callback', [call.__callbackId, call.url]);
+      }
       return;
   }
 }

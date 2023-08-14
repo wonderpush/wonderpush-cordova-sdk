@@ -15,9 +15,149 @@
 #import <WonderPush/WonderPush.h>
 #import <CoreLocation/CoreLocation.h>
 
+@interface WonderPushSavedNotification: NSObject
+@property (nonatomic, strong) NSDictionary *dict;
+@property (nonatomic, assign) NSInteger buttonIndex;
+@end
+
+typedef void(^WPNotificationReceivedCallback)(NSDictionary *);
+typedef void(^WPNotificationOpenedCallback)(NSDictionary *, NSInteger);
+typedef void(^WPURLForDeepLinkCallback)(NSURL *, void (^)(NSURL *));
+
+@interface WonderPushLibDelegate : NSObject <WonderPushDelegate>
++ (instancetype) instance;
+@property (nonatomic, strong) NSMutableArray<WonderPushSavedNotification *> *savedReceivedNotifications;
+@property (nonatomic, strong) NSMutableArray<WonderPushSavedNotification *> *savedOpenedNotifications;
+@property (nonatomic, strong) WPNotificationOpenedCallback notificationOpenedCallback;
+@property (nonatomic, strong) WPNotificationReceivedCallback notificationReceivedCallback;
+@property (nonatomic, strong) WPURLForDeepLinkCallback urlForDeepLinkCallback;
+- (void) saveOpenedNotification:(WonderPushSavedNotification *) notification;
+- (void) saveReceivedNotification:(WonderPushSavedNotification *) notification;
+- (NSArray<WonderPushSavedNotification *> *) consumeSavedReceivedNotifications;
+- (NSArray<WonderPushSavedNotification *> *) consumeSavedOpenedNotifications;
+@end
+
+@implementation WonderPushSavedNotification
+
+- (instancetype) initWithDictionary:(NSDictionary *)dict buttonIndex:(NSInteger) buttonIndex {
+    if (self = [super init]) {
+        self.dict = dict;
+        self.buttonIndex = buttonIndex;
+    }
+    return self;
+}
+@end
+
+@implementation WonderPushLibDelegate
+
+- (instancetype)init {
+    if (self = [super init]) {
+        self.savedOpenedNotifications = [NSMutableArray new];
+        self.savedReceivedNotifications = [NSMutableArray new];
+    }
+    return self;
+}
+        
++ (instancetype)instance {
+    static dispatch_once_t onceToken;
+    static WonderPushLibDelegate *_instance = nil;
+    dispatch_once(&onceToken, ^{
+        _instance = [WonderPushLibDelegate new];
+    });
+    return _instance;
+}
+
+
+- (void)saveOpenedNotification:(WonderPushSavedNotification *)notification {
+    @synchronized (self) {
+        [self.savedOpenedNotifications addObject:notification];
+    }
+}
+
+- (void)saveReceivedNotification:(WonderPushSavedNotification *)notification {
+    @synchronized (self) {
+        [self.savedReceivedNotifications addObject:notification];
+    }
+}
+
+- (NSArray<WonderPushSavedNotification *> *)consumeSavedOpenedNotifications {
+    @synchronized (self) {
+        NSArray<WonderPushSavedNotification *> * result = [NSArray arrayWithArray:self.savedOpenedNotifications];
+        [self.savedOpenedNotifications removeAllObjects];
+        return result;
+    }
+}
+
+- (NSArray<WonderPushSavedNotification *> *)consumeSavedReceivedNotifications {
+    @synchronized (self) {
+        NSArray<WonderPushSavedNotification *> * result = [NSArray arrayWithArray:self.savedReceivedNotifications];
+        [self.savedReceivedNotifications removeAllObjects];
+        return result;
+    }
+}
+
+- (void) onNotificationReceived:(NSDictionary *)notification {
+#if DEBUG
+    NSLog(@"[WonderPush] onNotificationReceived: %@", notification);
+#endif
+    if (self.notificationReceivedCallback) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+#if DEBUG
+            NSLog(@"[WonderPush] callback Cordova with received notification %@", notification);
+#endif
+            self.notificationReceivedCallback(notification);
+        });
+    } else {
+#if DEBUG
+        NSLog(@"[WonderPush] save received notification for later %@", notification);
+#endif
+        [self saveReceivedNotification:[[WonderPushSavedNotification alloc] initWithDictionary:notification buttonIndex:0]];
+    }
+
+}
+
+- (void) onNotificationOpened:(NSDictionary *)notification withButton:(NSInteger)buttonIndex {
+#if DEBUG
+    NSLog(@"[WonderPush] onNotificationOpened: %@", notification);
+#endif
+
+    if (self.notificationOpenedCallback) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+#if DEBUG
+        NSLog(@"[WonderPush] callback Cordova with opened notification %@", notification);
+#endif
+            self.notificationOpenedCallback(notification, buttonIndex);
+        });
+    } else {
+#if DEBUG
+        NSLog(@"[WonderPush] Save opened notification for later: %@", notification);
+#endif
+        [self saveOpenedNotification:[[WonderPushSavedNotification alloc] initWithDictionary:notification buttonIndex:buttonIndex]];
+    }
+}
+
+- (void)wonderPushWillOpenURL:(NSURL *)url withCompletionHandler:(void (^)(NSURL * _Nullable))completionHandler {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.urlForDeepLinkCallback) {
+            self.urlForDeepLinkCallback(url, completionHandler);
+        } else {
+           completionHandler(url);
+        }
+    });
+}
+
+@end
+
+
 @implementation WonderPushPlugin
 
 #pragma mark - Initialization
++ (void)initialize {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [WonderPush setDelegate:[WonderPushLibDelegate instance]];
+    });
+}
 
 - (void)pluginInitialize {
     // Because we use `<param name="onload" value="true"/>`, this method is called inside
@@ -34,7 +174,7 @@
     } else {
         NSString *consentString = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_REQUIRES_USER_CONSENT" lowercaseString]];
         if (consentString) {
-          [WonderPush setRequiresUserConsent:[@"true" isEqualToString:consentString]];
+            [WonderPush setRequiresUserConsent:[@"true" isEqualToString:consentString]];
         }
         NSString *clientId = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_CLIENT_ID" lowercaseString]];
         NSString *clientSecret = [self.commandDelegate.settings objectForKey:[@"WONDERPUSH_CLIENT_SECRET" lowercaseString]];
@@ -56,12 +196,12 @@
                                                object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(onNotificationReceived:)
+                                             selector:@selector(onNotificationCenterNotificationReceived:)
                                                  name:WP_NOTIFICATION_RECEIVED
                                                object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(onNotificationOpened:)
+                                             selector:@selector(onNotificationCenterNotificationOpened:)
                                                  name:WP_NOTIFICATION_OPENED
                                                object:nil];
 
@@ -77,7 +217,7 @@
     [WonderPush application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:launchOptions];
 }
 
-- (void)onNotificationReceived:(NSNotification *)notification {
+- (void)onNotificationCenterNotificationReceived:(NSNotification *)notification {
     NSDictionary *pushNotification = notification.userInfo;
     NSDictionary *wpData = pushNotification[@"_wp"];
     if (![wpData isKindOfClass:[NSDictionary class]]) wpData = @{};
@@ -86,26 +226,26 @@
     if ([pushNotificationType isEqualToString:@"data"]) {
         // Send the notificationOpen event for data notifications just like it does on Android
         CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
-                                                                                                              @"type": @"notificationOpen",
-                                                                                                              @"notification": pushNotification,
-                                                                                                              @"notificationType": pushNotificationType,
-                                                                                                              }];
+            @"type": @"notificationOpen",
+            @"notification": pushNotification,
+            @"notificationType": pushNotificationType,
+        }];
         [result setKeepCallbackAsBool:YES];
         [self.commandDelegate sendPluginResult:result callbackId:self.jsEventForwarder.callbackId];
     }
 }
 
-- (void)onNotificationOpened:(NSNotification *)notification {
+- (void)onNotificationCenterNotificationOpened:(NSNotification *)notification {
     NSDictionary *pushNotification = notification.userInfo;
     NSDictionary *wpData = pushNotification[@"_wp"];
     if (![wpData isKindOfClass:[NSDictionary class]]) wpData = @{};
     NSString *pushNotificationType = wpData[@"type"];
     if (![pushNotificationType isKindOfClass:[NSString class]]) pushNotificationType = @"simple";
     CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
-                                                                                                          @"type": @"notificationOpen",
-                                                                                                          @"notification": pushNotification,
-                                                                                                          @"notificationType": pushNotificationType,
-                                                                                                          }];
+        @"type": @"notificationOpen",
+        @"notification": pushNotification,
+        @"notificationType": pushNotificationType,
+    }];
     [result setKeepCallbackAsBool:YES];
     [self.commandDelegate sendPluginResult:result callbackId:self.jsEventForwarder.callbackId];
 }
@@ -114,10 +254,10 @@
     NSString *method = notification.userInfo[WP_REGISTERED_CALLBACK_METHOD_KEY];
     NSString *arg = notification.userInfo[WP_REGISTERED_CALLBACK_PARAMETER_KEY];
     CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
-                                                                                                          @"type": @"registeredCallback",
-                                                                                                          @"method": method,
-                                                                                                          @"arg": arg,
-                                                                                                          }];
+        @"type": @"registeredCallback",
+        @"method": method,
+        @"arg": arg,
+    }];
     [result setKeepCallbackAsBool:YES];
     [self.commandDelegate sendPluginResult:result callbackId:self.jsEventForwarder.callbackId];
 }
@@ -158,6 +298,7 @@
 #pragma mark - Delegate
 
 - (void) wonderPushWillOpenURL:( NSURL * )url withCompletionHandler:(void (^)(NSURL *url))completionHandler {
+    if (!self.jsDelegateCommand) return;
     __block bool cbCalled = false;
     void (^cb)(id value) = ^(id value) {
         if (cbCalled) {
@@ -175,10 +316,10 @@
     // Call to the JavaScript application code
     NSString *callbackId = [self createJsCallbackWaiter:cb];
     CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
-                                                                                                          @"method": @"wonderPushWillOpenURL",
-                                                                                                          @"__callbackId": callbackId,
-                                                                                                          @"url": url.absoluteString,
-                                                                                                          }];
+        @"method": @"wonderPushWillOpenURL",
+        @"__callbackId": callbackId,
+        @"url": url.absoluteString,
+    }];
     [result setKeepCallbackAsBool:YES];
     [self.commandDelegate sendPluginResult:result callbackId:self.jsDelegateCommand.callbackId];
 
@@ -191,6 +332,27 @@
     });
 }
 
+
+- (void)onNotificationReceived:(NSDictionary *)notification {
+    if (!self.jsDelegateCommand) return;
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
+        @"method": @"onNotificationReceived",
+        @"notification": notification,
+    }];
+    [result setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:result callbackId:self.jsDelegateCommand.callbackId];
+}
+
+- (void)onNotificationOpened:(NSDictionary *)notification withButton:(NSInteger)buttonIndex {
+    if (!self.jsDelegateCommand) return;
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
+        @"method": @"onNotificationOpened",
+        @"notification": notification,
+        @"buttonIndex": [NSNumber numberWithInteger:buttonIndex]
+    }];
+    [result setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:result callbackId:self.jsDelegateCommand.callbackId];
+}
 
 - (NSString *)createJsCallbackWaiter:(void (^)(id value))cb {
     [self.jsCallbackWaitersLock lock];
@@ -216,11 +378,34 @@
 
 - (void)setDelegate:(CDVInvokedUrlCommand *)command {
     NSNumber *enabled = (NSNumber *)command.arguments[0];
-    self.jsDelegateCommand = command;
-    [WonderPush setDelegate:([enabled boolValue] ? self : nil)];
+    self.jsDelegateCommand = enabled ? command : nil;
     CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [result setKeepCallbackAsBool:YES];
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    if (enabled) {
+        WonderPushLibDelegate.instance.notificationOpenedCallback = ^(NSDictionary *notification, NSInteger buttonIndex) {
+            [self onNotificationOpened:notification withButton:buttonIndex];
+        };
+        WonderPushLibDelegate.instance.notificationReceivedCallback = ^(NSDictionary *notification) {
+            [self onNotificationReceived:notification];
+        };
+        WonderPushLibDelegate.instance.urlForDeepLinkCallback = ^(NSURL *url, void(^completionHandler)(NSURL *)) {
+            [self wonderPushWillOpenURL:url withCompletionHandler:completionHandler];
+        };
+        // Consume stacks
+        NSArray<WonderPushSavedNotification *> *openedNotifications = [WonderPushLibDelegate.instance consumeSavedOpenedNotifications];
+        NSArray<WonderPushSavedNotification *> *receivedNotifications = [WonderPushLibDelegate.instance consumeSavedReceivedNotifications];
+        for (WonderPushSavedNotification *notification in receivedNotifications) {
+            [self onNotificationReceived:notification.dict];
+        }
+        for (WonderPushSavedNotification *notification in openedNotifications) {
+            [self onNotificationOpened:notification.dict withButton:notification.buttonIndex];
+        }
+    } else {
+        WonderPushLibDelegate.instance.notificationOpenedCallback = nil;
+        WonderPushLibDelegate.instance.notificationReceivedCallback = nil;
+        WonderPushLibDelegate.instance.urlForDeepLinkCallback = nil;
+    }
 }
 
 #pragma mark - Core information
@@ -493,14 +678,14 @@
         NSNumber *longitudeNumber = [dict objectForKey:@"longitude"];
         latitude = latitudeNumber ? latitudeNumber.doubleValue : 0;
         longitude = longitudeNumber ? longitudeNumber.doubleValue : 0;
-     } else if (command.arguments.count > 1
-        && [command.arguments[0] isKindOfClass:NSNumber.class]
-        && [command.arguments[1] isKindOfClass:NSNumber.class]) {
+    } else if (command.arguments.count > 1
+               && [command.arguments[0] isKindOfClass:NSNumber.class]
+               && [command.arguments[1] isKindOfClass:NSNumber.class]) {
         latitude = [command.arguments[0] doubleValue];
         longitude = [command.arguments[1] doubleValue];
     } else if (command.arguments.count > 1
-        && [command.arguments[0] isKindOfClass:NSString.class]
-        && [command.arguments[1] isKindOfClass:NSString.class]) {
+               && [command.arguments[0] isKindOfClass:NSString.class]
+               && [command.arguments[1] isKindOfClass:NSString.class]) {
         latitude = [command.arguments[0] doubleValue];
         longitude = [command.arguments[1] doubleValue];
     }

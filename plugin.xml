@@ -26,6 +26,9 @@
 
     <framework src="com.wonderpush:wonderpush-android-sdk:4.3.4" />
     <framework src="androidx.localbroadcastmanager:localbroadcastmanager:1.0.0" />
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+      <meta-data android:name="com.wonderpush.sdk.delegateClass" android:value="com.wonderpush.sdk.cordova.Delegate" />
+    </config-file>
     <config-file parent="/*" target="res/xml/config.xml">
       <feature name="WonderPushPlugin">
         <param name="android-package" value="com.wonderpush.sdk.cordova.WonderPushPlugin" />

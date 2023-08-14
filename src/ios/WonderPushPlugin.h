@@ -28,8 +28,6 @@
 // Initialization
 - (void)pluginInitialize;
 - (void)UIApplicationDidFinishLaunchingNotification:(NSNotification *)notification;
-- (void)onNotificationReceived:(NSNotification *)notification;
-- (void)onNotificationOpened:(NSNotification *)notification;
 - (void)__setEventForwarder:(CDVInvokedUrlCommand *)command;
 
 - (void)initialize:(CDVInvokedUrlCommand *)command;
