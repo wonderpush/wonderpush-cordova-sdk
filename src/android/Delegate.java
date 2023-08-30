@@ -9,7 +9,6 @@ import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
-import com.wonderpush.sdk.ContextReceiver;
 import com.wonderpush.sdk.DeepLinkEvent;
 import com.wonderpush.sdk.WonderPushDelegate;
 
@@ -19,7 +18,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Delegate implements WonderPushDelegate, ContextReceiver {
+public class Delegate implements WonderPushDelegate {
     public interface SubDelegate extends WonderPushDelegate {
         boolean subDelegateIsReady();
     }
