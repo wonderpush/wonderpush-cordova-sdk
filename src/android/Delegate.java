@@ -25,7 +25,7 @@ public class Delegate implements WonderPushDelegate {
 
     private Context context;
 
-    private static List<WeakReference<SubDelegate>> subDelegates = new ArrayList<>();
+    private static WeakReference<SubDelegate> subDelegate;
     private static final List<Pair<JSONObject, Integer>> savedOpenedNotifications = new ArrayList<>();
     private static final List<JSONObject> savedReceivedNotifications = new ArrayList<>();
 
@@ -49,8 +49,7 @@ public class Delegate implements WonderPushDelegate {
 
     protected static void setSubDelegate(SubDelegate subDelegate) {
         synchronized (Delegate.class) {
-            subDelegates.clear();
-            subDelegates.add(new WeakReference<>(subDelegate));
+            Delegate.subDelegate = subDelegate != null ? new WeakReference<>(subDelegate) : null;
         }
     }
 
@@ -64,13 +63,9 @@ public class Delegate implements WonderPushDelegate {
     public String urlForDeepLink(DeepLinkEvent event) {
         String defaultUrl = event.getUrl();
         synchronized (Delegate.class) {
-            for (WeakReference<SubDelegate> subDelegate : subDelegates) {
-                WonderPushDelegate delegate = subDelegate.get();
-                if (delegate == null) continue;
-                String alternateUrl = delegate.urlForDeepLink(event);
-                if (alternateUrl == null && defaultUrl == null) continue;
-                if (alternateUrl != null && alternateUrl.equals(defaultUrl)) continue;
-                return alternateUrl;
+            SubDelegate subDelegate = Delegate.subDelegate != null ? Delegate.subDelegate.get() : null;
+            if (subDelegate != null) {
+                return subDelegate.urlForDeepLink(event);
             }
         }
         return defaultUrl;
@@ -79,15 +74,14 @@ public class Delegate implements WonderPushDelegate {
     @Override
     public void onNotificationOpened(JSONObject notif, int buttonIndex) {
         synchronized (Delegate.class) {
-            if (!hasReadySubDelegates()) {
+            if (!subDelegateIsReady()) {
                 // Save for later
                 savedOpenedNotifications.add(new Pair<>(notif, buttonIndex));
                 return;
             }
-            for (WeakReference<SubDelegate> subDelegate : subDelegates) {
-                WonderPushDelegate delegate = subDelegate.get();
-                if (delegate == null) continue;
-                delegate.onNotificationOpened(notif, buttonIndex);
+            SubDelegate subDelegate = Delegate.subDelegate != null ? Delegate.subDelegate.get() : null;
+            if (subDelegate != null) {
+                subDelegate.onNotificationOpened(notif, buttonIndex);
             }
         }
     }
@@ -95,26 +89,21 @@ public class Delegate implements WonderPushDelegate {
     @Override
     public void onNotificationReceived(JSONObject notif) {
         synchronized (Delegate.class) {
-            if (!hasReadySubDelegates()) {
+            if (!subDelegateIsReady()) {
                 // Save for later
                 savedReceivedNotifications.add(notif);
                 return;
             }
-            for (WeakReference<SubDelegate> subDelegate : subDelegates) {
-                WonderPushDelegate delegate = subDelegate.get();
-                if (delegate == null) continue;
-                delegate.onNotificationReceived(notif);
+            SubDelegate subDelegate = Delegate.subDelegate != null ? Delegate.subDelegate.get() : null;
+            if (subDelegate != null) {
+                subDelegate.onNotificationReceived(notif);
             }
         }
     }
 
-    private static boolean hasReadySubDelegates() {
-        for (WeakReference<SubDelegate> sd : subDelegates) {
-            SubDelegate subDelegate = sd.get();
-            if (subDelegate != null && subDelegate.subDelegateIsReady()) {
-                return true;
-            }
-        }
+    private static boolean subDelegateIsReady() {
+        SubDelegate subDelegate = Delegate.subDelegate != null ? Delegate.subDelegate.get() : null;
+        if (subDelegate != null) return subDelegate.subDelegateIsReady();
         return false;
     }
 
