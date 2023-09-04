@@ -1,6 +1,6 @@
 {
   "name": "wonderpush-cordova-sdk-hcm",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Mobile push notification delivery with the WonderPush service. The WonderPush Cordova SDK is compatible with iOS and Android. Huawei Mobile Services compatibility module.",
   "repository": {
     "type": "git",
