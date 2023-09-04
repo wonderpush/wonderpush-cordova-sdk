@@ -1,5 +1,7 @@
 export interface WonderPushDelegate {
-  urlForDeepLink(url: string, callback: (url?: string) => void): void;
+  urlForDeepLink?: (url: string, callback: (url?: string) => void) => void;
+  onNotificationOpened?: (notification: object, buttonIndex: number) => void;
+  onNotificationReceived?: (notification: object) => void;
 }
 
 export interface WonderPushChannel {
