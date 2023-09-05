@@ -37,6 +37,7 @@
     <framework src="build-extras.gradle" custom="true" type="gradleReference" />
     <source-file src="src/android/WonderPushPlugin.java" target-dir="src/com/wonderpush/sdk/cordova" />
     <source-file src="src/android/JSONUtil.java" target-dir="src/com/wonderpush/sdk/cordova" />
+    <source-file src="src/android/Delegate.java" target-dir="src/com/wonderpush/sdk/cordova" />
   </platform>
   <platform name="ios">
     <preference name="CLIENT_ID" />
