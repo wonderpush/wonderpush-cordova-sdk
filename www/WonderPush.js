@@ -632,7 +632,7 @@ function subscribeToNotifications(fallbackToSettings, onSuccess, onFailure) {
     onSuccess = fallbackToSettings;
     fallbackToSettings = false;
   }
-  return _callNative('subscribeToNotifications', [fallbackToSettings], onSuccess, onFailure);
+  return _callNative('subscribeToNotifications', [!!fallbackToSettings], onSuccess, onFailure);
 }
 
 /**
