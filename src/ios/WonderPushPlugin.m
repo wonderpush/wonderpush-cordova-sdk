@@ -203,7 +203,7 @@ typedef void(^WPURLForDeepLinkCallback)(NSURL *, void (^)(NSURL *));
         [WonderPush setupDelegateForUserNotificationCenter];
     }
 
-    [WonderPush setIntegrator:@"wonderpush-cordova-sdk-3.2.9"];
+    [WonderPush setIntegrator:@"wonderpush-cordova-sdk-3.3.0"];
 
 
     // Here we have no access to launchOptions from application:didFinishLaunchingWithOptions:,
