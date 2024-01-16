@@ -33,7 +33,6 @@ typedef void(^WPURLForDeepLinkCallback)(NSURL *, void (^)(NSURL *));
 + (instancetype) instance;
 @property (nonatomic, strong) NSMutableArray<WonderPushSavedNotification *> *savedReceivedNotifications;
 @property (nonatomic, strong) NSMutableArray<WonderPushSavedNotification *> *savedOpenedNotifications;
-@property (nonatomic, strong) NSMutableArray<WonderPushSavedUrlForDeepLinkCallback *> *savedUrlForDeepLinkCallbacks;
 @property (nonatomic, strong) WPNotificationOpenedCallback notificationOpenedCallback;
 @property (nonatomic, strong) WPNotificationReceivedCallback notificationReceivedCallback;
 @property (nonatomic, strong) WPURLForDeepLinkCallback urlForDeepLinkCallback;
@@ -71,7 +70,6 @@ typedef void(^WPURLForDeepLinkCallback)(NSURL *, void (^)(NSURL *));
     if (self = [super init]) {
         self.savedOpenedNotifications = [NSMutableArray new];
         self.savedReceivedNotifications = [NSMutableArray new];
-        self.savedUrlForDeepLinkCallbacks = [NSMutableArray new];
     }
     return self;
 }
@@ -98,12 +96,6 @@ typedef void(^WPURLForDeepLinkCallback)(NSURL *, void (^)(NSURL *));
     }
 }
 
-- (void)saveUrlForDeepLinkCallback:(WonderPushSavedUrlForDeepLinkCallback *)callback {
-    @synchronized (self) {
-        [self.savedUrlForDeepLinkCallbacks addObject:callback];
-    }
-}
-
 - (NSArray<WonderPushSavedNotification *> *)consumeSavedOpenedNotifications {
     @synchronized (self) {
         NSArray<WonderPushSavedNotification *> * result = [NSArray arrayWithArray:self.savedOpenedNotifications];
@@ -116,14 +108,6 @@ typedef void(^WPURLForDeepLinkCallback)(NSURL *, void (^)(NSURL *));
     @synchronized (self) {
         NSArray<WonderPushSavedNotification *> * result = [NSArray arrayWithArray:self.savedReceivedNotifications];
         [self.savedReceivedNotifications removeAllObjects];
-        return result;
-    }
-}
-
-- (NSArray<WonderPushSavedUrlForDeepLinkCallback *> *)consumeSavedUrlForDeepLinkCallbacks {
-    @synchronized (self) {
-        NSArray<WonderPushSavedUrlForDeepLinkCallback *> * result = [NSArray arrayWithArray:self.savedUrlForDeepLinkCallbacks];
-        [self.savedUrlForDeepLinkCallbacks removeAllObjects];
         return result;
     }
 }
@@ -173,7 +157,9 @@ typedef void(^WPURLForDeepLinkCallback)(NSURL *, void (^)(NSURL *));
         if (self.urlForDeepLinkCallback) {
             self.urlForDeepLinkCallback(url, completionHandler);
         } else {
-            [self saveUrlForDeepLinkCallback:[[WonderPushSavedUrlForDeepLinkCallback alloc] initWithUrl:url callback:completionHandler]];
+            // Please note that we are not saving these callbacks for later as the native layer is waiting for an answer.
+            // The consequence is that when app is launched by a notification click, there's great chances we won't be able to act on it from the JS layer
+            completionHandler(url);
         }
     });
 }
@@ -427,15 +413,11 @@ typedef void(^WPURLForDeepLinkCallback)(NSURL *, void (^)(NSURL *));
         // Consume stacks
         NSArray<WonderPushSavedNotification *> *openedNotifications = [WonderPushLibDelegate.instance consumeSavedOpenedNotifications];
         NSArray<WonderPushSavedNotification *> *receivedNotifications = [WonderPushLibDelegate.instance consumeSavedReceivedNotifications];
-        NSArray<WonderPushSavedUrlForDeepLinkCallback *> *urlForDeepLinkCallbacks = [WonderPushLibDelegate.instance consumeSavedUrlForDeepLinkCallbacks];
         for (WonderPushSavedNotification *notification in receivedNotifications) {
             [self onNotificationReceived:notification.dict];
         }
         for (WonderPushSavedNotification *notification in openedNotifications) {
             [self onNotificationOpened:notification.dict withButton:notification.buttonIndex];
-        }
-        for (WonderPushSavedUrlForDeepLinkCallback *cb in urlForDeepLinkCallbacks) {
-            [self wonderPushWillOpenURL:cb.url withCompletionHandler:cb.callback];
         }
     } else {
         WonderPushLibDelegate.instance.notificationOpenedCallback = nil;
