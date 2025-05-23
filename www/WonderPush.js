@@ -194,6 +194,7 @@ function setUserId(userId, onSuccess, onFailure) {
  * @param {WonderPush~BooleanCallback} cb - Callback called with `true` if the SDK is ready, `false` otherwise.
  * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
  * @memberof WonderPush
+ * @deprecated Unimplemented since WonderPush Cordova SDK v3.0.0, callback will not be called.
  */
 function isReady(cb, onFailure) {
   return _callNative('isReady', [], cb, onFailure);
@@ -1136,7 +1137,7 @@ var WonderPush = {
   // Initialization
   initialize: initialize,
   setUserId: setUserId,
-  isReady: isReady,
+  isReady: isReady, // deprecated
   setLogging: setLogging,
   setDelegate: setDelegate,
   getDelegate: getDelegate,
