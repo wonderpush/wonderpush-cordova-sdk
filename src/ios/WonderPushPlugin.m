@@ -177,6 +177,12 @@ typedef void(^WPURLForDeepLinkCallback)(NSURL *, void (^)(NSURL *));
     });
 }
 
+- (void)isInitialized:(CDVInvokedUrlCommand *)command {
+    BOOL rtn = [WonderPush isInitialized];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:rtn] callbackId:command.callbackId];
+}
+
 - (void)pluginInitialize {
     // Because we use `<param name="onload" value="true"/>`, this method is called inside
     // - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions

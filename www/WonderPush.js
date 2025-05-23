@@ -161,6 +161,18 @@ function initialize(clientId, clientSecret, onSuccess, onFailure) {
 }
 
 /**
+ * Whether the SDK has been initialized.
+ *
+ * The SDK is ready when it is initialized with its Client ID and Client Secret.
+ * @param {WonderPush~BooleanCallback} cb - Callback called with `true` if the SDK is ready, `false` otherwise.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function isInitialized(cb, onFailure) {
+  return _callNative('isInitialized', [], cb, onFailure);
+}
+
+/**
  * Sets the user id, used to identify a single identity across multiple devices,
  * and to correctly identify multiple users on a single device.
  *
@@ -1136,6 +1148,7 @@ var UserPreferences = {
 var WonderPush = {
   // Initialization
   initialize: initialize,
+  isInitialized: isInitialized,
   setUserId: setUserId,
   isReady: isReady, // deprecated
   setLogging: setLogging,
