@@ -65,7 +65,7 @@
     <podspec>
       <config />
       <pods use-frameworks="true">
-        <pod name="WonderPush" spec="4.3.2" />
+        <pod name="WonderPush" spec="4.4.0" />
       </pods>
     </podspec>
     <config-file target="*-Info.plist" parent="UIBackgroundModes">
