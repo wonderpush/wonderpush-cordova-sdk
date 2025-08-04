@@ -177,12 +177,6 @@ typedef void(^WPURLForDeepLinkCallback)(NSURL *, void (^)(NSURL *));
     });
 }
 
-- (void)isInitialized:(CDVInvokedUrlCommand *)command {
-    BOOL rtn = [WonderPush isInitialized];
-
-    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:rtn] callbackId:command.callbackId];
-}
-
 - (void)pluginInitialize {
     // Because we use `<param name="onload" value="true"/>`, this method is called inside
     // - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
@@ -300,6 +294,27 @@ typedef void(^WPURLForDeepLinkCallback)(NSURL *, void (^)(NSURL *));
     [WonderPush setClientId:clientId secret:clientSecret];
 
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)initializeAndRememberCredentials:(CDVInvokedUrlCommand *)command {
+    NSString *clientId = (NSString *)command.arguments[0];
+    NSString *clientSecret = (NSString *)command.arguments[1];
+
+    [WonderPush setAndRememberClientId:clientId secret:clientSecret];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
+}
+
+- (void)getRememberedClientId:(CDVInvokedUrlCommand *)command {
+    NSString *rtn = [WonderPush getRememberedClientId];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:rtn] callbackId:command.callbackId];
+}
+
+- (void)isInitialized:(CDVInvokedUrlCommand *)command {
+    BOOL rtn = [WonderPush isInitialized];
+
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:rtn] callbackId:command.callbackId];
 }
 
 - (void)setUserId:(CDVInvokedUrlCommand *)command {

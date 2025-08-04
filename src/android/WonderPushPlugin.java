@@ -156,6 +156,17 @@ public class WonderPushPlugin extends CordovaPlugin implements Delegate.SubDeleg
             WonderPush.initialize(cordova.getContext(), clientId, clientSecret);
             callbackContext.success();
 
+        } else if (action.equals("initializeAndRememberCredentials")) {
+
+            String clientId = args.getString(0);
+            String clientSecret = args.getString(1);
+            WonderPush.initializeAndRememberCredentials(cordova.getContext(), clientId, clientSecret);
+            callbackContext.success();
+
+        } else if (action.equals("getRememberedClientId")) {
+
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.getRememberedClientId(cordova.getContext())));
+
         } else if (action.equals("isInitialized")) {
 
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, WonderPush.isInitialized()));

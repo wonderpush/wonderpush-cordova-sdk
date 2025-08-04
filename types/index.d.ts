@@ -169,10 +169,25 @@ export interface WonderPushPlugin {
    * Initializes the WonderPush SDK
    * @param clientId
    * @param clientSecret
-   * @param onSuccess
-   * @param onFailure
    */
   initialize(clientId: string, clientSecret: string): Promise<void>;
+
+  /**
+   * Initializes the SDK and remembers credentials for subsequent auto-initialization.
+   * You can disable AUTO_INIT or instead use `"USE_REMEMBERED"` as a value for the Client ID and Client Secret.
+   * This is aimed at enabling complex integration scenarios where the Client ID and Client Secret are resolved dynamically and reused ever after.
+   * If you provide a null value, the credential will be forgotten and the SDK won't be initialized.
+   * @param clientId
+   * @param clientSecret
+   */
+  function initializeAndRememberCredentials(clientId: string|null, clientSecret: string|null): Promise<void>;
+
+  /**
+   * Returns the remembered Client ID given to `initializeAndRememberCredentials()`.
+   * There is no similar getter for the Client Secret.
+   * @returns The remembered Client ID if both a non-empty Client ID and Client Secret were last remembered, `null` otherwise.
+   */
+  function getRememberedClientId(): Promise<string|null>;
 
   /**
    * Whether the SDK has been initialized.

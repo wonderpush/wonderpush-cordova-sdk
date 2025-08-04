@@ -31,6 +31,8 @@
 - (void)__setEventForwarder:(CDVInvokedUrlCommand *)command;
 
 - (void)initialize:(CDVInvokedUrlCommand *)command;
+- (void)initializeAndRememberCredentials:(CDVInvokedUrlCommand *)command;
+- (void)getRememberedClientId:(CDVInvokedUrlCommand*)command;
 - (void)isInitialized:(CDVInvokedUrlCommand*)command;
 - (void)setUserId:(CDVInvokedUrlCommand *)command;
 - (void)setLogging:(CDVInvokedUrlCommand *)command;

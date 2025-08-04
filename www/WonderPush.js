@@ -161,6 +161,32 @@ function initialize(clientId, clientSecret, onSuccess, onFailure) {
 }
 
 /**
+ * Initializes the SDK and remembers credentials for subsequent auto-initialization.
+ * You can disable AUTO_INIT or instead use `"USE_REMEMBERED"` as a value for the Client ID and Client Secret.
+ * This is aimed at enabling complex integration scenarios where the Client ID and Client Secret are resolved dynamically and reused ever after.
+ * If you provide a null value, the credential will be forgotten and the SDK won't be initialized.
+ * @param {?string} clientId
+ * @param {?string} clientSecret
+ * @param {WonderPush~SuccessCallback} [onSuccess] - The success callback.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function initializeAndRememberCredentials(clientId, clientSecret, onSuccess, onFailure) {
+  return _callNative('initializeAndRememberCredentials', [clientId, clientSecret], onSuccess, onFailure);
+}
+
+/**
+ * Returns the remembered Client ID given to `initializeAndRememberCredentials()`.
+ * There is no similar getter for the Client Secret.
+ * @param {WonderPush~StringCallback} cb - Callback called with the remembered Client ID if both a non-empty Client ID and Client Secret were last remembered, `null` otherwise.
+ * @param {WonderPush~ErrorCallback} [onFailure] - The failure callback.
+ * @memberof WonderPush
+ */
+function getRememberedClientId(cb, onFailure) {
+  return _callNative('getRememberedClientId', [], cb, onFailure);
+}
+
+/**
  * Whether the SDK has been initialized.
  *
  * The SDK is ready when it is initialized with its Client ID and Client Secret.
@@ -1148,6 +1174,8 @@ var UserPreferences = {
 var WonderPush = {
   // Initialization
   initialize: initialize,
+  initializeAndRememberCredentials: initializeAndRememberCredentials,
+  getRememberedClientId: getRememberedClientId,
   isInitialized: isInitialized,
   setUserId: setUserId,
   isReady: isReady, // deprecated
