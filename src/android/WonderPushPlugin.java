@@ -51,7 +51,7 @@ public class WonderPushPlugin extends CordovaPlugin implements Delegate.SubDeleg
 
     @Override
     protected void pluginInitialize() {
-        WonderPush.setIntegrator("wonderpush-cordova-sdk-3.5.0");
+        WonderPush.setIntegrator("wonderpush-cordova-sdk-3.5.1");
 
         // Forward notification clicks and data notifications receipt
         LocalBroadcastManager.getInstance(cordova.getContext()).registerReceiver(new BroadcastReceiver() {
