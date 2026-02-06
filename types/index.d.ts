@@ -180,14 +180,14 @@ export interface WonderPushPlugin {
    * @param clientId
    * @param clientSecret
    */
-  function initializeAndRememberCredentials(clientId: string|null, clientSecret: string|null): Promise<void>;
+  initializeAndRememberCredentials(clientId: string|null, clientSecret: string|null): Promise<void>;
 
   /**
    * Returns the remembered Client ID given to `initializeAndRememberCredentials()`.
    * There is no similar getter for the Client Secret.
    * @returns The remembered Client ID if both a non-empty Client ID and Client Secret were last remembered, `null` otherwise.
    */
-  function getRememberedClientId(): Promise<string|null>;
+  getRememberedClientId(): Promise<string|null>;
 
   /**
    * Whether the SDK has been initialized.
