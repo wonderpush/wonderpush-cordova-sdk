@@ -89,6 +89,22 @@ module.exports = function(context) {
             projectHelper.removeGroupByKey(group.uuid);
           }
 
+          // Remove the Swift package product dependencies of the target
+          if (target && target.pbxNativeTarget && target.pbxNativeTarget.packageProductDependencies) {
+            const objects = project.hash.project.objects;
+            for (const dep of target.pbxNativeTarget.packageProductDependencies) {
+              if (objects['XCSwiftPackageProductDependency']) {
+                delete objects['XCSwiftPackageProductDependency'][dep.value];
+                delete objects['XCSwiftPackageProductDependency'][`${dep.value}_comment`];
+              }
+              // Build files referencing this product
+              const buildFiles = objects['PBXBuildFile'] || {};
+              for (const k of Object.keys(buildFiles)) {
+                if (buildFiles[k] && buildFiles[k].productRef === dep.value) buildFileKeys.add(k);
+              }
+            }
+          }
+
           // Remove the target
           if (target) {
             projectHelper.removeTargetByKey(target.uuid);

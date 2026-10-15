@@ -88,6 +88,8 @@ const addExtensionToProject = (contextHelper, project) => {
 
   const ourServiceExtensionName = ProjectHelper.NOTIFICATION_SERVICE_EXTENSION_NAME;
   const projectHelper = new ProjectHelper(project);
+  // cordova-ios >= 8 projects use Swift Package Manager: there is no Podfile
+  const useSpm = !fs.existsSync(contextHelper.podfilePath);
 
   const existingServiceExtensions = projectHelper.getAppExtensionTargets();
 
@@ -194,6 +196,7 @@ const addExtensionToProject = (contextHelper, project) => {
         // Copy other build settings
         Object.assign(buildConfiguration.pbxXCBuildConfiguration.buildSettings, EXTENSION_TARGET_BUILD_SETTINGS.Common);
         Object.assign(buildConfiguration.pbxXCBuildConfiguration.buildSettings, EXTENSION_TARGET_BUILD_SETTINGS[environment]);
+        if (useSpm) buildConfiguration.pbxXCBuildConfiguration.buildSettings.IPHONEOS_DEPLOYMENT_TARGET = '15.0'; // required by the WonderPush Swift package
 
         // set baseConfigurationReference
         const baseConfigurationFileReference = projectHelper.findFileByName(`wonderpushnotificationserviceextension-${environment.toLowerCase()}.xcconfig`);
@@ -229,15 +232,23 @@ const addExtensionToProject = (contextHelper, project) => {
       const buildPhase = projectHelper.addSourcesBuildPhase(buildPhaseFileKeys, target);
       logHelper.debug('[addExtensionToProject] added build phase', buildPhase.uuid);
 
+      if (useSpm) {
+        projectHelper.addSwiftPackageProductToTarget(target, ProjectHelper.SPM_URL, ProjectHelper.SPM_VERSION, ProjectHelper.SPM_EXTENSION_PRODUCT);
+        logHelper.debug('[addExtensionToProject] linked Swift package product', ProjectHelper.SPM_EXTENSION_PRODUCT);
+      }
+
       // Write the project
       projectHelper.saveSync();
       logHelper.debug('[addExtensionToProject] saved project');
+
+      if (useSpm) return null;
 
       // Read the Podfile
       logHelper.debug('[addExtensionToProject] read Podfile', contextHelper.podfilePath);
       return fs.readFile(contextHelper.podfilePath);
     })
     .then((buffer) => {
+      if (!buffer) return;
       const podfileContents = buffer.toString('utf8');
       if (podfileContents.indexOf(ProjectHelper.PODFILE_SNIPPET) < 0) {
         logHelper.debug('[addExtensionToProject] adding snippet to Podfile', contextHelper.podfilePath);

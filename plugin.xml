@@ -39,7 +39,7 @@
     <source-file src="src/android/JSONUtil.java" target-dir="src/com/wonderpush/sdk/cordova" />
     <source-file src="src/android/Delegate.java" target-dir="src/com/wonderpush/sdk/cordova" />
   </platform>
-  <platform name="ios">
+  <platform name="ios" package="swift">
     <preference name="CLIENT_ID" />
     <preference name="CLIENT_SECRET" />
     <preference name="LOGGING" default="false" />
@@ -65,7 +65,7 @@
     <podspec>
       <config />
       <pods use-frameworks="true">
-        <pod name="WonderPush" spec="4.5.0" />
+        <pod name="WonderPush" spec="4.4.3" nospm="true" />
       </pods>
     </podspec>
     <config-file target="*-Info.plist" parent="UIBackgroundModes">

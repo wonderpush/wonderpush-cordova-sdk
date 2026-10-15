@@ -285,6 +285,58 @@ class ProjectHelper {
     };
   }
 
+  /**
+   * Links a product of a remote Swift package to the given target, adding the package reference to the project if needed.
+   * @param target the target, as returned by project.addTarget()
+   * @param {string} url the package repository URL
+   * @param {string} minimumVersion
+   * @param {string} productName
+   */
+  addSwiftPackageProductToTarget(target, url, minimumVersion, productName) {
+    const objects = this.project.hash.project.objects;
+    const ensureSection = (name) => objects[name] = objects[name] || {};
+    const projectObject = this.project.getFirstProject().firstProject;
+
+    // Find or create the package reference
+    const packageRefSection = ensureSection('XCRemoteSwiftPackageReference');
+    let packageRefKey = Object.keys(packageRefSection)
+      .filter(x => !ProjectHelper.COMMENT_KEY.test(x))
+      .find(x => this.unquote(packageRefSection[x].repositoryURL) === url);
+    if (!packageRefKey) {
+      packageRefKey = this.project.generateUuid();
+      packageRefSection[packageRefKey] = {
+        isa: 'XCRemoteSwiftPackageReference',
+        repositoryURL: `"${url}"`,
+        requirement: { kind: 'upToNextMajorVersion', minimumVersion },
+      };
+      packageRefSection[`${packageRefKey}_comment`] = `XCRemoteSwiftPackageReference "${url.replace(/^.*\//, '').replace(/\.git$/, '')}"`;
+      projectObject.packageReferences = projectObject.packageReferences || [];
+      projectObject.packageReferences.push({ value: packageRefKey, comment: packageRefSection[`${packageRefKey}_comment`] });
+    }
+
+    // Create the product dependency of the target
+    const productDepSection = ensureSection('XCSwiftPackageProductDependency');
+    const productDepKey = this.project.generateUuid();
+    productDepSection[productDepKey] = {
+      isa: 'XCSwiftPackageProductDependency',
+      package: packageRefKey,
+      package_comment: packageRefSection[`${packageRefKey}_comment`],
+      productName,
+    };
+    productDepSection[`${productDepKey}_comment`] = productName;
+    target.pbxNativeTarget.packageProductDependencies = target.pbxNativeTarget.packageProductDependencies || [];
+    target.pbxNativeTarget.packageProductDependencies.push({ value: productDepKey, comment: productName });
+
+    // Link it in a Frameworks build phase
+    const buildFileSection = ensureSection('PBXBuildFile');
+    const buildFileKey = this.project.generateUuid();
+    buildFileSection[buildFileKey] = { isa: 'PBXBuildFile', productRef: productDepKey, productRef_comment: productName };
+    buildFileSection[`${buildFileKey}_comment`] = `${productName} in Frameworks`;
+    const frameworksPhase = this.project.addBuildPhase([], 'PBXFrameworksBuildPhase', 'Frameworks', target.uuid);
+    frameworksPhase.buildPhase.files.push({ value: buildFileKey, comment: `${productName} in Frameworks` });
+    return { packageRefKey, productDepKey, buildFileKey };
+  }
+
   unquote(str) {
     if (str) return str.replace(/^"(.*)"$/, "$1");
   }
@@ -340,7 +392,10 @@ class ProjectHelper {
   }
 }
 
-ProjectHelper.POD_VERSION = '4.5.0';
+ProjectHelper.POD_VERSION = '4.4.3'; // last version published to CocoaPods
+ProjectHelper.SPM_URL = 'https://github.com/wonderpush/wonderpush-ios-sdk.git';
+ProjectHelper.SPM_VERSION = '4.5.0';
+ProjectHelper.SPM_EXTENSION_PRODUCT = 'WonderPushExtension';
 ProjectHelper.PODFILE_SNIPPET = "target 'WonderPushNotificationServiceExtension' do\n" +
   "  platform :ios, '12.0'\n" +
   "  use_frameworks!\n" +
