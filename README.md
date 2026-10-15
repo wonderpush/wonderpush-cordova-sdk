@@ -34,6 +34,11 @@ We provide ready-made tools to collect and manage user consent, and let users do
 
 See our [Cordova Quickstart Guide](https://docs.wonderpush.com/docs/cordova-quickstart).
 
+### iOS dependency management
+
+- **cordova-ios 8 and above**: the plugin uses Swift Package Manager. The native WonderPush iOS SDK and the notification service extension are added as Swift packages, and no Podfile is needed.
+- **Older cordova-ios versions**: the plugin uses CocoaPods, with the WonderPush iOS SDK pinned to 4.4.3, the last version published to CocoaPods.
+
 ## Reference
 
 Check out the [**API reference**](https://docs.wonderpush.com/docs/cordova-sdk) for a list of available methods.
