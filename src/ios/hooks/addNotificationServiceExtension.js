@@ -88,8 +88,8 @@ const addExtensionToProject = (contextHelper, project) => {
 
   const ourServiceExtensionName = ProjectHelper.NOTIFICATION_SERVICE_EXTENSION_NAME;
   const projectHelper = new ProjectHelper(project);
-  // cordova-ios >= 8 projects use Swift Package Manager: there is no Podfile
-  const useSpm = !fs.existsSync(contextHelper.podfilePath);
+  // cordova-ios >= 8 projects use Swift Package Manager
+  const useSpm = contextHelper.usesSpm;
 
   const existingServiceExtensions = projectHelper.getAppExtensionTargets();
 
@@ -168,10 +168,10 @@ const addExtensionToProject = (contextHelper, project) => {
         .filter(x => buildConfigurations.map(y => y.uuid).indexOf(x) === -1)
         .sort();
 
-      const changeBuildConfigurationKey = (buildConfiguration) => {
+      const changeBuildConfigurationKey = (buildConfiguration, newKey) => {
         projectHelper.removeBuildConfigurationFromBuildConfigurationList(buildConfiguration.uuid, target.pbxNativeTarget.buildConfigurationList);
         projectHelper.removeBuildConfigurationByKey(buildConfiguration.uuid);
-        buildConfiguration.uuid = projectHelper.project.generateUuid();
+        buildConfiguration.uuid = newKey || projectHelper.project.generateUuid();
         let result;
         result = projectHelper.addBuildConfiguration(buildConfiguration.uuid, buildConfiguration.pbxXCBuildConfiguration);
         result = projectHelper.addBuildConfigurationToBuildConfigurationList(buildConfiguration.uuid, target.pbxNativeTarget.buildConfigurationList);
@@ -211,10 +211,21 @@ const addExtensionToProject = (contextHelper, project) => {
 
         // Make sure we're not first or last
         if (otherBuildConfigurationKeys.length) {
-          while (buildConfiguration.uuid < otherBuildConfigurationKeys[0]
-          || buildConfiguration.uuid > otherBuildConfigurationKeys[otherBuildConfigurationKeys.length - 1]) {
+          const minKey = otherBuildConfigurationKeys[0];
+          const maxKey = otherBuildConfigurationKeys[otherBuildConfigurationKeys.length - 1];
+          const isInRange = (key) => key >= minKey && key <= maxKey;
+          // Random keys land in the range of the other keys with a good probability only when it is wide.
+          // cordova-ios >= 7 generates keys in a very narrow range, so we then pick keys sharing the range's prefix.
+          let commonPrefixLength = 0;
+          while (commonPrefixLength < minKey.length && minKey[commonPrefixLength] === maxKey[commonPrefixLength]) commonPrefixLength++;
+          const randomKeyInRange = () => {
+            const prefix = minKey.substring(0, commonPrefixLength);
+            const hex = () => Math.floor(Math.random() * 16).toString(16).toUpperCase();
+            return prefix + Array.from({ length: minKey.length - prefix.length }, hex).join('');
+          };
+          for (let attempt = 0; !isInRange(buildConfiguration.uuid) && attempt < 1000; attempt++) {
             const oldKey = buildConfiguration.uuid;
-            changeBuildConfigurationKey(buildConfiguration);
+            changeBuildConfigurationKey(buildConfiguration, attempt < 50 ? undefined : randomKeyInRange());
             logHelper.debug('Changed build configuration key from', oldKey, 'to', buildConfiguration.uuid);
           }
         }

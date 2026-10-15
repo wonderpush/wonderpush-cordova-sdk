@@ -82,19 +82,24 @@ class ContextHelper {
       });
     });
   }
+  /**
+   * Whether the iOS platform manages dependencies with Swift Package Manager (cordova-ios >= 8).
+   * Note that cordova-ios 8 still generates a (empty) Podfile, so we cannot rely on its absence.
+   */
+  get usesSpm() {
+    return !!this.projectRoot && fs.existsSync(path.join(this.projectRoot, 'platforms', 'ios', 'packages'));
+  }
   readXcodeProjectPath() {
     const projectRoot = this.projectRoot;
     if (!projectRoot) return Promise.reject(new Error('Missing project root'));
     return this.readConfig()
       .then((config) => {
-        const name = config.name();
-        const xcodeProjectPath = path.join(projectRoot, 'platforms', 'ios', `${name}.xcodeproj`);
-        return new Promise((res, rej) => {
-          fs.exists(xcodeProjectPath, (exists) => {
-            if (exists) res(xcodeProjectPath);
-            else rej(new Error(`${xcodeProjectPath}: no such file or directory`));
-          });
-        });
+        const iosPath = path.join(projectRoot, 'platforms', 'ios');
+        // cordova-ios >= 7 always names the project "App.xcodeproj", older versions use the app name
+        const candidates = [`${config.name()}.xcodeproj`, 'App.xcodeproj'];
+        const xcodeProjectPath = candidates.map(x => path.join(iosPath, x)).find(x => fs.existsSync(x));
+        if (xcodeProjectPath) return xcodeProjectPath;
+        return Promise.reject(new Error(`${path.join(iosPath, candidates[0])}: no such file or directory`));
       })
   }
   readXcodeProject() {
