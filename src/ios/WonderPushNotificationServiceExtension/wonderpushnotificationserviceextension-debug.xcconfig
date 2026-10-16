@@ -4,5 +4,5 @@
 //
 
 GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1
-#include "../Pods/Target Support Files/Pods-WonderPushNotificationServiceExtension/Pods-WonderPushNotificationServiceExtension.debug.xcconfig"
+#include? "../Pods/Target Support Files/Pods-WonderPushNotificationServiceExtension/Pods-WonderPushNotificationServiceExtension.debug.xcconfig"
 #include "../cordova/build-extras.xcconfig"
