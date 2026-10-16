@@ -36,7 +36,7 @@ See our [Cordova Quickstart Guide](https://docs.wonderpush.com/docs/cordova-quic
 
 ### iOS dependency management
 
-- **cordova-ios 8 and above**: the plugin uses Swift Package Manager. The native WonderPush iOS SDK and the notification service extension are added as Swift packages, and no Podfile is needed.
+- **cordova-ios 8 and above**: the plugin uses Swift Package Manager. The native WonderPush iOS SDK and the notification service extension are added as Swift packages, and no Podfile is needed. Your app must target iOS 15 or above, for example with `<preference name="deployment-target" value="15.0" />` in your `config.xml`.
 - **Older cordova-ios versions**: the plugin uses CocoaPods, with the WonderPush iOS SDK pinned to 4.4.3, the last version published to CocoaPods.
 
 ## Reference
