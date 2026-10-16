@@ -3,3 +3,5 @@
 /node_modules/
 /.idea/
 /fcm/
+get.sh
+cordova-plugin-maven-local.gradle
