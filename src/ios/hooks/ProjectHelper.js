@@ -416,7 +416,7 @@ class ProjectHelper {
 
 ProjectHelper.POD_VERSION = '4.4.3'; // last version published to CocoaPods
 ProjectHelper.SPM_URL = 'https://github.com/wonderpush/wonderpush-ios-sdk.git';
-ProjectHelper.SPM_VERSION = '4.5.0';
+ProjectHelper.SPM_VERSION = '4.5.1';
 ProjectHelper.SPM_EXTENSION_PRODUCT = 'WonderPushExtension';
 ProjectHelper.PODFILE_SNIPPET = "target 'WonderPushNotificationServiceExtension' do\n" +
   "  platform :ios, '12.0'\n" +

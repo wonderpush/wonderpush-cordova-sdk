@@ -11,7 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apache/cordova-ios.git", branch: "master"),
-        .package(url: "https://github.com/wonderpush/wonderpush-ios-sdk.git", from: "4.5.0"),
+        .package(url: "https://github.com/wonderpush/wonderpush-ios-sdk.git", from: "4.5.1"),
     ],
     targets: [
         .target(
