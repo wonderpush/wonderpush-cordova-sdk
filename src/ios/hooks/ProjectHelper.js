@@ -370,9 +370,22 @@ class ProjectHelper {
     }
   }
 
+  /**
+   * Makes `targetKey` explicitly depend on `dependencyKey`.
+   * The xcode library silently does nothing when the PBXTargetDependency and PBXContainerItemProxy sections are missing.
+   */
+  addTargetDependency(targetKey, dependencyKey) {
+    const objects = this.project.hash.project.objects;
+    if (!objects['PBXTargetDependency']) objects['PBXTargetDependency'] = {};
+    if (!objects['PBXContainerItemProxy']) objects['PBXContainerItemProxy'] = {};
+    this.project.addTargetDependency(targetKey, [dependencyKey]);
+  }
+
   removeTargetFromAllTargetDependencies(key) {
     const dependenciesSection = this.project.hash.project.objects['PBXTargetDependency'];
     const proxySection = this.project.hash.project.objects['PBXContainerItemProxy'];
+    if (!dependenciesSection) return;
+    const removedKeys = new Set();
     for (const depKey of Object.keys(dependenciesSection)) {
       const dep = dependenciesSection[depKey];
       if (typeof dep !== 'object') continue;
@@ -381,6 +394,7 @@ class ProjectHelper {
       if (dep.target && dep.target === key) {
         delete dependenciesSection[depKey];
         delete dependenciesSection[`${depKey}_comment`];
+        removedKeys.add(depKey);
 
         // Remove from PBXContainerItemProxy
         if (dep.targetProxy) {
@@ -388,6 +402,14 @@ class ProjectHelper {
           delete proxySection[dep.targetProxy];
         }
       }
+    }
+
+    // Remove references from the targets
+    const nativeTargets = this.project.pbxNativeTargetSection();
+    for (const targetKey of Object.keys(nativeTargets)) {
+      const target = nativeTargets[targetKey];
+      if (typeof target !== 'object' || !target.dependencies) continue;
+      target.dependencies = target.dependencies.filter(x => !removedKeys.has(x.value));
     }
   }
 }

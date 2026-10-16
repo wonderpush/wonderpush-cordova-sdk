@@ -248,6 +248,10 @@ const addExtensionToProject = (contextHelper, project) => {
       if (useSpm) {
         projectHelper.addSwiftPackageProductToTarget(target, ProjectHelper.SPM_URL, ProjectHelper.SPM_VERSION, ProjectHelper.SPM_EXTENSION_PRODUCT);
         logHelper.debug('[addExtensionToProject] linked Swift package product', ProjectHelper.SPM_EXTENSION_PRODUCT);
+        // Without an explicit dependency, Xcode may scan the extension's imports before the Swift package is built,
+        // failing with "'WonderPushExtension/WonderPushExtension.h' file not found"
+        projectHelper.addTargetDependency(appTargetKey, target.uuid);
+        logHelper.debug('[addExtensionToProject] made the app target depend on the extension');
       }
 
       // Write the project
