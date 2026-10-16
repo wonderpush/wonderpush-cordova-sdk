@@ -186,6 +186,8 @@ const addExtensionToProject = (contextHelper, project) => {
         const correspondingAppBuildConfiguration = appBuildConfigurations.find(x => x.pbxXCBuildConfiguration.name === environment);
         if (correspondingAppBuildConfiguration && correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings) {
           for (const key in correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings) {
+            // The app's entitlements file (cordova-ios >= 7) lives in the app's directory, and is not needed by the extension
+            if (key === 'CODE_SIGN_ENTITLEMENTS') continue;
             if (key.startsWith("CODE_SIGN") || key === 'DEVELOPMENT_TEAM') {
               logHelper.debug('Copying build setting', key, correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings[key]);
               buildConfiguration.pbxXCBuildConfiguration.buildSettings[key] = correspondingAppBuildConfiguration.pbxXCBuildConfiguration.buildSettings[key];
